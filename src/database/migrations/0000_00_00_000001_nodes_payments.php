@@ -13,6 +13,18 @@ class NodesPayments extends Migration
     public function up()
     {
         // Módulo General de Pagos
+        Schema::create('payment_methods', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->string('code')->nullable();
+            $table->string('model')->nullable();
+            $table->text('description')->nullable();
+            $table->boolean('active')->default(1);
+            $table->boolean('automatic')->default(1);
+            $table->boolean('normal_payments')->default(1);
+            $table->boolean('recurrent_payments')->default(0);
+            $table->timestamps();
+        });
         Schema::create('scheduled_transactions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('customer_id')->nullable();
@@ -56,7 +68,7 @@ class NodesPayments extends Migration
             $table->string('payment_code')->nullable();
             $table->text('external_payment_code')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
-            $table->enum('method', ['pagostt','paypal','payme','tigomoney','pagosnet','other'])->default('pagostt');
+            $table->enum('method', ['bank-deposit','pagostt','paypal','payme','tigo-money','pagosnet','other'])->default('bank-deposit');
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
             $table->timestamps();
@@ -96,6 +108,26 @@ class NodesPayments extends Migration
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
+        Schema::create('online_banks', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->string('account_number')->nullable();
+            $table->integer('currency_id')->nullable();
+            $table->string('image')->nullable();
+            $table->text('content')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('online_bank_deposits', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('online_bank_id')->unsigned();
+            $table->integer('online_transaction_id')->unsigned();
+            $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
+            $table->string('image')->nullable();
+            $table->text('observations')->nullable();
+            $table->timestamps();
+            $table->foreign('online_bank_id')->references('id')->on('online_banks')->onDelete('cascade');
+            $table->foreign('online_transaction_id')->references('id')->on('online_transactions')->onDelete('cascade');
+        });
     }
 
     /**
@@ -113,6 +145,7 @@ class NodesPayments extends Migration
         Schema::dropIfExists('scheduled_transaction_payments');
         Schema::dropIfExists('scheduled_transaction_items');
         Schema::dropIfExists('scheduled_transactions');
+        Schema::dropIfExists('payment_methods');
 
     }
 }
