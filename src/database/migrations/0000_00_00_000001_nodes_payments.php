@@ -18,7 +18,7 @@ class NodesPayments extends Migration
             $table->string('name')->nullable();
             $table->string('code')->nullable();
             $table->string('model')->nullable();
-            $table->text('description')->nullable();
+            $table->text('content')->nullable();
             $table->boolean('active')->default(1);
             $table->boolean('automatic')->default(1);
             $table->boolean('normal_payments')->default(1);
@@ -138,6 +138,8 @@ class NodesPayments extends Migration
     public function down()
     {
         // Módulo General de PagosTT
+        Schema::dropIfExists('online_bank_deposits');
+        Schema::dropIfExists('online_banks');
         Schema::dropIfExists('online_transaction_payments');
         Schema::dropIfExists('online_transaction_items');
         Schema::dropIfExists('online_transaction_shippings');
