@@ -62,18 +62,15 @@ class NodesPayments extends Migration
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
-        Schema::create('online_transactions', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->string('customer_id')->nullable();
-            $table->string('payment_code')->nullable();
-            $table->text('external_payment_code')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
-            $table->enum('method', ['bank-deposit','pagostt','paypal','payme','tigo-money','pagosnet','other'])->default('bank-deposit');
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
             $table->timestamps();
         });
-        Schema::create('online_transaction_shippings', function (Blueprint $table) {
+        Schema::create('payment_shippings', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->nullable();
             $table->string('name')->nullable();
@@ -87,7 +84,7 @@ class NodesPayments extends Migration
             $table->decimal('price', 10, 2)->nullable();
             $table->timestamps();
         });
-        Schema::create('online_transaction_items', function (Blueprint $table) {
+        Schema::create('payment_items', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->nullable();
             $table->string('item_type')->nullable();
@@ -100,11 +97,13 @@ class NodesPayments extends Migration
             $table->decimal('tax', 10, 2)->nullable();
             $table->timestamps();
         });
-        Schema::create('online_transaction_payments', function (Blueprint $table) {
+        Schema::create('payment_transactions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->nullable();
             $table->text('callback_url')->nullable();
-            $table->decimal('amount', 10, 2)->nullable();
+            $table->string('payment_code')->nullable();
+            $table->integer('payment_method_id')->default(1);
+            $table->text('external_payment_code')->nullable();
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
@@ -140,10 +139,14 @@ class NodesPayments extends Migration
         // Módulo General de PagosTT
         Schema::dropIfExists('online_bank_deposits');
         Schema::dropIfExists('online_banks');
-        Schema::dropIfExists('online_transaction_payments');
-        Schema::dropIfExists('online_transaction_items');
-        Schema::dropIfExists('online_transaction_shippings');
-        Schema::dropIfExists('online_transactions');
+        Schema::dropIfExists('payment_transactions');
+        Schema::dropIfExists('payment_items');
+        Schema::dropIfExists('payment_shippings');
+        Schema::dropIfExists('payments');
+        Schema::dropIfExists('online_transaction_payments'); // BORRAR
+        Schema::dropIfExists('online_transaction_items'); // BORRAR
+        Schema::dropIfExists('online_transaction_shippings'); // BORRAR
+        Schema::dropIfExists('online_transactions'); // BORRAR
         Schema::dropIfExists('scheduled_transaction_payments');
         Schema::dropIfExists('scheduled_transaction_items');
         Schema::dropIfExists('scheduled_transactions');

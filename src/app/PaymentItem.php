@@ -4,9 +4,9 @@ namespace Solunes\Payments\App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OnlineTransactionItem extends Model {
+class PaymentItem extends Model {
 	
-	protected $table = 'online_transaction_items';
+	protected $table = 'payment_items';
 	public $timestamps = true;
 
 	/* Creating rules */
@@ -21,8 +21,8 @@ class OnlineTransactionItem extends Model {
 		'payment_id'=>'required',
 	);
     
-    public function online_transaction() {
-        return $this->belongsTo('Solunes\Payments\App\OnlineTransaction', 'parent_id');
+    public function payment() {
+        return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
     }
 
 }

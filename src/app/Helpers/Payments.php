@@ -6,23 +6,48 @@ use Validator;
 
 class Payments {
 
+    public static function getSalePaymentBridge($sale) {
+        $item['id'] = $sale->id;
+        $item['name'] = $sale->name;
+        $subitems_array = [];
+        foreach($sale->sale_items as $payment_item){
+            $subitems_array[] = \Pagostt::generatePaymentItem($payment_item->name, $payment_item->quantity, $payment_item->amount, 0);
+        }
+        $item['amount'] = $sale->amount;
+        $item['items'] = $subitems_array;
+        return $item;
+    }
+
+    public static function getSaleCustomerBridge($sale) {
+        $item['id'] = $sale->user_id;
+        $item['email'] = $sale->user->email;
+        $item['name'] = $sale->user->full_name;
+        $item['nit_name'] = $sale->user->name;
+        $item['nit_number'] = $sale->user->cellphone;
+        $item['pending_payments'] = [];
+        return $item;
+    }
+
     public static function generateAppKey() {
         $token = \Payments::generateToken([8,4,4,4,12]);
         return $token;
     }
 
-    public static function generatePaymentTransaction($customer_id, $payment_ids, $amount = NULL) {
+    public static function generatePaymentTransaction($customer_id, $payment_items, $amount, $method) {
         $payment_code = \Payments::generatePaymentCode();
-        $payments_transaction = new \Solunes\Payments\App\PttTransaction;
+        $payments_transaction = new \Solunes\Payments\App\OnlineTransaction;
         $payments_transaction->customer_id = $customer_id;
         $payments_transaction->payment_code = $payment_code;
+        $payments_transaction->method = $method;
         $payments_transaction->amount = $amount;
         $payments_transaction->status = 'holding';
         $payments_transaction->save();
-        foreach($payment_ids as $payment_id){
-            $payments_payment = new \Solunes\Payments\App\PttTransactionPayment;
+        foreach($payment_items as $payment_item){
+            $payments_item = new \Solunes\Payments\App\OnlineTransactionPayment;
             $payments_payment->parent_id = $payments_transaction->id;
-            $payments_payment->payment_id = $payment_id;
+            $payments_payment->item_type = 'sale-item';
+            $payments_payment->item_id = $payment_item->id;
+            $payments_payment->item_id = $payment_id;
             $payments_payment->save();
         }
         return $payments_transaction;
@@ -30,7 +55,7 @@ class Payments {
 
     public static function generatePaymentCode() {
         $token = \Payments::generateToken([8,4,4,4,12]);
-        if(\Solunes\Payments\App\PttTransaction::where('payment_code', $token)->first()){
+        if(\Solunes\Payments\App\OnlineTransaction::where('payment_code', $token)->first()){
             $token = \Payments::generatePaymentCode();
         }
         return $token;

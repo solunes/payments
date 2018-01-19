@@ -15,10 +15,10 @@ class TruncateSeeder extends Seeder {
     {
         \Solunes\Payments\App\OnlineBankDeposit::truncate();
         \Solunes\Payments\App\OnlineBank::truncate();
-        \Solunes\Payments\App\OnlineTransactionPayment::truncate();
-        \Solunes\Payments\App\OnlineTransactionShipping::truncate();
-        \Solunes\Payments\App\OnlineTransactionItem::truncate();
-        \Solunes\Payments\App\OnlineTransaction::truncate();
+        \Solunes\Payments\App\PaymentTransaction::truncate();
+        \Solunes\Payments\App\PaymentShipping::truncate();
+        \Solunes\Payments\App\PaymentItem::truncate();
+        \Solunes\Payments\App\Payment::truncate();
         \Solunes\Payments\App\ScheduledTransactionPayment::truncate();
         \Solunes\Payments\App\ScheduledTransactionItem::truncate();
         \Solunes\Payments\App\ScheduledTransaction::truncate();

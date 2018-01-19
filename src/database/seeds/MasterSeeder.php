@@ -19,10 +19,10 @@ class MasterSeeder extends Seeder {
         $node_scheduled_transaction = \Solunes\Master\App\Node::create(['name'=>'scheduled-transaction', 'location'=>'payments', 'folder'=>'payments']);
         \Solunes\Master\App\Node::create(['name'=>'scheduled-transaction-item', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_scheduled_transaction->id]);
         \Solunes\Master\App\Node::create(['name'=>'scheduled-transaction-payment', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_scheduled_transaction->id]);
-        $node_online_transaction = \Solunes\Master\App\Node::create(['name'=>'online-transaction', 'location'=>'payments', 'folder'=>'payments']);
-        \Solunes\Master\App\Node::create(['name'=>'online-transaction-item', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_online_transaction->id]);
-        \Solunes\Master\App\Node::create(['name'=>'online-transaction-shipping', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_online_transaction->id]);
-        \Solunes\Master\App\Node::create(['name'=>'online-transaction-payment', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_online_transaction->id]);
+        $node_payment = \Solunes\Master\App\Node::create(['name'=>'payment', 'location'=>'payments', 'folder'=>'payments']);
+        \Solunes\Master\App\Node::create(['name'=>'payment-item', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_payment->id]);
+        \Solunes\Master\App\Node::create(['name'=>'payment-shipping', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_payment->id]);
+        \Solunes\Master\App\Node::create(['name'=>'payment-transaction', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_payment->id]);
         $node_online_bank = \Solunes\Master\App\Node::create(['name'=>'online-bank', 'location'=>'payments', 'folder'=>'payments']);
         \Solunes\Master\App\Node::create(['name'=>'online-bank-deposit', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_online_bank->id]);
 

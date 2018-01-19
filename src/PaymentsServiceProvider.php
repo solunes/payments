@@ -33,6 +33,8 @@ class PaymentsServiceProvider extends ServiceProvider {
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('Paypalpayment', 'Anouar\Paypalpayment\Facades\PaypalPayment');
 
+        $loader->alias('Pagostt', '\Solunes\Payments\App\Helpers\Pagostt');
+        $loader->alias('Paypal', '\Solunes\Payments\App\Helpers\Paypal');
         $loader->alias('Payments', '\Solunes\Payments\App\Helpers\Payments');
 
         /* Comandos de Consola */

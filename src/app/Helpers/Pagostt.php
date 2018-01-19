@@ -6,6 +6,23 @@ use Validator;
 
 class Pagostt {
 
+    public static function generateSalePayment($sale, $prev) {
+        $customer = \Payments::getSaleCustomerBridge($sale);
+        $payment = \Payments::getSalePaymentBridge($sale);
+        if($customer&&$payment){
+          $payments_transaction = \Payments::generatePaymentTransaction($customer['id'], [$payment['id']], $payment['amount']);
+          $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $payments_transaction);
+          $api_url = \Pagostt::generateTransactionQuery($payments_transaction, $final_fields);
+          if($api_url){
+            return redirect($api_url);
+          } else {
+            return redirect($prev)->with('message_error', 'Hubo un error al realizar su pago en PagosTT.');
+          }
+        } else {
+          return redirect($prev)->with('message_error', 'Hubo un error al realizar su pago.');
+        }
+    }
+
     public static function generateTransactionArray($customer, $payment, $payments_transaction) {
         $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
         $final_fields = array(

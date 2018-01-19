@@ -4,9 +4,9 @@ namespace Solunes\Payments\App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OnlineTransaction extends Model {
+class Payment extends Model {
 	
-	protected $table = 'online_transactions';
+	protected $table = 'payments';
 	public $timestamps = true;
 
 	/* Creating rules */
@@ -28,16 +28,16 @@ class OnlineTransaction extends Model {
 		'status'=>'required',
 	);
     
-    public function online_transaction_items() {
-        return $this->hasMany('Solunes\Payments\App\OnlineTransactionItem', 'parent_id');
+    public function payment_items() {
+        return $this->hasMany('Solunes\Payments\App\PaymentItem', 'parent_id');
     }
     
-    public function online_transaction_shippings() {
-        return $this->hasMany('Solunes\Payments\App\OnlineTransactionShipping', 'parent_id');
+    public function payment_shippings() {
+        return $this->hasMany('Solunes\Payments\App\PaymentShipping', 'parent_id');
     }
     
-    public function online_transaction_payments() {
-        return $this->hasMany('Solunes\Payments\App\OnlineTransactionPayment', 'parent_id');
+    public function payment_transactions() {
+        return $this->hasMany('Solunes\Payments\App\PaymentTransaction', 'parent_id');
     }
 
 }
