@@ -28,4 +28,16 @@ class PaymentMethod extends Model {
 		'status'=>'required',
 	);
 
+    public function scopeActive($query) {
+        return $query->where('active', 1);
+    }
+
+    public function scopeInactive($query) {
+        return $query->where('active', 0);
+    }
+
+    public function scopeOrder($query) {
+        return $query->orderBy('id', 'ASC');
+    }
+
 }
