@@ -33,29 +33,40 @@ class Payments {
         return $token;
     }
 
-    public static function generatePaymentTransaction($customer_id, $payment_items, $amount, $method) {
-        $payment_code = \Payments::generatePaymentCode();
-        $payments_transaction = new \Solunes\Payments\App\OnlineTransaction;
-        $payments_transaction->customer_id = $customer_id;
-        $payments_transaction->payment_code = $payment_code;
-        $payments_transaction->method = $method;
-        $payments_transaction->amount = $amount;
-        $payments_transaction->status = 'holding';
-        $payments_transaction->save();
-        foreach($payment_items as $payment_item){
-            $payments_item = new \Solunes\Payments\App\OnlineTransactionPayment;
-            $payments_payment->parent_id = $payments_transaction->id;
-            $payments_payment->item_type = 'sale-item';
-            $payments_payment->item_id = $payment_item->id;
-            $payments_payment->item_id = $payment_id;
-            $payments_payment->save();
+    public static function generatePayment($customer_id, $sale, $amount) {
+        $payment = new \Solunes\Payments\App\Payment;
+        $payment->customer_id = $customer_id;
+        $payment->amount = $amount;
+        $payment->status = 'holding';
+        $payment->save();
+        foreach($sale->sale_items as $sale_item){
+            $payment_item = new \Solunes\Payments\App\PaymentItem;
+            $payment_item->parent_id = $payments_transaction->id;
+            $payment_item->item_type = 'sale-item';
+            $payment_item->item_id = $payment_item->id;
+            $payment_item->name = $sale_item->name;
+            $payment_item->currency_id = $sale_item->currency_id;
+            $payment_item->quantity = $sale_item->quantity;
+            $payment_item->price = $sale_item->price;
+            $payment_item->save();
         }
-        return $payments_transaction;
+
+        return $payment;
+    }
+
+    public static function generatePaymentTransaction($payment, $payment_method_id) {
+        $payment_code = \Payments::generatePaymentCode();
+        $payment_transaction = new \Solunes\Payments\App\PaymentTransaction;
+        $payment_transaction->parent_id = $payment->id;
+        $payment_transaction->payment_code = $payment_code;
+        $payment_transaction->payment_method_id = $payment_method_id;
+        $payment_transaction->save();
+        return $payment_transaction;
     }
 
     public static function generatePaymentCode() {
         $token = \Payments::generateToken([8,4,4,4,12]);
-        if(\Solunes\Payments\App\OnlineTransaction::where('payment_code', $token)->first()){
+        if(\Solunes\Payments\App\PaymentTransaction::where('payment_code', $token)->first()){
             $token = \Payments::generatePaymentCode();
         }
         return $token;

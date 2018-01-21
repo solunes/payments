@@ -119,13 +119,13 @@ class NodesPayments extends Migration
         Schema::create('online_bank_deposits', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('online_bank_id')->unsigned();
-            $table->integer('online_transaction_id')->unsigned();
+            $table->integer('payment_transaction_id')->unsigned();
             $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
             $table->string('image')->nullable();
             $table->text('observations')->nullable();
             $table->timestamps();
             $table->foreign('online_bank_id')->references('id')->on('online_banks')->onDelete('cascade');
-            $table->foreign('online_transaction_id')->references('id')->on('online_transactions')->onDelete('cascade');
+            $table->foreign('payment_transaction_id')->references('id')->on('payment_transactions')->onDelete('cascade');
         });
     }
 
