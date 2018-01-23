@@ -6,8 +6,10 @@ use Validator;
 
 class Pagostt {
 
-    public static function generateSalePayment($customer, $sale_payment, $payments_transaction) {
-        $final_fields = \Pagostt::generateTransactionArray($customer, $sale_payment, $payments_transaction);
+    public static function generateSalePayment($payment, $cancel_url) {
+        $payments_transaction = \Payments::generatePaymentTransaction($payment, 'pagostt');
+        $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
+        $final_fields = \Pagostt::generateTransactionArray($callback_url, $payment, $payments_transaction);
         $api_url = \Pagostt::generateTransactionQuery($payments_transaction, $final_fields);
         if($api_url){
             return $api_url;
@@ -16,19 +18,36 @@ class Pagostt {
         }
     }
 
-    public static function generateTransactionArray($customer, $payment, $payments_transaction) {
-        $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
+    public static function generateTransactionArray($callback_url, $payment) {
+        $shipping_desc = "Sin costo de envío";
+        $shipping_price = 0;
+        $payment->load('payment_shippings');
+        foreach($payment->payment_shippings as $shipping){
+            $shipping_desc = $shipping->name;
+            $shipping_price = $shipping->price;
+        }
         $final_fields = array(
-            "appkey" => config('payments.app_key'),
-            "email_cliente" => $customer['email'],
+            "appkey" => config('payments.pagostt_app_key'),
+            "email_cliente" => $payment->customer_email,
             "callback_url" => $callback_url,
-            "razon_social" => $customer['nit_name'],
-            "nit" => $customer['nit_number'],
-            "valor_envio" => 0,
-            "descripcion_envio" => "Sin costo de envío",
+            "razon_social" => $payment->invoice_name,
+            "nit" => $payment->invoice_number,
+            "valor_envio" => $shipping_price,
+            "descripcion_envio" => $shipping_desc,
         );
-        $final_fields['descripcion'] = $payment['name'];
-        $final_fields['lineas_detalle_deuda'] = $payment['items'];
+        $final_fields['descripcion'] = $payment->name;
+        $items_array = [];
+        $payment->load('payment_items');
+        foreach($payment->payment_items as $payment_item){
+            $item = [];
+            $item['concepto'] = $payment_item->name;
+            $item['cantidad'] = $payment_item->quantity;
+            $item['costo_unitario'] = $payment_item->price;
+            $item['factura_independiente'] = $payment->invoice;
+            $encoded_item = json_encode($item);
+            $items_array[] = $encoded_item;
+        }
+        $final_fields['lineas_detalle_deuda'] = $items_array;
         return $final_fields;
     }
 
@@ -55,7 +74,7 @@ class Pagostt {
 
         // Guardado de transaction_id generado por PagosTT
         $transaction_id = $decoded_result->id_transaccion;
-        $payments_payment->transaction_id = $transaction_id;
+        $payments_payment->external_payment_code = $transaction_id;
         $payments_payment->save();
         
         // URL para redireccionar

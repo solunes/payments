@@ -24,5 +24,9 @@ class PaymentItem extends Model {
     public function payment() {
         return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
     }
+    
+    public function currency() {
+        return $this->belongsTo('Solunes\Business\App\Currency');
+    }
 
 }

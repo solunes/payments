@@ -7,19 +7,32 @@ use Paypalpayment;
 
 class Paypal {
 
-    public static function generateSalePayment($customer, $sale_payment, $payments_transaction) {
+    public static function generateSalePayment($payment, $cancel_url) {
+        $payments_transaction = \Payments::generatePaymentTransaction($payment, 'paypal');
+        $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
+        $shipping_cost = 0;
+        $tax_cost = 0;
+        $subtotal_cost = 0;
+
         // ### Address
         // Base Address object used as shipping or billing
         // address in a payment. [Optional]
-        $shippingAddress= Paypalpayment::shippingAddress();
-        $shippingAddress->setLine1("3909 Witmer Road")
-            ->setLine2("Niagara Falls")
-            ->setCity("Niagara Falls")
-            ->setState("NY")
-            ->setPostalCode("14305")
-            ->setCountryCode("US")
-            ->setPhone("716-298-1822")
-            ->setRecipientName("Jhone");
+        $shippingAddress = NULL;
+        $payment->load('payment_shippings');
+        if(count($payment->payment_shippings)>0){
+          foreach($payment->payment_shippings as $shipping){
+            $shippingAddress= Paypalpayment::shippingAddress();
+            $shippingAddress->setLine1($shipping->address)
+            ->setLine2($shipping->address_2)
+            ->setCity($shipping->city)
+            ->setState($shipping->region)
+            ->setPostalCode($shipping->postal_code)
+            ->setCountryCode($shipping->country_code)
+            ->setPhone($shipping->phone)
+            ->setRecipientName($shipping->contact_name);
+            $shipping_cost += $shipping->price;
+          }
+        }
 
         // ### Payer
         // A resource representing a Payer that funds a payment
@@ -28,39 +41,39 @@ class Paypal {
         $payer = Paypalpayment::payer();
         $payer->setPaymentMethod("paypal");
 
-        $item1 = Paypalpayment::item();
-        $item1->setName('Ground Coffee 40 oz')
-                ->setDescription('Ground Coffee 40 oz')
-                ->setCurrency('USD')
-                ->setQuantity(1)
-                ->setTax(0.3)
-                ->setPrice(7.50);
-
-        $item2 = Paypalpayment::item();
-        $item2->setName('Granola bars')
-                ->setDescription('Granola Bars with Peanuts')
-                ->setCurrency('USD')
-                ->setQuantity(5)
-                ->setTax(0.2)
-                ->setPrice(2);
-
+        $arrayToAdd = [];
+        $payment->load('payment_items');
+        foreach($payment->payment_items as $subitem){
+            $item = Paypalpayment::item();
+            $item->setName($subitem->name)
+            ->setDescription($subitem->detail)
+            ->setCurrency($subitem->currency->code)
+            ->setQuantity($subitem->quantity)
+            ->setTax($subitem->tax)
+            ->setPrice($subitem->price);
+            $subtotal_cost += ($subitem->price * $subitem->quantity);
+            $tax_cost += ($subitem->price * $subitem->quantity * $subitem->tax);
+            array_push($arrayToAdd, $item);
+        }
 
         $itemList = Paypalpayment::itemList();
-        $itemList->setItems([$item1,$item2])
-            ->setShippingAddress($shippingAddress);
+        $itemList->setItems($arrayToAdd);
+        if($shippingAddress){
+            $itemList->setShippingAddress($shippingAddress);
+        }
 
 
         $details = Paypalpayment::details();
-        $details->setShipping("1.2")
-                ->setTax("1.3")
+        $details->setShipping($shipping_cost)
+                ->setTax($tax_cost)
                 //total of items prices
-                ->setSubtotal("17.5");
+                ->setSubtotal($subtotal_cost);
 
         //Payment Amount
         $amount = Paypalpayment::amount();
-        $amount->setCurrency("USD")
+        $amount->setCurrency($payment->currency->code)
                 // the total is $17.8 = (16 + 0.6) * 1 ( of quantity) + 1.2 ( of Shipping).
-                ->setTotal("20")
+                ->setTotal($shipping_cost+$tax_cost+$subtotal_cost)
                 ->setDetails($details);
 
         // ### Transaction
@@ -72,7 +85,7 @@ class Paypal {
         $transaction = Paypalpayment::transaction();
         $transaction->setAmount($amount)
             ->setItemList($itemList)
-            ->setDescription("Payment description")
+            ->setDescription($payment->name)
             ->setInvoiceNumber(uniqid());
 
         // ### Payment
@@ -80,8 +93,8 @@ class Paypal {
         // the above types and intent as 'sale'
 
         $redirectUrls = Paypalpayment::redirectUrls();
-        $redirectUrls->setReturnUrl(url("/payments/success"))
-            ->setCancelUrl(url("/payments/fails"));
+        $redirectUrls->setReturnUrl($callback_url)
+            ->setCancelUrl($cancel_url);
 
         $payment = Paypalpayment::payment();
 

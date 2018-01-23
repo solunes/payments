@@ -64,7 +64,14 @@ class NodesPayments extends Migration
         });
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name')->nullable();
             $table->string('customer_id')->nullable();
+            $table->integer('currency_id')->nullable();
+            $table->string('customer_name')->nullable();
+            $table->string('customer_email')->nullable();
+            $table->boolean('invoice')->nullable();
+            $table->string('invoice_name')->nullable();
+            $table->string('invoice_number')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
@@ -74,6 +81,7 @@ class NodesPayments extends Migration
             $table->increments('id');
             $table->integer('parent_id')->nullable();
             $table->string('name')->nullable();
+            $table->string('contact_name')->nullable();
             $table->string('address')->nullable();
             $table->string('address_2')->nullable();
             $table->string('city')->nullable();
