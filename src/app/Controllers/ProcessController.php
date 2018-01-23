@@ -8,8 +8,6 @@ use Illuminate\Routing\UrlGenerator;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Paypalpayment;
-
 class ProcessController extends Controller {
 
   public function getPayment($payment_id) {

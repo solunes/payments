@@ -8,7 +8,7 @@ use Illuminate\Routing\UrlGenerator;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class ProcessController extends Controller {
+class PagosttController extends Controller {
 
 	protected $request;
 	protected $url;

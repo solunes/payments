@@ -6,6 +6,25 @@ use Validator;
 
 class Payments {
 
+    public static function generateSalePayment($sale, $model, $redirect) {
+        $customer = \Payments::getSaleCustomerBridge($sale);
+        $sale_payment = \Payments::getSalePaymentBridge($sale);
+        if($customer&&$sale_payment){
+          $payment = \Payments::generatePayment($customer['id'], $sale, $sale_payment['amount']);
+          $payments_transaction = \Payments::generatePaymentTransaction($payment, 'pagostt');
+
+          $model = new $model;
+          $api_url = $model->generateSalePayment($customer, $sale_payment, $payments_transaction);
+          if($api_url){
+            return redirect($api_url);
+          } else {
+            return redirect($redirect)->with('message_error', 'Hubo un error al realizar su pago en PagosTT.');
+          }
+        } else {
+          return redirect($redirect)->with('message_error', 'Hubo un error al realizar su pago.');
+        }
+    }
+
     public static function getSalePaymentBridge($sale) {
         $item['id'] = $sale->id;
         $item['name'] = $sale->name;
