@@ -2,6 +2,14 @@
 
 return [
 
+	// ACTIVE PAYMENT METHODS
+	'bank-deposit' => true,
+	'pagostt' => true,
+	'paypal' => false,
+	'payme' => false,
+	'tigo-money' => false,
+	'pagosnet' => false,
+
 	// SEGURIDAD Y ENCRIPTACION
 	'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto
 	'secret_iv' => '!IV@_$2', // Secret IV de encriptación, reemplazar por oficial de cuentas 365
