@@ -27,22 +27,22 @@ class MasterSeeder extends Seeder {
         \Solunes\Master\App\Node::create(['name'=>'online-bank-deposit', 'location'=>'payments', 'folder'=>'payments', 'type'=>'subchild', 'parent_id'=>$node_online_bank->id]);
 
         // Crear Métodos de Pago por Defecto
-        if(config('solunes.bank-deposit')){
+        if(config('payments.bank-deposit')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Transferencia Bancaria', 'code'=>'bank-deposit', 'model'=>'BankDeposit', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'automatic'=>0]);
         }
-        if(config('solunes.pagostt')){
+        if(config('payments.pagostt')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosTT', 'code'=>'pagostt', 'model'=>'Pagostt', 'content'=>'<p>Realiza una transferencia bancaria a:</p>']);
         }
-        if(config('solunes.paypal')){
+        if(config('payments.paypal')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayPal', 'code'=>'paypal', 'model'=>'Paypal', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'recurrent_payments'=>1]);
         }
-        if(config('solunes.payme')){
+        if(config('payments.payme')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayMe', 'code'=>'payme', 'model'=>'Payme', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
         }
-        if(config('solunes.tigo-money')){
+        if(config('payments.tigo-money')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Tigo Money', 'code'=>'tigo-money', 'model'=>'TigoMoney', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
         }
-        if(config('solunes.pagosnet')){
+        if(config('payments.pagosnet')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosNet', 'code'=>'pagosnet', 'model'=>'PagosNet', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
         }
 
