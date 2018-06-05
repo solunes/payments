@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "solunes/master": "1.*",
+        "solunes/master": "*",
         "anouar/paypalpayment": "3.*"
     },
     "require-dev": {
