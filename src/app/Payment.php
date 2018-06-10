@@ -49,6 +49,10 @@ class Payment extends Model {
         return $this->belongsTo('Solunes\Business\App\Currency');
     }
     
+    public function company() {
+        return $this->belongsTo('Solunes\Business\App\Company');
+    }
+
     public function payment_items() {
         return $this->hasMany('Solunes\Payments\App\PaymentItem', 'parent_id');
     }

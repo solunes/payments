@@ -3,12 +3,17 @@
 return [
 
 	// ACTIVE PAYMENT METHODS
-	'bank-deposit' => true,
+	'bank-deposit' => false,
 	'pagostt' => true,
 	'paypal' => false,
 	'payme' => false,
 	'tigo-money' => false,
 	'pagosnet' => false,
+
+	// PARAMETROS
+	'scheduled_transactions' => false,
+	'shipping' => false,
+	'online_banks' => false,
 
 	// SEGURIDAD Y ENCRIPTACION
 	'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto

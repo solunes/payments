@@ -3,12 +3,25 @@
 return array(
 
 	// MENU
-	'payments' => 'PagosTT',
 	'payments' => 'Pagos',
+	'parameters' => 'Parámetros',
 
 	// CUSTOM TRANS
 	'cancelled' => 'Cancelado',
 	'holding' => 'Pendiente',
 	'paid' => 'Pagado',
+	'0' => 'No',
+	'1' => 'Si',
+	'confirmed' => 'Confirmado',
+	'Day' => 'Día',
+	'denied' => 'Denegado',
+	'digital' => 'Digital',
+	'Month' => 'Mes',
+	'other' => 'Otro',
+	'paypal' => 'Paypal',
+	'phyisical' => 'Físico',
+	'SemiMonth' => 'Semi Mes',
+	'Week' => 'Semana',
+	'Year' => 'Año',
 
 );

@@ -25,73 +25,77 @@ class NodesPayments extends Migration
             $table->boolean('recurrent_payments')->default(0);
             $table->timestamps();
         });
-        Schema::create('scheduled_transactions', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('customer_id')->nullable();
-            $table->string('payment_code')->nullable();
-            $table->string('external_payment_code')->nullable();
-            $table->string('external_profile_id')->nullable();
-            $table->decimal('outstanding_balance', 10, 2)->nullable();
-            $table->date('profile_start_date')->nullable();
-            $table->enum('billing_period', ['Day','Week','SemiMonth','Month','Year'])->default('Month');
-            $table->integer('billing_frequency')->default(1);
-            $table->integer('total_billing_cycles')->default(0);
-            $table->decimal('initial_amount', 10, 2)->nullable()->default(0);
-            $table->decimal('payment_amount', 10, 2)->nullable();
-            $table->enum('method', ['paypal','other'])->default('paypal');
-            $table->boolean('active')->nullable()->default(1);
-            $table->timestamps();
-        });
-        Schema::create('scheduled_transaction_items', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('parent_id')->nullable();
-            $table->string('item_type')->nullable();
-            $table->string('item_id')->nullable();
-            $table->enum('category',['digital','phyisical'])->default('digital');
-            $table->string('name')->nullable();
-            $table->integer('currency_id')->nullable();
-            $table->integer('quantity')->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->timestamps();
-        });
-        Schema::create('scheduled_transaction_payments', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('parent_id')->nullable();
-            $table->text('callback_url')->nullable();
-            $table->decimal('amount', 10, 2)->nullable();
-            $table->boolean('processed')->default(0);
-            $table->timestamps();
-        });
+        if(config('payments.scheduled_transactions')){
+            Schema::create('scheduled_transactions', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('customer_id')->nullable();
+                $table->string('payment_code')->nullable();
+                $table->string('external_payment_code')->nullable();
+                $table->string('external_profile_id')->nullable();
+                $table->decimal('outstanding_balance', 10, 2)->nullable();
+                $table->date('profile_start_date')->nullable();
+                $table->enum('billing_period', ['Day','Week','SemiMonth','Month','Year'])->default('Month');
+                $table->integer('billing_frequency')->default(1);
+                $table->integer('total_billing_cycles')->default(0);
+                $table->decimal('initial_amount', 10, 2)->nullable()->default(0);
+                $table->decimal('payment_amount', 10, 2)->nullable();
+                $table->enum('method', ['paypal','other'])->default('paypal');
+                $table->boolean('active')->nullable()->default(1);
+                $table->timestamps();
+            });
+            Schema::create('scheduled_transaction_items', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->string('item_type')->nullable();
+                $table->string('item_id')->nullable();
+                $table->enum('category',['digital','phyisical'])->default('digital');
+                $table->string('name')->nullable();
+                $table->integer('currency_id')->nullable();
+                $table->integer('quantity')->nullable();
+                $table->decimal('price', 10, 2)->nullable();
+                $table->timestamps();
+            });
+            Schema::create('scheduled_transaction_payments', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->text('callback_url')->nullable();
+                $table->decimal('amount', 10, 2)->nullable();
+                $table->boolean('processed')->default(0);
+                $table->timestamps();
+            });
+        }
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->integer('company_id')->nullable();
             $table->integer('currency_id')->nullable();
+            $table->decimal('amount', 10, 2)->nullable();
             $table->string('customer_name')->nullable();
             $table->string('customer_email')->nullable();
             $table->boolean('invoice')->nullable();
             $table->string('invoice_name')->nullable();
             $table->string('invoice_number')->nullable();
-            $table->decimal('amount', 10, 2)->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
             $table->timestamps();
         });
-        Schema::create('payment_shippings', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('parent_id')->nullable();
-            $table->string('name')->nullable();
-            $table->string('contact_name')->nullable();
-            $table->string('address')->nullable();
-            $table->string('address_2')->nullable();
-            $table->string('city')->nullable();
-            $table->string('region')->nullable();
-            $table->string('postal_code')->nullable();
-            $table->string('country_code')->nullable();
-            $table->string('phone')->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->timestamps();
-        });
+        if(config('payments.shipping')){
+            Schema::create('payment_shippings', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->string('name')->nullable();
+                $table->string('contact_name')->nullable();
+                $table->string('address')->nullable();
+                $table->string('address_2')->nullable();
+                $table->string('city')->nullable();
+                $table->string('region')->nullable();
+                $table->string('postal_code')->nullable();
+                $table->string('country_code')->nullable();
+                $table->string('phone')->nullable();
+                $table->decimal('price', 10, 2)->nullable();
+                $table->timestamps();
+            });
+        }
         Schema::create('payment_items', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('parent_id')->nullable();
@@ -115,26 +119,28 @@ class NodesPayments extends Migration
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
-        Schema::create('online_banks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name')->nullable();
-            $table->string('account_number')->nullable();
-            $table->integer('currency_id')->nullable();
-            $table->string('image')->nullable();
-            $table->text('content')->nullable();
-            $table->timestamps();
-        });
-        Schema::create('online_bank_deposits', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('online_bank_id')->unsigned();
-            $table->integer('payment_transaction_id')->unsigned();
-            $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
-            $table->string('image')->nullable();
-            $table->text('observations')->nullable();
-            $table->timestamps();
-            $table->foreign('online_bank_id')->references('id')->on('online_banks')->onDelete('cascade');
-            $table->foreign('payment_transaction_id')->references('id')->on('payment_transactions')->onDelete('cascade');
-        });
+        if(config('payments.online_banks')){
+            Schema::create('online_banks', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('name')->nullable();
+                $table->string('account_number')->nullable();
+                $table->integer('currency_id')->nullable();
+                $table->string('image')->nullable();
+                $table->text('content')->nullable();
+                $table->timestamps();
+            });
+            Schema::create('online_bank_deposits', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('online_bank_id')->unsigned();
+                $table->integer('payment_transaction_id')->unsigned();
+                $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
+                $table->string('image')->nullable();
+                $table->text('observations')->nullable();
+                $table->timestamps();
+                $table->foreign('online_bank_id')->references('id')->on('online_banks')->onDelete('cascade');
+                $table->foreign('payment_transaction_id')->references('id')->on('payment_transactions')->onDelete('cascade');
+            });
+        }
     }
 
     /**
