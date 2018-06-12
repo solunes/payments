@@ -115,7 +115,7 @@ class Payments {
     
     public static function generatePaymentCode() {
         $token = \Payments::generateToken([8,4,4,4,12]);
-        if(\Solunes\Payments\App\PaymentTransaction::where('payment_code', $token)->first()){
+        if(\Solunes\Payments\App\Transaction::where('payment_code', $token)->first()){
             $token = \Payments::generatePaymentCode();
         }
         return $token;

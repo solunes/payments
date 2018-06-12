@@ -30,7 +30,7 @@ class Transaction extends Model {
     }
     
     public function transaction_payments() {
-        return $this->hasMany('Solunes\Payments\App\TransactionPayment');
+        return $this->hasMany('Solunes\Payments\App\TransactionPayment', 'parent_id');
     }
 
 }
