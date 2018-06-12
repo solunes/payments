@@ -103,14 +103,22 @@ class Payments {
         return $payment;
     }
 
-    public static function generatePaymentTransaction($payment, $payment_method_id) {
-        $payment_code = \Payments::generatePaymentCode();
-        $payment_transaction = new \Solunes\Payments\App\PaymentTransaction;
-        $payment_transaction->parent_id = $payment->id;
-        $payment_transaction->payment_code = $payment_code;
-        $payment_transaction->payment_method_id = $payment_method_id;
-        $payment_transaction->save();
-        return $payment_transaction;
+    public static function generatePaymentTransaction($payment, $payment_method_code) {
+        $payment_method = \Solunes\Payments\App\PaymentMethod::where('code', $payment_method_code)->first();
+        if($payment_method){
+            $payment_code = \Payments::generatePaymentCode();
+            $transaction = new \Solunes\Payments\App\Transaction;
+            $transaction->parent_id = $payment->id;
+            $transaction->payment_code = $payment_code;
+            $transaction->payment_method_id = $payment_method->id;
+            $transaction->save();
+            $transaction_payment = new \Solunes\Payments\App\TransactionPayment;
+            $transaction_payment->parent_id = $transaction->id;
+            $transaction_payment->payment_id = $payment->id;
+            $transaction_payment->save();
+            return $transaction;
+        }
+        return false;
     }
     
     public static function generatePaymentCode() {

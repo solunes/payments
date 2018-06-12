@@ -11,9 +11,9 @@ class Payment extends Model {
 
     /* Creating rules */
     public static $rules_create = array(
-        'customer_id'=>'required',
+        'currency_id'=>'required',
+        'name'=>'required',
         'payment_code'=>'required',
-        'transaction_id'=>'required',
         'amount'=>'required',
         'status'=>'required',
     );
@@ -21,9 +21,9 @@ class Payment extends Model {
     /* Updating rules */
     public static $rules_edit = array(
         'id'=>'required',
-        'customer_id'=>'required',
+        'currency_id'=>'required',
+        'name'=>'required',
         'payment_code'=>'required',
-        'transaction_id'=>'required',
         'amount'=>'required',
         'status'=>'required',
     );
@@ -51,6 +51,10 @@ class Payment extends Model {
     
     public function company() {
         return $this->belongsTo('Solunes\Business\App\Company');
+    }
+    
+    public function customer() {
+        return $this->belongsTo('Todotix\Customer\App\Customer');
     }
 
     public function payment_items() {

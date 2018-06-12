@@ -68,6 +68,7 @@ class NodesPayments extends Migration
             $table->increments('id');
             $table->string('name')->nullable();
             $table->integer('company_id')->nullable();
+            $table->integer('customer_id')->nullable();
             $table->integer('currency_id')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('customer_name')->nullable();
@@ -75,6 +76,8 @@ class NodesPayments extends Migration
             $table->boolean('invoice')->nullable();
             $table->string('invoice_name')->nullable();
             $table->string('invoice_number')->nullable();
+            $table->date('date')->nullable();
+            $table->date('due_date')->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
             $table->timestamps();
