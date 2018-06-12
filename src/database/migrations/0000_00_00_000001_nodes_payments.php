@@ -109,13 +109,19 @@ class NodesPayments extends Migration
             $table->decimal('tax', 10, 2)->nullable();
             $table->timestamps();
         });
-        Schema::create('payment_transactions', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('parent_id')->nullable();
             $table->text('callback_url')->nullable();
             $table->string('payment_code')->nullable();
             $table->integer('payment_method_id')->default(1);
             $table->text('external_payment_code')->nullable();
+            $table->boolean('processed')->default(0);
+            $table->timestamps();
+        });
+        Schema::create('transaction_payments', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('parent_id')->nullable();
+            $table->string('payment_id')->nullable();
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
@@ -154,6 +160,8 @@ class NodesPayments extends Migration
         Schema::dropIfExists('online_bank_deposits');
         Schema::dropIfExists('online_banks');
         Schema::dropIfExists('payment_transactions');
+        Schema::dropIfExists('transaction_payments');
+        Schema::dropIfExists('transactions');
         Schema::dropIfExists('payment_items');
         Schema::dropIfExists('payment_shippings');
         Schema::dropIfExists('payments');

@@ -74,5 +74,6 @@ return [
     'scheduled_transaction_payments' => 'Pagos de Transacción Periódica',
     'tax' => 'Impuestos',
     'total_billing_cycles' => 'Ciclos Totales del Pago',
+    'transaction_payments' => 'Transacciones de Pagos',
 
 ];
