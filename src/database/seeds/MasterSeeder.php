@@ -34,6 +34,9 @@ class MasterSeeder extends Seeder {
         }
 
         // Crear Métodos de Pago por Defecto
+        if(config('payments.manual')){
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Pago Manual', 'code'=>'manual-payment', 'model'=>NULL, 'content'=>'<p>Método de pagos registrados manualmente por el administrador.</p>', 'automatic'=>0, 'active'=>0]);
+        }
         if(config('payments.bank-deposit')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Transferencia Bancaria', 'code'=>'bank-deposit', 'model'=>'BankDeposit', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'automatic'=>0]);
         }
