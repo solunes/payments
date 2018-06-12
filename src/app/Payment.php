@@ -68,5 +68,13 @@ class Payment extends Model {
     public function payment_transactions() {
         return $this->hasMany('Solunes\Payments\App\PaymentTransaction', 'parent_id');
     }
+    
+    public function getAmountAttribute() {
+        $total = 0;
+        foreach($this->payment_items as $item){
+            $total += $item->amount;
+        }
+        return $total;
+    }
 
 }
