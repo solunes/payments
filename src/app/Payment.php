@@ -13,9 +13,11 @@ class Payment extends Model {
     public static $rules_create = array(
         'currency_id'=>'required',
         'name'=>'required',
-        'payment_code'=>'required',
+        'date'=>'required',
+        'invoice'=>'required',
         'amount'=>'required',
         'status'=>'required',
+        'active'=>'required',
     );
 
     /* Updating rules */
@@ -23,9 +25,11 @@ class Payment extends Model {
         'id'=>'required',
         'currency_id'=>'required',
         'name'=>'required',
-        'payment_code'=>'required',
+        'date'=>'required',
+        'invoice'=>'required',
         'amount'=>'required',
         'status'=>'required',
+        'active'=>'required',
     );
     
     public function scopeFindId($query, $id) {

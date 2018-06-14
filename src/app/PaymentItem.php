@@ -11,14 +11,16 @@ class PaymentItem extends Model {
 
 	/* Creating rules */
 	public static $rules_create = array(
-		'parent_id'=>'required',
-		'payment_id'=>'required',
+		'currency_id'=>'required',
+		'name'=>'required',
+		'price'=>'required',
 	);
 
 	/* Updating rules */
 	public static $rules_edit = array(
-		'parent_id'=>'required',
-		'payment_id'=>'required',
+		'currency_id'=>'required',
+		'name'=>'required',
+		'price'=>'required',
 	);
     
     public function payment() {
@@ -27,6 +29,10 @@ class PaymentItem extends Model {
     
     public function currency() {
         return $this->belongsTo('Solunes\Business\App\Currency');
+    }
+    
+    public function getAmountAttribute() {
+        return ($this->price * $this->quantity) + $this->tax;
     }
 
 }
