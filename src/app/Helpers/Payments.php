@@ -108,7 +108,6 @@ class Payments {
         if($payment_method){
             $payment_code = \Payments::generatePaymentCode();
             $transaction = new \Solunes\Payments\App\Transaction;
-            $transaction->parent_id = $payment->id;
             $transaction->payment_code = $payment_code;
             $transaction->payment_method_id = $payment_method->id;
             $transaction->save();

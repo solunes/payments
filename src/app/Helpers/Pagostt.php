@@ -9,8 +9,8 @@ class Pagostt {
     public static function generateSalePayment($payment, $cancel_url) {
         $payments_transaction = \Payments::generatePaymentTransaction($payment, 'pagostt');
         $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
-        $final_fields = \Pagostt::generateTransactionArray($callback_url, $payment, $payments_transaction);
-        $api_url = \Pagostt::generateTransactionQuery($payments_transaction, $final_fields);
+        $final_fields = \Solunes\Payments\App\Helpers\Pagostt::generateTransactionArray($callback_url, $payment, $payments_transaction);
+        $api_url = \Solunes\Payments\App\Helpers\Pagostt::generateTransactionQuery($payments_transaction, $final_fields);
         if($api_url){
             return $api_url;
         } else {
@@ -21,10 +21,12 @@ class Pagostt {
     public static function generateTransactionArray($callback_url, $payment) {
         $shipping_desc = "Sin costo de envío";
         $shipping_price = 0;
-        $payment->load('payment_shippings');
-        foreach($payment->payment_shippings as $shipping){
-            $shipping_desc = $shipping->name;
-            $shipping_price = $shipping->price;
+        if(config('payments.shipping')){
+            $payment->load('payment_shippings');
+            foreach($payment->payment_shippings as $shipping){
+                $shipping_desc = $shipping->name;
+                $shipping_price = $shipping->price;
+            }
         }
         $final_fields = array(
             "appkey" => config('payments.pagostt_app_key'),
@@ -69,6 +71,7 @@ class Pagostt {
         $decoded_result = json_decode($result);
         
         if(!isset($decoded_result->url_pasarela_pagos)){
+            \Log::info(json_encode($decoded_result)));
             return NULL;
         }
 
