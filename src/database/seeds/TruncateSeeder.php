@@ -19,6 +19,9 @@ class TruncateSeeder extends Seeder {
         }
         \Solunes\Payments\App\TransactionPayment::truncate();
         \Solunes\Payments\App\Transaction::truncate();
+        if(config('payments.invoices')){
+            \Solunes\Payments\App\PaymentInvoice::truncate();
+        }
         if(config('payments.shipping')){
             \Solunes\Payments\App\PaymentShipping::truncate();
         }

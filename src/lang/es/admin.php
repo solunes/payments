@@ -24,4 +24,8 @@ return array(
 	'Week' => 'Semana',
 	'Year' => 'Año',
 
+	// PAGOSTT TRANS
+	'E' => 'Electrónica',
+	'C' => 'Ciclos',
+
 );

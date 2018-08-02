@@ -82,6 +82,37 @@ class NodesPayments extends Migration
             $table->boolean('active')->nullable()->default(1);
             $table->timestamps();
         });
+        if(config('payments.invoices')){
+            Schema::create('payment_invoices', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->string('name')->nullable();
+                $table->string('invoice_code')->nullable();
+                $table->string('invoice_url')->nullable();
+                $table->string('nit_company')->nullable();
+                $table->string('invoice_number')->nullable();
+                $table->string('auth_number')->nullable();
+                $table->string('control_code')->nullable();
+                $table->string('customer_name')->nullable();
+                $table->string('customer_nit')->nullable();
+                $table->enum('invoice_type', ['E','C'])->nullable();
+                $table->string('transaction_id')->nullable();
+                $table->decimal('amount', 10, 2)->nullable();
+                $table->timestamps();
+            });
+        }
+        if(config('payments.invoices')&&config('payments.enable_cycle')){
+            Schema::table('payment_invoices', function (Blueprint $table) {
+                $table->string('billing_cycle_dosage')->nullable();
+                $table->string('billing_cycle_start_date')->nullable();
+                $table->string('billing_cycle_end_date')->nullable();
+                $table->string('billing_cycle_eticket')->nullable();
+                $table->string('billing_cycle_legend')->nullable();
+                $table->string('billing_cycle_parallel')->nullable();
+                $table->string('billing_cycle_invoice_title')->nullable();
+                $table->string('company_code')->nullable();
+            });
+        }
         if(config('payments.shipping')){
             Schema::create('payment_shippings', function (Blueprint $table) {
                 $table->increments('id');
@@ -166,6 +197,7 @@ class NodesPayments extends Migration
         Schema::dropIfExists('payment_transactions');
         Schema::dropIfExists('transaction_payments');
         Schema::dropIfExists('transactions');
+        Schema::dropIfExists('payment_invoices');
         Schema::dropIfExists('payment_items');
         Schema::dropIfExists('payment_shippings');
         Schema::dropIfExists('payments');
