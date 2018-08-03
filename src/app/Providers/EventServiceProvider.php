@@ -27,7 +27,7 @@ class EventServiceProvider extends ServiceProvider
     {
         
         // Módulo de Proyectos
-        $events->listen('eloquent.creating: Solunes\Payments\App\BankAccount', '\Solunes\Payments\App\Listeners\RegisteringBankAccount');
+        $events->listen('eloquent.saved: Solunes\Payments\App\TransactionPayment', '\Solunes\Payments\App\Listeners\TransactionPaymentSaved');
 
         parent::boot($events);
     }

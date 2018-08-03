@@ -106,10 +106,8 @@ class Pagostt {
     public static function generatePaymentTransaction($customer_id, $payment_ids, $amount = NULL) {
         $payment_code = \Pagostt::generatePaymentCode();
         $transaction = new \Solunes\Payments\App\Transaction;
-        $transaction->customer_id = $customer_id;
         $transaction->payment_code = $payment_code;
-        $transaction->amount = $amount;
-        $transaction->status = 'holding';
+        $transaction->payment_method_id = 2;
         $transaction->save();
         foreach($payment_ids as $payment_id){
             $transaction_payment = new \Solunes\Payments\App\TransactionPayment;
@@ -117,7 +115,7 @@ class Pagostt {
             $transaction_payment->payment_id = $payment_id;
             $transaction_payment->save();
         }
-        return $pagostt_transaction;
+        return $transaction;
     }
 
     public static function generatePaymentCode() {

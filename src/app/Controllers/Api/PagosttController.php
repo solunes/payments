@@ -23,16 +23,16 @@ class PagosttController extends BaseController {
                     $final_pending_payments[$payment_id] = $pending_payment;
                     foreach($pending_payment['items'] as $key => $item){
                         $new_item = json_decode($item, true);
-                        $transaction = \Payments::generatePaymentTransaction($customer['id'], [$payment_id], $pending_payment['amount']);
+                        $transaction = \Pagostt::generatePaymentTransaction($customer['id'], [$payment_id], $pending_payment['amount']);
                         if($external_payment_code){
                             $transaction->external_payment_code = $external_payment_code;
                             $transaction->save();
                         }
-                        $callback_url = \Payments::generatePaymentCallback($transaction->payment_code, $external_payment_code);
+                        $callback_url = \Pagostt::generatePaymentCallback($transaction->payment_code, $external_payment_code);
                         $new_item['appkey_empresa_final'] = $app_key;
                         $new_item['call_back_url'] = $callback_url;
                         $new_item = json_encode($new_item, JSON_UNESCAPED_SLASHES);
-                        $new_item = \Payments::encrypt($new_item);
+                        $new_item = \Pagostt::encrypt($new_item);
                         $final_pending_payments[$payment_id]['items'][$key] = urlencode($new_item);
                     }
                 }
@@ -52,7 +52,7 @@ class PagosttController extends BaseController {
                 $api_transaction = true;
             } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','holding')->first()){
                 $api_transaction = false;
-            } else if($transaction = \Solunes\Pagostt\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','paid')->first()){
+            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','paid')->first()){
                 $putInoviceParameters = \Pagostt::putInoviceParameters($transaction);
                 $transaction = $putInoviceParameters['transaction'];
                 if($putInoviceParameters['save']){
