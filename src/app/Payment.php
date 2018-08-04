@@ -15,7 +15,7 @@ class Payment extends Model {
         'name'=>'required',
         'date'=>'required',
         'invoice'=>'required',
-        'amount'=>'required',
+        'real_amount'=>'required',
         'status'=>'required',
         'active'=>'required',
     );
@@ -27,7 +27,7 @@ class Payment extends Model {
         'name'=>'required',
         'date'=>'required',
         'invoice'=>'required',
-        'amount'=>'required',
+        'real_amount'=>'required',
         'status'=>'required',
         'active'=>'required',
     );

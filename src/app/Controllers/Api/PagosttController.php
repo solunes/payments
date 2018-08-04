@@ -60,6 +60,7 @@ class PagosttController extends BaseController {
             } else {
                 throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
             }
+            \Log::info(json_encode(request()->all()));
             \Pagostt::putInoviceParameters($transaction);
             $transaction->status = 'paid';
             $transaction->save();
@@ -87,7 +88,7 @@ class PagosttController extends BaseController {
             if($api_transaction){
                 return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
             } else {
-                return redirect('');
+                return redirect('admin/my-payments')->with('message_success', 'Su pago fue realizado correctamente.');
             }
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Operación no permitida.');

@@ -16,6 +16,7 @@ class Pagostt {
         if(!$transaction_invoice){
             $transaction_invoice = new \Solunes\Payments\App\TransactionInvoice;
             $transaction_invoice->parent_id = $transaction->id;
+            $transaction_invoice->amount = $transaction->amount;
         }
         $save = false;
         if(request()->has('nit_company')){
@@ -47,7 +48,11 @@ class Pagostt {
             $save = true;
         }
         if(request()->has('invoice_id')){
-            $transaction_invoice->invoice_id = request()->input('invoice_id');
+            $transaction_invoice->invoice_code = request()->input('invoice_id');
+            $save = true;
+        }
+        if(request()->has('invoice_url')){
+            $transaction_invoice->invoice_url = request()->input('invoice_url');
             $save = true;
         }
         if(config('payments.pagostt_params.enable_cycle')&&$transaction_invoice->invoice_type=='C'){
