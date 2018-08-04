@@ -89,20 +89,15 @@ class NodesPayments extends Migration
                 $table->string('name')->nullable();
                 $table->string('invoice_code')->nullable();
                 $table->string('invoice_url')->nullable();
-                $table->string('nit_company')->nullable();
                 $table->string('invoice_number')->nullable();
-                $table->string('auth_number')->nullable();
-                $table->string('control_code')->nullable();
                 $table->string('customer_name')->nullable();
                 $table->string('customer_nit')->nullable();
-                $table->enum('invoice_type', ['E','C'])->nullable();
-                $table->string('transaction_id')->nullable();
                 $table->decimal('amount', 10, 2)->nullable();
                 $table->timestamps();
             });
         }
         if(config('payments.invoices')&&config('payments.enable_cycle')){
-            Schema::table('payment_invoices', function (Blueprint $table) {
+            Schema::table('transaction_invoices', function (Blueprint $table) {
                 $table->string('billing_cycle_dosage')->nullable();
                 $table->string('billing_cycle_start_date')->nullable();
                 $table->string('billing_cycle_end_date')->nullable();
@@ -146,11 +141,12 @@ class NodesPayments extends Migration
         });
         Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('customer_id')->nullable();
             $table->text('callback_url')->nullable();
             $table->string('payment_code')->nullable();
             $table->integer('payment_method_id')->default(1);
             $table->text('external_payment_code')->nullable();
-            $table->boolean('processed')->default(0);
+            $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->timestamps();
         });
         Schema::create('transaction_payments', function (Blueprint $table) {
@@ -160,6 +156,24 @@ class NodesPayments extends Migration
             $table->boolean('processed')->default(0);
             $table->timestamps();
         });
+        if(config('payments.invoices')){
+            Schema::create('transaction_invoices', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->string('name')->nullable();
+                $table->string('invoice_code')->nullable();
+                $table->string('invoice_url')->nullable();
+                $table->string('nit_company')->nullable();
+                $table->string('invoice_number')->nullable();
+                $table->string('auth_number')->nullable();
+                $table->string('control_code')->nullable();
+                $table->string('customer_name')->nullable();
+                $table->string('customer_nit')->nullable();
+                $table->enum('invoice_type', ['E','C'])->nullable();
+                $table->decimal('amount', 10, 2)->nullable();
+                $table->timestamps();
+            });
+        }
         if(config('payments.online_banks')){
             Schema::create('online_banks', function (Blueprint $table) {
                 $table->increments('id');
@@ -195,6 +209,7 @@ class NodesPayments extends Migration
         Schema::dropIfExists('online_bank_deposits');
         Schema::dropIfExists('online_banks');
         Schema::dropIfExists('payment_transactions');
+        Schema::dropIfExists('transaction_invoices');
         Schema::dropIfExists('transaction_payments');
         Schema::dropIfExists('transactions');
         Schema::dropIfExists('payment_invoices');

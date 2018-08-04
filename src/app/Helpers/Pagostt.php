@@ -12,75 +12,83 @@ class Pagostt {
     }
 
     public static function putInoviceParameters($transaction) {
+        $transaction_invoice = $transaction->transaction_invoice;
+        if(!$transaction_invoice){
+            $transaction_invoice = new \Solunes\Payments\App\TransactionInvoice;
+            $transaction_invoice->parent_id = $transaction->id;
+        }
         $save = false;
         if(request()->has('nit_company')){
-            $transaction->nit_company = urldecode(request()->input('nit_company'));
+            $transaction_invoice->nit_company = urldecode(request()->input('nit_company'));
             $save = true;
         }
         if(request()->has('invoice_number')){
-            $transaction->invoice_number = request()->input('invoice_number');
+            $transaction_invoice->invoice_number = request()->input('invoice_number');
             $save = true;
         }
         if(request()->has('auth_number')){
-            $transaction->auth_number = request()->input('auth_number');
+            $transaction_invoice->auth_number = request()->input('auth_number');
             $save = true;
         }
         if(request()->has('control_code')){
-            $transaction->control_code = urldecode(request()->input('control_code'));
+            $transaction_invoice->control_code = urldecode(request()->input('control_code'));
             $save = true;
         }
         if(request()->has('customer_name')){
-            $transaction->customer_name = urldecode(request()->input('customer_name'));
+            $transaction_invoice->customer_name = urldecode(request()->input('customer_name'));
             $save = true;
         }
         if(request()->has('customer_nit')){
-            $transaction->customer_nit = request()->input('customer_nit');
+            $transaction_invoice->customer_nit = request()->input('customer_nit');
             $save = true;
         }
         if(request()->has('invoice_type')){
-            $transaction->invoice_type = request()->input('invoice_type');
+            $transaction_invoice->invoice_type = request()->input('invoice_type');
             $save = true;
         }
         if(request()->has('invoice_id')){
-            $transaction->invoice_id = request()->input('invoice_id');
+            $transaction_invoice->invoice_id = request()->input('invoice_id');
             $save = true;
         }
-        if(config('payments.pagostt_params.enable_cycle')&&$transaction->invoice_type=='C'){
+        if(config('payments.pagostt_params.enable_cycle')&&$transaction_invoice->invoice_type=='C'){
             if(request()->has('billing_cycle_dosage')){
                 $dosage_decrypt = \Pagostt::pagosttDecrypt(request()->input('billing_cycle_dosage'));
-                $transaction->billing_cycle_dosage = $dosage_decrypt;
+                $transaction_invoice->billing_cycle_dosage = $dosage_decrypt;
                 $save = true;
             }
             if(request()->has('billing_cycle_start_date')){
-                $transaction->billing_cycle_start_date = request()->input('billing_cycle_start_date');
+                $transaction_invoice->billing_cycle_start_date = request()->input('billing_cycle_start_date');
                 $save = true;
             }
             if(request()->has('billing_cycle_end_date')){
-                $transaction->billing_cycle_end_date = request()->input('billing_cycle_end_date');
+                $transaction_invoice->billing_cycle_end_date = request()->input('billing_cycle_end_date');
                 $save = true;
             }
             if(request()->has('billing_cycle_eticket')){
-                $transaction->billing_cycle_eticket = request()->input('billing_cycle_eticket');
+                $transaction_invoice->billing_cycle_eticket = request()->input('billing_cycle_eticket');
                 $save = true;
             }
             if(request()->has('billing_cycle_legend')){
-                $transaction->billing_cycle_legend = request()->input('billing_cycle_legend');
+                $transaction_invoice->billing_cycle_legend = request()->input('billing_cycle_legend');
                 $save = true;
             }
             if(request()->has('billing_cycle_parallel')){
-                $transaction->billing_cycle_parallel = request()->input('billing_cycle_parallel');
+                $transaction_invoice->billing_cycle_parallel = request()->input('billing_cycle_parallel');
                 $save = true;
             }
             if(request()->has('billing_cycle_invoice_title')){
-                $transaction->billing_cycle_invoice_title = request()->input('billing_cycle_invoice_title');
+                $transaction_invoice->billing_cycle_invoice_title = request()->input('billing_cycle_invoice_title');
                 $save = true;
             }
             if(request()->has('company_code')){
-                $transaction->company_code = request()->input('company_code');
+                $transaction_invoice->company_code = request()->input('company_code');
                 $save = true;
             }
         }
-        return ['transaction'=>$transaction,'save'=>$save];
+        if($save){
+            $transaction_invoice->save();
+        }
+        return $save;
     }
 
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true) {
@@ -106,6 +114,7 @@ class Pagostt {
     public static function generatePaymentTransaction($customer_id, $payment_ids, $amount = NULL) {
         $payment_code = \Pagostt::generatePaymentCode();
         $transaction = new \Solunes\Payments\App\Transaction;
+        $transaction->customer_id = $customer_id;
         $transaction->payment_code = $payment_code;
         $transaction->payment_method_id = 2;
         $transaction->save();

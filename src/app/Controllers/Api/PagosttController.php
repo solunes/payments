@@ -46,26 +46,21 @@ class PagosttController extends BaseController {
     }
 
     public function getSuccessfulPayment($payment_code, $external_payment_code = NULL){
-        if($payment_code&&request()->has('external_payment_code')){
+        if($payment_code&&request()->has('transaction_id')){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = true;
             } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','holding')->first()){
                 $api_transaction = false;
             } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','paid')->first()){
-                $putInoviceParameters = \Pagostt::putInoviceParameters($transaction);
-                $transaction = $putInoviceParameters['transaction'];
-                if($putInoviceParameters['save']){
-                    $transaction->save();
-                }
+                \Pagostt::putInoviceParameters($transaction);
                 return redirect('admin/my-payments')->with('message_success', 'Su pago fue realizado correctamente');
             } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','cancelled')->first()){
                 return redirect('admin/my-payments')->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
             } else {
                 throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
             }
-            $putInoviceParameters = \Pagostt::putInoviceParameters($transaction);
-            $transaction = $putInoviceParameters['transaction'];
+            \Pagostt::putInoviceParameters($transaction);
             $transaction->status = 'paid';
             $transaction->save();
             if(config('payments.pagostt_params.enable_bridge')){
@@ -79,6 +74,7 @@ class PagosttController extends BaseController {
                 } else {
                     $customer = \Customer::getCustomer($transaction->customer_id);
                 }
+                \Log::info($customer['email']);
                 \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
                     if($customer['name']){
                         $name = $customer['name'];

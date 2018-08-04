@@ -17,6 +17,9 @@ class TruncateSeeder extends Seeder {
             \Solunes\Payments\App\OnlineBankDeposit::truncate();
             \Solunes\Payments\App\OnlineBank::truncate();
         }
+        if(config('payments.invoices')){
+            \Solunes\Payments\App\TransactionInvoice::truncate();
+        }
         \Solunes\Payments\App\TransactionPayment::truncate();
         \Solunes\Payments\App\Transaction::truncate();
         if(config('payments.invoices')){
