@@ -96,6 +96,29 @@ class Pagostt {
         return $save;
     }
 
+    public static function putPaymentInvoice($transaction) {
+        $transaction->load('transaction_invoice');
+        if($transaction_invoice = $transaction->transaction_invoice){
+            foreach($transaction->transaction_payments as $transaction_payment){
+                $payment = $transaction_payment->payment;
+                if($payment->invoice){
+                    if(!$payment_invoice = $payment->payment_invoice){
+                        $payment_invoice = new \Solunes\Payments\App\PaymentInvoice;
+                        $payment_invoice->parent_id = $payment->id;
+                    }
+                    $payment_invoice->name = 'Factura de: '.$payment->name;
+                    $payment_invoice->invoice_code = $transaction_invoice->invoice_code;
+                    $payment_invoice->invoice_url = $transaction_invoice->invoice_url;
+                    $payment_invoice->invoice_number = $transaction_invoice->invoice_number;
+                    $payment_invoice->customer_name = $transaction_invoice->customer_name;
+                    $payment_invoice->customer_nit = $transaction_invoice->customer_nit;
+                    $payment_invoice->amount = $transaction_invoice->amount;
+                    $payment_invoice->save();
+                }
+            }
+        }
+    }
+
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true) {
         $item = [];
         $item['concepto'] = $concept;

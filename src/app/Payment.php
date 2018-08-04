@@ -72,6 +72,14 @@ class Payment extends Model {
     public function payment_shippings() {
         return $this->hasMany('Solunes\Payments\App\PaymentShipping', 'parent_id');
     }
+        
+    public function payment_invoices() {
+        return $this->hasMany('Solunes\Payments\App\PaymentInvoice', 'parent_id');
+    }
+        
+    public function payment_invoice() {
+        return $this->hasOne('Solunes\Payments\App\PaymentInvoice', 'parent_id');
+    }
     
     public function transaction_payments() {
         return $this->hasMany('Solunes\Payments\App\TransactionPayment');
