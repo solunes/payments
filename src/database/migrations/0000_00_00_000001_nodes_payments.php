@@ -176,6 +176,32 @@ class NodesPayments extends Migration
                 $table->timestamps();
             });
         }
+        if(config('payments.pagostt_params.enable_preinvoice')){
+            Schema::create('preinvoices', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('payment_id')->nullable();
+                $table->string('invoice_batch')->nullable();
+                $table->string('nit_name')->nullable();
+                $table->string('nit_number')->nullable();
+                $table->string('return_code')->nullable();
+                $table->string('pagostt_iterator')->nullable();
+                $table->string('pagostt_code')->nullable();
+                $table->string('pagostt_error')->nullable()->default(0);
+                $table->string('pagostt_message')->nullable();
+                $table->timestamps();
+            });
+            Schema::create('preinvoice_items', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('parent_id')->nullable();
+                $table->string('name')->nullable();
+                $table->string('detail')->nullable();
+                $table->string('product_code')->nullable();
+                $table->integer('quantity')->nullable();
+                $table->decimal('price', 10, 2)->nullable();
+                $table->decimal('amount', 10, 2)->nullable();
+                $table->timestamps();
+            });
+        }
         if(config('payments.online_banks')){
             Schema::create('online_banks', function (Blueprint $table) {
                 $table->increments('id');
@@ -210,6 +236,10 @@ class NodesPayments extends Migration
         // Módulo General de PagosTT
         Schema::dropIfExists('online_bank_deposits');
         Schema::dropIfExists('online_banks');
+        if(config('payments.pagostt_params.enable_preinvoice')){
+            Schema::dropIfExists('preinvoice_items');
+            Schema::dropIfExists('preinvoices');
+        }
         Schema::dropIfExists('payment_transactions');
         Schema::dropIfExists('transaction_invoices');
         Schema::dropIfExists('transaction_payments');

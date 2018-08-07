@@ -40,6 +40,7 @@ class PaymentsServiceProvider extends ServiceProvider {
         /* Comandos de Consola */
         $this->commands([
             \Solunes\Payments\App\Console\TestEncryption::class,
+            \Solunes\Payments\App\Console\TestPagostt::class,
         ]);
 
         $this->mergeConfigFrom(
