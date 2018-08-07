@@ -405,6 +405,7 @@ class Pagostt {
                     $transaction_id = $decoded_result->id_transaccion;
                     $preinvoice->pagostt_iterator = $payment_response->identificador_iteracion;
                     $preinvoice->pagostt_code = $payment_response->identificador_prefactura;
+                    $preinvoice->pagostt_url = $payment_response->url;
                 } else {
                     $preinvoice->pagostt_error = 1;
                     $preinvoice->pagostt_message = $payment_response->mensaje;

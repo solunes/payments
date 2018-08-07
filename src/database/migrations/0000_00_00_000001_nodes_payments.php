@@ -186,6 +186,7 @@ class NodesPayments extends Migration
                 $table->string('return_code')->nullable();
                 $table->string('pagostt_iterator')->nullable();
                 $table->string('pagostt_code')->nullable();
+                $table->string('pagostt_url')->nullable();
                 $table->string('pagostt_error')->nullable()->default(0);
                 $table->string('pagostt_message')->nullable();
                 $table->timestamps();
