@@ -119,6 +119,37 @@ class Pagostt {
         }
     }
 
+    public static function putInoviceParametersCashier($transaction, $factura_electronica) {
+        $transaction_invoice = $transaction->transaction_invoice;
+        if(!$transaction_invoice){
+            $transaction_invoice = new \Solunes\Payments\App\TransactionInvoice;
+            $transaction_invoice->parent_id = $transaction->id;
+            $transaction_invoice->amount = $transaction->amount;
+        }
+        $transaction_invoice->nit_company = $factura_electronica->nit;
+        $transaction_invoice->invoice_number = $factura_electronica->numero_factura;
+        $transaction_invoice->auth_number = $factura_electronica->numero_autorizacion;
+        $transaction_invoice->control_code = $factura_electronica->codigo_control;
+        $transaction_invoice->customer_name = $factura_electronica->cliente_razon_social;
+        $transaction_invoice->customer_nit = $factura_electronica->cliente_nit;
+        $transaction_invoice->invoice_type = $factura_electronica->tipo_dosificacion;
+        $transaction_invoice->invoice_id = $factura_electronica->identificador;
+        if(config('pagostt.enable_cycle')&&$ptt_transaction->invoice_type=='C'){
+            // TODO REVISAR
+            if($factura_electronica->dosificacion){
+                $dosage_decrypt = \Pagostt::pagosttDecrypt($factura_electronica->dosificacion);
+                $transaction_invoice->billing_cycle_dosage = $dosage_decrypt;
+            }
+            $transaction_invoice->billing_cycle_start_date = $factura_electronica->fecha_inicio_ciclo;
+            $transaction_invoice->billing_cycle_end_date = $factura_electronica->fecha_final_ciclo;
+            $transaction_invoice->billing_cycle_eticket = $factura_electronica->eticket_dosificacion;
+            $transaction_invoice->billing_cycle_legend = $factura_electronica->leyenda_dosificacion;
+            $transaction_invoice->billing_cycle_parallel = $factura_electronica->paralela_dosificacion;
+        }
+        $transaction_invoice->save();
+        return true;
+    }
+
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true) {
         $item = [];
         $item['concepto'] = $concept;
@@ -177,11 +208,7 @@ class Pagostt {
 
     public static function generateTransactionArray($customer, $payment, $transaction, $custom_app_key = NULL) {
         $callback_url = \Pagostt::generatePaymentCallback($transaction->payment_code);
-        if($custom_app_key&&config('payments.pagostt_params.custom_app_keys.'.$custom_app_key)){
-            $app_key = config('payments.pagostt_params.custom_app_keys.'.$custom_app_key);
-        } else {
-            $app_key = \Pagostt::getAppKey(NULL);
-        }
+        $app_key = \Pagostt::getAppKey(NULL, $custom_app_key);
         if(config('payments.pagostt_params.finish_payment_verification')){
             $payment = \PagosttBridge::finishPaymentVerification($payment, $transaction);
         }
@@ -217,6 +244,16 @@ class Pagostt {
         }
         $final_fields['descripcion'] = $payment['name'];
         $final_fields['lineas_detalle_deuda'] = $payment['items'];
+        // Habilitar Pago en Caja
+        if(config('pagostt.enable_cashier')&&isset($payment['canal_caja'])&&$payment['canal_caja']==true){
+            $cashierKey = \Pagostt::getCashierKey();
+            if($cashierKey&&isset($payment['canal_caja_sucursal'])&&isset($payment['canal_caja_usuario'])){
+                $final_fields['canal_caja'] = $cashierKey;
+                $final_fields['canal_caja_sucursal'] = $payment['canal_caja_sucursal'];
+                $final_fields['canal_caja_usuario'] = $payment['canal_caja_usuario'];
+            }
+        }
+        // Definir Metadata
         if(isset($payment['metadata'])){
             $final_fields['lineas_metadatos'] = $payment['metadata'];
         }
@@ -228,15 +265,34 @@ class Pagostt {
         $decoded_result = \Pagostt::queryCurlTransaction($url, $final_fields);
         
         if(!isset($decoded_result->url_pasarela_pagos)){
-            \Log::info('Error en PagosTT Deuda: '.json_encode($decoded_result));
-            return NULL;
+            if($decoded_result->error==0&&isset($decoded_result->id_transaccion)){
+                \Log::info('Iniciando Pago en Caja: '.json_encode($decoded_result));
+                if(isset($decoded_result->facturas_electronicas)){
+                    foreach($decoded_result->facturas_electronicas as $factura_electronica){
+                        \Pagostt::putInoviceParametersCashier($transaction, $factura_electronica);
+                        \Pagostt::putPaymentInvoice($transaction);
+                    }
+                }
+                $transaction->external_payment_code = $decoded_result->id_transaccion;
+                $transaction->status = 'paid';
+                $transaction->save();
+                if(config('payments.pagostt_params.enable_bridge')){
+                    $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
+                } else {
+                    $payment_registered = \Customer::transactionSuccesful($transaction);
+                }
+                \Log::info('Pago en Caja Generado: '.json_encode($payment_registered));
+                return 'success-cashier';
+            } else {
+                \Log::info('Error en PagosTT Deuda: '.json_encode($decoded_result));
+                return NULL;
+            }
         } else {
             \Log::info('Success en PagosTT Deuda: '.json_encode($decoded_result));
         }
 
         // Guardado de transaction_id generado por PagosTT
-        $transaction_id = $decoded_result->id_transaccion;
-        $transaction->external_payment_code = $transaction_id;
+        $transaction->external_payment_code = $decoded_result->id_transaccion;
         $transaction->save();
         
         // URL para redireccionar
@@ -331,12 +387,32 @@ class Pagostt {
         return $url;
     }
 
-    public static function getAppKey($appkey) {
+    public static function getAppKey($appkey = NULL, $custom_key = NULL) {
         if(!$appkey){
-            if(config('payments.pagostt_params.testing')){
-                $appkey = config('payments.pagostt_params.test_app_key');
-            } else {
-                $appkey = config('payments.pagostt_params.app_key');
+            if($custom_key){
+                if(config('pagostt.testing')==true&&config('pagostt.custom_test_app_keys.'.$custom_key)){
+                    $appkey = config('pagostt.custom_test_app_keys.'.$custom_key);
+                } else if(config('pagostt.testing')==false&&config('pagostt.custom_app_keys.'.$custom_key)) {
+                    $appkey = config('pagostt.custom_app_keys.'.$custom_key);
+                }
+            }
+            if(!$appkey){
+                if(config('pagostt.testing')){
+                    $appkey = config('pagostt.test_app_key');
+                } else {
+                    $appkey = config('pagostt.app_key');
+                }
+            }
+        }
+        return $appkey;
+    }
+
+    public static function getCashierKey($appkey = NULL, $custom_key = 'default') {
+        if(!$appkey){
+            if(config('pagostt.testing')==true&&config('pagostt.test_cashier_payments.'.$custom_key)){
+                $appkey = config('pagostt.test_cashier_payments.'.$custom_key);
+            } else if(config('pagostt.testing')==false&&config('pagostt.cashier_payments.'.$custom_key)) {
+                $appkey = config('pagostt.cashier_payments.'.$custom_key);
             }
         }
         return $appkey;
@@ -370,13 +446,11 @@ class Pagostt {
         return $api_url;
     }
 
-    public static function generatePreInovices($payments_array, $appkey = NULL) {
+    public static function generatePreInvoices($payments_array, $appkey = NULL) {
         if(!config('payments.pagostt_params.enable_preinvoice')||count($payments_array)==0){
             return false;
         }
-        if(!$appkey){
-            $appkey = \Pagostt::getAppKey($appkey);
-        }
+        $appkey = \Pagostt::getAppKey($appkey);
         $final_fields = [];
         $count = 0;
         $invoice_batch = time().'_'.rand(100000,900000);
