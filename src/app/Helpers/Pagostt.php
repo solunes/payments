@@ -266,7 +266,7 @@ class Pagostt {
         
         if(!isset($decoded_result->url_pasarela_pagos)){
             if($decoded_result->error==0&&isset($decoded_result->id_transaccion)){
-                \Log::info('Iniciando Pago en Caja: '.json_encode($decoded_result));
+                \Log::info('Iniciando Pago en Caja: '.json_encode($final_fields));
                 if(isset($decoded_result->facturas_electronicas)){
                     foreach($decoded_result->facturas_electronicas as $factura_electronica){
                         \Pagostt::putInoviceParametersCashier($transaction, $factura_electronica);
@@ -276,12 +276,13 @@ class Pagostt {
                 $transaction->external_payment_code = $decoded_result->id_transaccion;
                 $transaction->status = 'paid';
                 $transaction->save();
+                $transaction->load('transaction_payments');
                 if(config('payments.pagostt_params.enable_bridge')){
                     $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
                 } else {
                     $payment_registered = \Customer::transactionSuccesful($transaction);
                 }
-                \Log::info('Pago en Caja Generado: '.json_encode($payment_registered));
+                \Log::info('Pago en Caja Generado: '.json_encode($payment_registered).' - '.json_encode($decoded_result));
                 return 'success-cashier';
             } else {
                 \Log::info('Error en PagosTT Deuda: '.json_encode($decoded_result));
