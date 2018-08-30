@@ -77,6 +77,7 @@ class NodesPayments extends Migration
             $table->string('invoice_name')->nullable();
             $table->string('invoice_nit')->nullable();
             $table->string('invoice_url')->nullable();
+            $table->string('preinvoice')->nullable();
             $table->date('date')->nullable();
             $table->date('due_date')->nullable();
             $table->date('payment_date')->nullable();
