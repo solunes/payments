@@ -39,7 +39,7 @@ class ProcessController extends Controller {
     if($type=='pagostt'){
       $model = '\Pagostt';
     }
-    \Payments::generateSalePayment($sale, $model, $this->prev);
+    return \Payments::generateSalePayment($sale, $model, 'inicio');
   }
 
 }

@@ -20,7 +20,7 @@ class Pagostt {
           $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
           $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
           if($api_url){
-            return redirect($api_url);
+            return $api_url;
           } else {
             return NULL;
           }

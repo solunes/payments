@@ -17,7 +17,6 @@ class Payments {
         } else {
             return redirect($redirect)->with('message_error', 'Hubo un error al realizar su pago en PagosTT.');
         }
-
     }
 
     public static function getSalePaymentBridge($sale) {
@@ -68,7 +67,11 @@ class Payments {
             $payment_item->parent_id = $payment->id;
             $payment_item->item_type = 'sale-item';
             $payment_item->item_id = $sale_item->id;
-            $payment_item->name = $sale_item->name;
+            if($sale_item->product_bridge->name){
+                $payment_item->name = $sale_item->product_bridge->name;
+            } else {
+                $payment_item->name = 'Detalle sin definir';
+            }
             $payment_item->currency_id = $payment->currency_id;
             $payment_item->quantity = $sale_item->quantity;
             $payment_item->price = \Business::calculate_currency($sale_item->price, $payment->currency, $sale_item->currency);
