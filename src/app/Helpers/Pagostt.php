@@ -6,6 +6,29 @@ use Validator;
 
 class Pagostt {
 
+    public static function generateSalePayment($payment_item, $cancel_url) {
+        $custom_app_key = NULL;
+        if(config('payments.pagostt_params.enable_bridge')){
+            $customer = \PagosttBridge::getCustomer($payment_item->customer_id, false, false, $custom_app_key);
+            $payment = \PagosttBridge::getPayment($payment_item->id, $custom_app_key);
+        } else {
+            $customer = \Customer::getCustomer($payment_item->customer_id, false, false, $custom_app_key);
+            $payment = \Customer::getPayment($payment_item->id, $custom_app_key);
+        }
+        if($customer&&$payment){
+          $pagostt_transaction = \Pagostt::generatePaymentTransaction($payment_item->customer_id, [$payment_item->id], $payment['amount']);
+          $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
+          $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
+          if($api_url){
+            return redirect($api_url);
+          } else {
+            return NULL;
+          }
+        } else {
+          return NULL;
+        }
+    }
+
     public static function generateAppKey() {
         $token = \Pagostt::generateToken([8,4,4,4,12]);
         return $token;

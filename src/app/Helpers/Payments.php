@@ -57,8 +57,8 @@ class Payments {
         $payment->customer_email = $sale->user->email;
         $payment->invoice = $sale->invoice;
         $payment->invoice_name = $sale->invoice_name;
-        $payment->invoice_number = $sale->invoice_number;
-        $payment->amount = \Business::calculate_currency($sale->amount, $currency, $sale->currency);
+        $payment->invoice_nit = $sale->invoice_nit;
+        $payment->real_amount = \Business::calculate_currency($sale->amount, $currency, $sale->currency);
         $payment->currency_id = $currency->id;
         $payment->status = 'holding';
         $payment->save();
@@ -74,31 +74,33 @@ class Payments {
             $payment_item->price = \Business::calculate_currency($sale_item->price, $payment->currency, $sale_item->currency);
             $payment_item->save();
         }
-        $sale->load('sale_deliveries');
-        foreach($sale->sale_deliveries as $sale_delivery){
-            if($city = $sale_delivery->city){
-                $city_name = $city->name;
-            } else {
-                $city_name = $sale_delivery->city_other;
+        if(config('sales.delivery')){
+            $sale->load('sale_deliveries');
+            foreach($sale->sale_deliveries as $sale_delivery){
+                if($city = $sale_delivery->city){
+                    $city_name = $city->name;
+                } else {
+                    $city_name = $sale_delivery->city_other;
+                }
+                if($region = $sale_delivery->region){
+                    $region_name = $region->name;
+                } else {
+                    $region_name = $sale_delivery->region_other;
+                }
+                $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
+                $payment_shipping->parent_id = $payment->id;
+                $payment_shipping->name = $sale->name.' ('.$sale_delivery->total_weight.' Kg.)';
+                $payment_shipping->contact_name = $sale_delivery->name;
+                $payment_shipping->address = $sale_delivery->address;
+                $payment_shipping->address_2 = $sale_delivery->address_extra;
+                $payment_shipping->city = $city_name;
+                $payment_shipping->region = $region_name;
+                $payment_shipping->postal_code = $sale_delivery->postal_code;
+                $payment_shipping->country_code = $sale_delivery->country_code;
+                $payment_shipping->phone = $sale_delivery->phone;
+                $payment_shipping->price = $sale_delivery->shipping_cost;
+                $payment_shipping->save();
             }
-            if($region = $sale_delivery->region){
-                $region_name = $region->name;
-            } else {
-                $region_name = $sale_delivery->region_other;
-            }
-            $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
-            $payment_shipping->parent_id = $payment->id;
-            $payment_shipping->name = $sale->name.' ('.$sale_delivery->total_weight.' Kg.)';
-            $payment_shipping->contact_name = $sale_delivery->name;
-            $payment_shipping->address = $sale_delivery->address;
-            $payment_shipping->address_2 = $sale_delivery->address_extra;
-            $payment_shipping->city = $city_name;
-            $payment_shipping->region = $region_name;
-            $payment_shipping->postal_code = $sale_delivery->postal_code;
-            $payment_shipping->country_code = $sale_delivery->country_code;
-            $payment_shipping->phone = $sale_delivery->phone;
-            $payment_shipping->price = $sale_delivery->shipping_cost;
-            $payment_shipping->save();
         }
         return $payment;
     }

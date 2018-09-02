@@ -9,6 +9,14 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class ProcessController extends Controller {
+  
+  protected $request;
+  protected $url;
+
+  public function __construct(UrlGenerator $url) {
+    //$this->middleware('permission:dashboard');
+    $this->prev = $url->previous();
+  }
 
   public function getPayment($payment_id) {
     if($payment = \Solunes\Payments\App\Payment::findId($payment_id)->checkOwner()->with('payment_items')->first()){
@@ -23,6 +31,15 @@ class ProcessController extends Controller {
     } else {
       return redirect($this->prev)->with('message_error', 'Hubo un error al encontrar su compra.');
     }
+  }
+
+  public function getFinishSalePayment($sale_id, $type) {
+    $sale = \Solunes\Sales\App\Sale::find($sale_id);
+    $model = '\Pagostt';
+    if($type=='pagostt'){
+      $model = '\Pagostt';
+    }
+    \Payments::generateSalePayment($sale, $model, $this->prev);
   }
 
 }
