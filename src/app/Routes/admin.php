@@ -14,6 +14,8 @@
 Route::group(['prefix'=>'payments'], function(){
     Route::get('/make-all-payments/{customer_id}', 'ProcessController@getMakeAllPayments');
     Route::get('/make-single-payment/{customer_id}/{payment_id}', 'ProcessController@getMakeSinglePayment');
+    Route::get('/make-cashier-payment/{customer_id}/{payment_id}', 'ProcessController@getMakeManualCashierPayment');
+    Route::post('/make-checkbox-payment', 'ProcessController@postMakeCheckboxPayment');
 });
 
 Route::group(['prefix'=>'test'], function(){
