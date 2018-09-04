@@ -157,7 +157,7 @@ class Pagostt {
         $transaction_invoice->customer_nit = $factura_electronica->cliente_nit;
         $transaction_invoice->invoice_type = $factura_electronica->tipo_dosificacion;
         $transaction_invoice->invoice_id = $factura_electronica->identificador;
-        if(config('pagostt.enable_cycle')&&$ptt_transaction->invoice_type=='C'){
+        if(config('payments.pagostt_params.enable_cycle')&&$ptt_transaction->invoice_type=='C'){
             // TODO REVISAR
             if($factura_electronica->dosificacion){
                 $dosage_decrypt = \Pagostt::pagosttDecrypt($factura_electronica->dosificacion);
@@ -271,7 +271,7 @@ class Pagostt {
             $final_fields['lineas_detalle_deuda'] = $payment['items'];
         }
         // Habilitar Pago en Caja
-        if(config('pagostt.enable_cashier')&&isset($payment['canal_caja'])&&$payment['canal_caja']==true){
+        if(config('payments.pagostt_params.enable_cashier')&&isset($payment['canal_caja'])&&$payment['canal_caja']==true){
             $cashierKey = \Pagostt::getCashierKey();
             if($cashierKey&&isset($payment['canal_caja_sucursal'])&&isset($payment['canal_caja_usuario'])){
                 $final_fields['canal_caja'] = $cashierKey;
@@ -417,17 +417,17 @@ class Pagostt {
     public static function getAppKey($appkey = NULL, $custom_key = NULL) {
         if(!$appkey){
             if($custom_key){
-                if(config('pagostt.testing')==true&&config('pagostt.custom_test_app_keys.'.$custom_key)){
-                    $appkey = config('pagostt.custom_test_app_keys.'.$custom_key);
-                } else if(config('pagostt.testing')==false&&config('pagostt.custom_app_keys.'.$custom_key)) {
-                    $appkey = config('pagostt.custom_app_keys.'.$custom_key);
+                if(config('payments.pagostt_params.testing')==true&&config('payments.pagostt_params.custom_test_app_keys.'.$custom_key)){
+                    $appkey = config('payments.pagostt_params.custom_test_app_keys.'.$custom_key);
+                } else if(config('payments.pagostt_params.testing')==false&&config('payments.pagostt_params.custom_app_keys.'.$custom_key)) {
+                    $appkey = config('payments.pagostt_params.custom_app_keys.'.$custom_key);
                 }
             }
             if(!$appkey){
-                if(config('pagostt.testing')){
-                    $appkey = config('pagostt.test_app_key');
+                if(config('payments.pagostt_params.testing')){
+                    $appkey = config('payments.pagostt_params.test_app_key');
                 } else {
-                    $appkey = config('pagostt.app_key');
+                    $appkey = config('payments.pagostt_params.app_key');
                 }
             }
         }
@@ -436,10 +436,10 @@ class Pagostt {
 
     public static function getCashierKey($appkey = NULL, $custom_key = 'default') {
         if(!$appkey){
-            if(config('pagostt.testing')==true&&config('pagostt.test_cashier_payments.'.$custom_key)){
-                $appkey = config('pagostt.test_cashier_payments.'.$custom_key);
-            } else if(config('pagostt.testing')==false&&config('pagostt.cashier_payments.'.$custom_key)) {
-                $appkey = config('pagostt.cashier_payments.'.$custom_key);
+            if(config('payments.pagostt_params.testing')==true&&config('payments.pagostt_params.test_cashier_payments.'.$custom_key)){
+                $appkey = config('payments.pagostt_params.test_cashier_payments.'.$custom_key);
+            } else if(config('payments.pagostt_params.testing')==false&&config('payments.pagostt_params.cashier_payments.'.$custom_key)) {
+                $appkey = config('payments.pagostt_params.cashier_payments.'.$custom_key);
             }
         }
         return $appkey;
