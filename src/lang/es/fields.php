@@ -64,6 +64,7 @@ return [
     'payment_transactions' => 'Transacciones de Pago',
     'phone' => 'Teléfono',
     'postal_code' => 'Código Postal',
+    'preinvoice' => 'Prefactura',
     'price' => 'Precio',
     'processed' => '¿Procesado?',
     'profile_start_date' => 'Fecha de Inicio del Perfil',
