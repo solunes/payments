@@ -46,6 +46,7 @@ class PagosttController extends BaseController {
     }
 
     public function getSuccessfulPayment($payment_code, $external_payment_code = NULL){
+        \Log::info('Successful transaction: '.$payment_code.' | '.$external_payment_code.' | '.json_encode(request()->all()));
         if($payment_code&&request()->has('transaction_id')){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){

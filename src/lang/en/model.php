@@ -9,16 +9,20 @@ return [
     |
     */
 
-	'online-bank' => 'Banco Online|Bancos Online',
-	'online-bank-deposit' => 'Depósito de Banco|Depósitos de Banco',
-	'payment' => 'Pago|Pagos',
-	'payment-item' => 'Item de Pago|Items de Pago',
-	'payment-method' => 'Método de Pago|Métodos de Pago',
-	'payment-shipping' => 'Pago de Envío|Pagos de Envío',
-	'transaction' => 'Transacción|Transacciones',
-	'transaction-payment' => 'Pago de Transacción|Pagos de Transacción',
-	'scheduled-transaction' => 'Transacción Programada|Transacciones Programadas',
-	'scheduled-transaction-item' => 'Item de Transacción Programada|Items de Transacción Programada',
-	'scheduled-transaction-payment' => 'Pago de Transacción Programada|Pagos de Transacción Programada',
+	'online-bank' => 'Online Bank|Online Banks',
+	'online-bank-deposit' => 'Online Bank Deposit|Online Bank Deposits',
+	'payment' => 'Payment|Payments',
+	'payment-item' => 'Payment Item|Payment Items',
+	'payment-method' => 'Payment Method|Payment Methods',
+	'payment-invoice' => 'Payment Invoice|Payment Invoices',
+	'payment-shipping' => 'Payment Shipping|Payment Shippings',
+	'transaction' => 'Transaction|Transactions',
+	'transaction-payment' => 'Transaction Payment|Transaction Payments',
+	'transaction-invoice' => 'Transaction Invoice|Transaction Invoice',
+	'preinvoice' => 'Preinvoice|Preinvoices',
+	'preinvoice-item' => 'Preinvoice Item|Preinvoice Items',
+	'scheduled-transaction' => 'Scheduled Transaction|Scheduled Transactions',
+	'scheduled-transaction-item' => 'Scheduled Transaction Item|Scheduled Transaction Items',
+	'scheduled-transaction-payment' => 'Scheduled Transaction Payment|Scheduled Transaction Payments',
 
 ];
