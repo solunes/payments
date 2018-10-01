@@ -40,13 +40,13 @@ class Payment extends Model {
         return $query->where('status', $status);
     }
         
-    public function scopeCheckOwner($query) {
+    public function scopeCheckOwner($query, $customer_id) {
         if(\Auth::check()){
-            $user_id = \Auth::user()->id;
+            $user_id = \Auth::user()->customers()->lists('id')->toArray();
         } else {
             $user_id = 0;
         }
-        return $query->where('user_id', $user_id);
+        return $query->whereIn('customer_id', $customer_id);
     }
 
     public function currency() {
@@ -60,6 +60,8 @@ class Payment extends Model {
     public function customer() {
         if(config('solunes.todotix-customer')){
             return $this->belongsTo('Todotix\Customer\App\Customer');
+        } else if(config('solunes.customer')){
+            return $this->belongsTo('Solunes\Customer\App\Customer');
         } else {
             return $this->belongsTo('App\Customer');
         }

@@ -33,7 +33,7 @@ class Payments {
     }
 
     public static function getSaleCustomerBridge($sale) {
-        $item['id'] = $sale->user_id;
+        $item['id'] = $sale->customer_id;
         $item['email'] = $sale->user->email;
         $item['name'] = $sale->user->full_name;
         $item['nit_name'] = $sale->user->name;
@@ -50,10 +50,10 @@ class Payments {
     public static function generatePayment($sale) {
         $currency = \Solunes\Business\App\Currency::find(2);
         $payment = new \Solunes\Payments\App\Payment;
-        $payment->customer_id = $sale->user_id;
+        $payment->customer_id = $sale->customer_id;
         $payment->name = 'Compra de productos online';
-        $payment->customer_name = $sale->user->name;
-        $payment->customer_email = $sale->user->email;
+        $payment->customer_name = $sale->customer->name;
+        $payment->customer_email = $sale->customer->email;
         $payment->invoice = $sale->invoice;
         $payment->invoice_name = $sale->invoice_name;
         $payment->invoice_nit = $sale->invoice_nit;

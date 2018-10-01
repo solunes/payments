@@ -26,11 +26,13 @@ class Transaction extends Model {
 	);
         
     public function customer() {
-    	if(config('solunes.todotix-customer')){
-        	return $this->belongsTo('Todotix\Customer\App\Customer');
-    	} else {
-        	return $this->belongsTo('App\Customer');
-    	}
+        if(config('solunes.todotix-customer')){
+            return $this->belongsTo('Todotix\Customer\App\Customer');
+        } else if(config('solunes.customer')){
+            return $this->belongsTo('Solunes\Customer\App\Customer');
+        } else {
+            return $this->belongsTo('App\Customer');
+        }
     }
 
     public function payment_method() {
