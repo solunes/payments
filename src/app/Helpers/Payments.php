@@ -105,6 +105,11 @@ class Payments {
                 $payment_shipping->save();
             }
         }
+        $sale->load('sale_payments');
+        foreach($sale->sale_payments as $sale_payment){
+            $sale_payment->payment_id = $payment->id;
+            $sale_payment->save();
+        }
         return $payment;
     }
 
