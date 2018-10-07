@@ -2,6 +2,8 @@
 
 return [
 
+	'redirect_after_payment' => 'admin/my-payments',
+
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,
 	'bank-deposit' => false,

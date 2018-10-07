@@ -92,7 +92,7 @@ class PagosttController extends BaseController {
             if($api_transaction){
                 return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
             } else {
-                return redirect('admin/my-payments')->with('message_success', 'Su pago fue realizado correctamente.');
+                return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente.');
             }
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Operación no permitida.');
