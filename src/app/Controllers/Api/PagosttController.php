@@ -77,15 +77,17 @@ class PagosttController extends BaseController {
                 } else {
                     $customer = \Customer::getCustomer($transaction->customer_id);
                 }
-                \Log::info($customer['email']);
-                \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
-                    if($customer['name']){
-                        $name = $customer['name'];
-                    } else {
-                        $name = 'Cliente';
-                    }
-                    $m->to($customer['email'], $name)->subject(config('solunes.app_name').' | '.trans('payments::mail.successful_payment_title'));
-                });
+                \Log::info('Successful Transaction Email: '.$customer['email']);
+                if(!config('payments.pagostt_params.testing')){
+                    \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
+                        if($customer['name']){
+                            $name = $customer['name'];
+                        } else {
+                            $name = 'Cliente';
+                        }
+                        $m->to($customer['email'], $name)->subject(config('solunes.app_name').' | '.trans('payments::mail.successful_payment_title'));
+                    });
+                }
             }
             if($api_transaction){
                 return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
