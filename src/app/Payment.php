@@ -57,8 +57,8 @@ class Payment extends Model {
         return $this->belongsTo('Solunes\Business\App\Company');
     }
         
-    public function sale() {
-        return $this->hasOne('Solunes\Sales\App\Sale');
+    public function sale_payment() {
+        return $this->hasOne('Solunes\Sales\App\SalePayment');
     }
 
     public function customer() {
