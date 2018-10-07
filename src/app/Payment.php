@@ -56,7 +56,11 @@ class Payment extends Model {
     public function company() {
         return $this->belongsTo('Solunes\Business\App\Company');
     }
-    
+        
+    public function sale() {
+        return $this->hasOne('Solunes\Sales\App\Sale');
+    }
+
     public function customer() {
         if(config('solunes.todotix-customer')){
             return $this->belongsTo('Todotix\Customer\App\Customer');
