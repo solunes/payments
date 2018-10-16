@@ -57,7 +57,7 @@ class MasterSeeder extends Seeder {
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayPal', 'code'=>'paypal', 'model'=>'Paypal', 'content'=>'<p>Realiza una transferencia por tu cuenta de PayPal o paga por tarjeta de crédito desde cualquier parte del mundo. Sabemos que tu seguridad es importante y es por eso que trabajamos con la empresa de pagos más grande del mundo.</p>', 'recurrent_payments'=>1]);
         }
         if(config('payments.payme')){
-            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayMe', 'code'=>'payme', 'model'=>'Payme', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayMe', 'code'=>'payme', 'model'=>'Payme', 'content'=>'<p>Realiza un pago a través de tu tarjeta de crédito/débito:</p>', 'active'=>0]);
         }
         if(config('payments.tigo-money')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Tigo Money', 'code'=>'tigo-money', 'model'=>'TigoMoney', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
