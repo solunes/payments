@@ -14,7 +14,7 @@ return [
 	'pagosnet' => false,
 
     'pagostt_params' => [
-		'testing' => false, // Utilizar el ambiente de pruebas
+		'testing' => true, // Utilizar el ambiente de pruebas
 		'main_server' => 'http://www.todotix.com:10365/rest/', // URL DE PagosTT para Producción
 		'test_server' => 'http://www.todotix.com:10888/rest/', // URL DE PagosTT para Pruebas
 		'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto
@@ -38,6 +38,22 @@ return [
 		'customer_all_payments' => true, // Habilitar si se desea aceptar pagos en masa
 		'customer_recurrent_payments' => false, // Habilitar si se desea integrar a Cuentas365
 		'is_cuentas365' => false, // Habilitar la plataforma es Cuentas365
+	],
+
+    'payme_params' => [
+		'testing' => true, // Utilizar el ambiente de pruebas
+		'main_server' => 'https://vpayment.verifika.com/VPOS2/', // URL DE PagosTT para Producción
+		'test_server' => 'https://integracion.alignetsac.com/VPOS2/', // URL DE PagosTT para Pruebas
+		'sha_key_production' => 'cuhceSEkyTVvnbqHSc_95627234825', // ID Adquiriente de Payme Enlace Producción
+		'sha_key_testing' => 'cuhceSEkyTVvnbqHSc_95627234825', // ID Adquiriente de Payme Enlace Testing
+		'commerce_id_production' => '8056', // ID Comercio de Payme Enlace Producción
+		'commerce_id_testing' => '8056', // ID Comercio de Payme Enlace Testing
+		'acquirer_id_production' => '99', // ID Adquiriente de Payme Enlace Producción
+		'acquirer_id_testing' => '99', // ID Adquiriente de Payme Enlace Testing
+		'iso_currency_code' => '4217', // Codigo ISO de Moneda
+		'app_name' => env('APP_NAME', 'PagosTT'), // Nombre enviado a Cuentas365
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
 	],
 
 	// PARAMETROS

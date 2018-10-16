@@ -18,6 +18,13 @@ Route::group(['prefix'=>'payments'], function(){
     Route::post('/make-checkbox-payment', 'ProcessController@postMakeCheckboxPayment');
 });
 
+Route::group(['prefix'=>'payme'], function(){
+    Route::get('/payment-iframe/{payment_code}', 'PaymeController@getPaymentIframe');
+    Route::get('/make-all-payments/{customer_id}/{custom_app_key?}', 'PaymeController@getMakeAllPayments');
+    Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PaymeController@getMakeSinglePayment');
+    Route::post('/make-checkbox-payment', 'PaymeController@postMakeCheckboxPayment');
+});
+
 Route::group(['prefix'=>'test'], function(){
     Route::get('/encryption/{text}', 'TestController@getEncryptionTest');
     Route::get('/decryption/{text}', 'TestController@getDecryptionTest');

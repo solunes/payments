@@ -112,23 +112,6 @@ class Payments {
         }
         return $payment;
     }
-
-    public static function generatePaymentTransaction($payment, $payment_method_code) {
-        $payment_method = \Solunes\Payments\App\PaymentMethod::where('code', $payment_method_code)->first();
-        if($payment_method){
-            $payment_code = \Payments::generatePaymentCode();
-            $transaction = new \Solunes\Payments\App\Transaction;
-            $transaction->payment_code = $payment_code;
-            $transaction->payment_method_id = $payment_method->id;
-            $transaction->save();
-            $transaction_payment = new \Solunes\Payments\App\TransactionPayment;
-            $transaction_payment->parent_id = $transaction->id;
-            $transaction_payment->payment_id = $payment->id;
-            $transaction_payment->save();
-            return $transaction;
-        }
-        return false;
-    }
     
     public static function generatePaymentCode() {
         $token = \Payments::generateToken([8,4,4,4,12]);
@@ -182,6 +165,39 @@ class Payments {
             $url .= '/'.$external_payment_code.'?external_payment_code='.$external_payment_code;
         }
         return $url;
+    }
+
+    public static function generatePaymentTransaction($customer_id, $payment_ids, $payment_method_code) {
+        $payment_code = \Payments::generatePaymentCode();
+        if(!$payment_method = \Solunes\Payments\App\PaymentMethod::where('code', $payment_method_code)->first()||count($payment_ids)==0){
+            return NULL;
+        }
+        $transaction = new \Solunes\Payments\App\Transaction;
+        $transaction->customer_id = $customer_id;
+        $transaction->payment_code = $payment_code;
+        $transaction->payment_method_id = $payment_method->id;
+        $transaction->save();
+        foreach($payment_ids as $payment_id){
+            $transaction_payment = new \Solunes\Payments\App\TransactionPayment;
+            $transaction_payment->parent_id = $transaction->id;
+            $transaction_payment->payment_id = $payment_id;
+            $transaction_payment->save();
+        }
+        return $transaction;
+    }
+
+    public static function calculateMultiplePayments($payments_array, $amount = 0) {
+        $total_amount = 0;
+        $payment_ids = [];
+        $items = [];
+        foreach($payments_array as $payment_id => $pending_payment){
+            $total_amount += $pending_payment['amount'];
+            $payment_ids[] = $payment_id;
+            foreach($pending_payment['items'] as $single_payment){
+                $items[] = $single_payment;
+            }
+        }
+        return ['items'=>$items, 'payment_ids'=>$payment_ids, 'total_amount'=>$amount];
     }
 
     public static function sendCustomerTo($url, $customer) {

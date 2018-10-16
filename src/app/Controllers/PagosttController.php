@@ -24,7 +24,7 @@ class PagosttController extends Controller {
             $customer = \Customer::getCustomer($customer_id, true, false, $custom_app_key);
         }
 	    if($customer){
-	      $calc_array = \Pagostt::calculateMultiplePayments($customer['pending_payments']); // Returns items, payment_ids and amount.
+	      $calc_array = \Payments::calculateMultiplePayments($customer['pending_payments']); // Returns items, payment_ids and amount.
 	      $payment = $customer['payment'];
 	      $payment['items'] = $calc_array['items'];
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
@@ -121,7 +121,7 @@ class PagosttController extends Controller {
             $payments = \Customer::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);
         }
 	    if($customer&&count($payments)>0){
-	      $calc_array = \Pagostt::calculateMultiplePayments($payments['pending_payments']); // Returns items, payment_ids and amount.
+	      $calc_array = \Payments::calculateMultiplePayments($payments['pending_payments']); // Returns items, payment_ids and amount.
 	      $payment = $payments['payment'];
 	      $payment['items'] = $calc_array['items'];
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
