@@ -46,8 +46,8 @@ class PaymeController extends Controller {
   
     public function getMakeSinglePayment($customer_id, $payment_id, $custom_app_key = NULL) {
         if(config('payments.payme_params.enable_bridge')){
-            $customer = \PaymeBridge::getCustomer($customer_id, false, false, $custom_app_key);
-    		$payment = \PaymeBridge::getPayment($payment_id, $custom_app_key);
+            $customer = \PagosttBridge::getCustomer($customer_id, false, false, $custom_app_key);
+    		$payment = \PagosttBridge::getPayment($payment_id, $custom_app_key);
         } else {
             $customer = \Customer::getCustomer($customer_id, false, false, $custom_app_key);
     		$payment = \Customer::getPayment($payment_id, $custom_app_key);
@@ -70,8 +70,8 @@ class PaymeController extends Controller {
         $customer_id = $request->input('customer_id');
         $payments_array = $request->input('check');
         if(config('payments.payme_params.enable_bridge')){
-            $customer = \PaymeBridge::getCustomer($customer_id, false, false, $custom_app_key);
-            $payments = \PaymeBridge::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);
+            $customer = \PagosttBridge::getCustomer($customer_id, false, false, $custom_app_key);
+            $payments = \PagosttBridge::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);
         } else {
             $customer = \Customer::getCustomer($customer_id, false, false, $custom_app_key);
             $payments = \Customer::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);

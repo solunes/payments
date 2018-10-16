@@ -9,16 +9,15 @@ class Payme {
     public static function generateSalePayment($payment_item, $cancel_url) {
         $custom_app_key = NULL;
         if(config('payments.payme_params.enable_bridge')){
-            $customer = \PaymeBridge::getCustomer($payment_item->customer_id, false, false, $custom_app_key);
-            $payment = \PaymeBridge::getPayment($payment_item->id, $custom_app_key);
+            $customer = \PagosttBridge::getCustomer($payment_item->customer_id, false, false, $custom_app_key);
+            $payment = \PagosttBridge::getPayment($payment_item->id, $custom_app_key);
         } else {
             $customer = \Customer::getCustomer($payment_item->customer_id, false, false, $custom_app_key);
             $payment = \Customer::getPayment($payment_item->id, $custom_app_key);
         }
         if($customer&&$payment){
-          $pagostt_transaction = \Payme::generatePaymentTransaction($payment_item->customer_id, [$payment_item->id], $payment['amount']);
-          $final_fields = \Payme::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
-          $api_url = \Payme::generateTransactionQuery($pagostt_transaction, $final_fields);
+          $transaction = \Payments::generatePaymentTransaction($payment_item->customer_id, [$payment_item->id], 'payme');
+          $api_url = \Payme::generatePaymentUrl($transaction);
           if($api_url){
             return $api_url;
           } else {

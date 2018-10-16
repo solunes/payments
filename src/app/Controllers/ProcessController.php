@@ -38,6 +38,10 @@ class ProcessController extends Controller {
     $model = '\Pagostt';
     if($type=='pagostt'){
       $model = '\Pagostt';
+    } else if($type=='paypal'){
+      $model = '\Paypal';
+    } else if($type=='payme'){
+      $model = '\Payme';
     }
     return \Payments::generateSalePayment($sale, $model, 'inicio');
   }
