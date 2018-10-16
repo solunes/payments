@@ -19,6 +19,7 @@ class PaymeController extends Controller {
 
     public function getPaymentIframe($payment_code) {
     	$array = \Payme::generatePaymentArray($payment_code);
+    	$array['page'] = \Solunes\Master\App\Page::first();
 	    return view('payments::payme.purchase', $array);
     }
 

@@ -169,7 +169,8 @@ class Payments {
 
     public static function generatePaymentTransaction($customer_id, $payment_ids, $payment_method_code) {
         $payment_code = \Payments::generatePaymentCode();
-        if(!$payment_method = \Solunes\Payments\App\PaymentMethod::where('code', $payment_method_code)->first()||count($payment_ids)==0){
+        $payment_method = \Solunes\Payments\App\PaymentMethod::where('code', $payment_method_code)->first();
+        if(!$payment_method||count($payment_ids)==0){
             return NULL;
         }
         $transaction = new \Solunes\Payments\App\Transaction;
