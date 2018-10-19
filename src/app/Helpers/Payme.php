@@ -49,7 +49,7 @@ class Payme {
             $claveSecreta = config('payments.payme_params.sha_key_production');
             $acquirerId = config('payments.payme_params.acquirer_id_production');
             $idCommerce = config('payments.payme_params.commerce_id_production');
-            $model_url = "'', '".config('payments.payments.payme_params.design_option')."'";
+            $model_url = "'', '".config('payments.payme_params.design_option')."'";
         } else {
             $url = config('payments.payme_params.test_server');
             $claveSecreta = config('payments.payme_params.sha_key_testing');

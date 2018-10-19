@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller\Api;
 
 class PaymeController extends BaseController {
 
-    public function getSuccessfulPayment($payment_code){
+    public function getSuccessfulPayment($payment_code, $external_payment_code){
         \Log::info('Successful transaction: '.$payment_code.' | '.$external_payment_code.' | '.json_encode(request()->all()));
         if($payment_code&&request()->has('transaction_id')){
             $api_transaction = false;
