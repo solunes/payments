@@ -50,7 +50,8 @@ return [
 		'commerce_id_testing' => '8056', // ID Comercio de Payme Enlace Testing
 		'acquirer_id_production' => '99', // ID Adquiriente de Payme Enlace Producción
 		'acquirer_id_testing' => '99', // ID Adquiriente de Payme Enlace Testing
-		'iso_currency_code' => '4217', // Codigo ISO de Moneda
+		'iso_currency_code' => '068', // Codigo ISO de Moneda
+		'design_option' => '1', // Opciones de diseño de iframe 1, 2 o 3
 		'app_name' => env('APP_NAME', 'PagosTT'), // Nombre enviado a Cuentas365
 		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
 		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final

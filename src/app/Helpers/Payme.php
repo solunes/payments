@@ -49,11 +49,13 @@ class Payme {
             $claveSecreta = config('payments.payme_params.sha_key_production');
             $acquirerId = config('payments.payme_params.acquirer_id_production');
             $idCommerce = config('payments.payme_params.commerce_id_production');
+            $model_url = "'', '".config('payments.payments.payme_params.design_option')."'";
         } else {
             $url = config('payments.payme_params.test_server');
             $claveSecreta = config('payments.payme_params.sha_key_testing');
             $acquirerId = config('payments.payme_params.acquirer_id_testing');
             $idCommerce = config('payments.payme_params.commerce_id_testing');
+            $model_url = 'https://integracion.alignetsac.com/';
         }
         $purchaseOperationNumber = $transaction->external_payment_code;
         $purchaseAmount = 0;
@@ -62,7 +64,7 @@ class Payme {
         }
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
-        return ['url'=>$url, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification];
+        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification];
     }
 
     public static function generatePaymentUrl($transaction) {
