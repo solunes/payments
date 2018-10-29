@@ -15,7 +15,7 @@ class Payments {
         if($api_url){
             return redirect($api_url);
         } else {
-            return redirect($redirect)->with('message_error', 'Hubo un error al realizar su pago en PagosTT.');
+            return redirect($redirect)->with('message_error', 'Hubo un error al realizar el pago de la compra pendiente.');
         }
     }
 

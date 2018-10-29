@@ -25,6 +25,7 @@ class Pagostt {
             return NULL;
           }
         } else {
+          \Log::info('Error, no hay Customer ('.json_encode($customer).') y Payment ('.json_encode($payment).')');
           return NULL;
         }
     }
