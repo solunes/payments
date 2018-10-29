@@ -111,7 +111,7 @@ class NodesPayments extends Migration
                 $table->string('company_code')->nullable();
             });
         }
-        if(config('payments.shipping')){
+        if(config('payments.shipping')||config('sales.delivery')){
             Schema::create('payment_shippings', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('parent_id')->nullable();

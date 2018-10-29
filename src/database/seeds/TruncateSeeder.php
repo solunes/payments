@@ -29,7 +29,7 @@ class TruncateSeeder extends Seeder {
         if(config('payments.invoices')){
             \Solunes\Payments\App\PaymentInvoice::truncate();
         }
-        if(config('payments.shipping')){
+        if(config('payments.shipping')||config('sales.delivery')){
             \Solunes\Payments\App\PaymentShipping::truncate();
         }
         \Solunes\Payments\App\PaymentItem::truncate();

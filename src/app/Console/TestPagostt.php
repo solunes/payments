@@ -39,9 +39,9 @@ class TestPagostt extends Command
         // Prueba de Prefactura
         $this->info('Comenzando la prueba de prefacturas.');
         $payments_array = [];
-        $payments_array[] = ['nit_name'=>'Mejia', 'nit_number'=>'4768578017', 'detalle'=>[['concepto'=>'Pago por muestra 1', 'codigo_producto'=>'Producto 1', 'cantidad'=>'1', 'costo_unitario'=>'100'],['concepto'=>'Pago por muestra 2', 'codigo_producto'=>'Producto 2', 'cantidad'=>'2', 'costo_unitario'=>'200']]];
-        $payments_array[] = ['nit_name'=>'Mejia', 'nit_number'=>'4768578017', 'detalle'=>[['concepto'=>'Pago por muestra 3', 'codigo_producto'=>'Producto 3', 'cantidad'=>'2', 'costo_unitario'=>'500']]];
-        $response = \Pagostt::generatePreInovices($payments_array);
-        $this->info('Respuesta de Prefactura: '.$response);
+        $payments_array[] = ['id'=>1, 'nit_name'=>'Mejia', 'nit_number'=>'4768578017', 'detalle'=>[['concepto'=>'Pago por muestra 1', 'codigo_producto'=>'Producto 1', 'cantidad'=>'1', 'costo_unitario'=>'100'],['concepto'=>'Pago por muestra 2', 'codigo_producto'=>'Producto 2', 'cantidad'=>'2', 'costo_unitario'=>'200']]];
+        $payments_array[] = ['id'=>2, 'nit_name'=>'Mejia', 'nit_number'=>'4768578017', 'detalle'=>[['concepto'=>'Pago por muestra 3', 'codigo_producto'=>'Producto 3', 'cantidad'=>'2', 'costo_unitario'=>'500']]];
+        $response = \Pagostt::generatePreInvoices($payments_array);
+        $this->info('Respuesta de Prefactura: '.json_encode($response));
     }
 }

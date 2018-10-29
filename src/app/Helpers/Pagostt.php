@@ -481,7 +481,7 @@ class Pagostt {
         $final_fields = [];
         $count = 0;
         $invoice_batch = time().'_'.rand(100000,900000);
-        \Log::info(json_encode($payments_array));
+        //\Log::info(json_encode($payments_array));
         foreach($payments_array as $payment_item){
             if(isset($payment_item['key_name'])){
                 $key_name = $payment_item['key_name'];
@@ -493,7 +493,7 @@ class Pagostt {
         }
 
         $url = \Pagostt::queryTransactiontUrl('prefacturas/registrar');
-        //\Log::info('Test en PagosTT: '.json_encode($final_fields));
+        \Log::info('Test Preinvoice en PagosTT: '.json_encode($final_fields));
         $decoded_result = \Pagostt::queryCurlTransaction($url, $final_fields);
         
         if(!$decoded_result||$decoded_result->error==1){

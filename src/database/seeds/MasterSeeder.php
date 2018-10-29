@@ -26,7 +26,7 @@ class MasterSeeder extends Seeder {
         if(config('payments.invoices')){
             \Solunes\Master\App\Node::create(['name'=>'payment-invoice', 'location'=>'payments', 'folder'=>'payments', 'type'=>'child', 'parent_id'=>$node_payment->id]);
         }
-        if(config('payments.shipping')){
+        if(config('payments.shipping')||config('sales.delivery')){
             \Solunes\Master\App\Node::create(['name'=>'payment-shipping', 'location'=>'payments', 'folder'=>'payments', 'type'=>'child', 'parent_id'=>$node_payment->id]);
         }
         $node_transaction = \Solunes\Master\App\Node::create(['name'=>'transaction', 'location'=>'payments', 'folder'=>'payments']);
