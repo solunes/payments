@@ -166,10 +166,11 @@ class Payments {
             foreach($payment_shippings as $payment_shipping){
                 $shipping_amount += $payment_shipping->price;
             }
-            return $shipping_amount;
+            $payment['shipping_amount'] = $shipping_amount;
         } else {
-            return 0;
+            $payment['shipping_amount'] = 0;
         }
+        return $payment;
     }
 
     public static function generatePaymentCallback($payment_code, $external_payment_code = NULL) {

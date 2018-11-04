@@ -16,6 +16,7 @@ class Pagostt {
             $payment = \Customer::getPayment($payment_item->id, $custom_app_key);
         }
         if($customer&&$payment){
+          $payment = \Payments::getShippingCost($payment, [$payment_item->id]);
           $pagostt_transaction = \Pagostt::generatePaymentTransaction($payment_item->customer_id, [$payment_item->id], $payment['amount']);
           $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
           $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
