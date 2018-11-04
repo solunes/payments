@@ -27,6 +27,7 @@ class PagosttController extends Controller {
 	      $calc_array = \Payments::calculateMultiplePayments($customer['pending_payments']); // Returns items, payment_ids and amount.
 	      $payment = $customer['payment'];
 	      $payment['items'] = $calc_array['items'];
+	      $payment = \Payments::getShippingCost($payment, $calc_array['payment_ids']);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
 	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
@@ -53,6 +54,7 @@ class PagosttController extends Controller {
     		$payment = \Customer::getPayment($payment_id, $custom_app_key);
         }
 	    if($customer&&$payment){
+	      $payment = \Payments::getShippingCost($payment, [$payment_id]);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
 	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
@@ -79,6 +81,7 @@ class PagosttController extends Controller {
     		$payment = \Customer::getPayment($payment_id, $custom_app_key);
         }
 	    if($customer&&$payment&&auth()->check()){
+	      $payment = \Payments::getShippingCost($payment, [$payment_id]);
           $user = auth()->user();
           if($user->hasPermission('manual_payments')){
         	  if(config('pagostt.enable_bridge')){
@@ -124,6 +127,7 @@ class PagosttController extends Controller {
 	      $calc_array = \Payments::calculateMultiplePayments($payments['pending_payments']); // Returns items, payment_ids and amount.
 	      $payment = $payments['payment'];
 	      $payment['items'] = $calc_array['items'];
+	      $payment = \Payments::getShippingCost($payment, $calc_array['payment_ids']);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
 	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);

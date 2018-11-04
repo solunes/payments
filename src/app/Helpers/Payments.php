@@ -159,6 +159,19 @@ class Payments {
         return $output;
     }
 
+    public static function getShippingCost($payment, $payment_ids) {
+        if(config('payments.shipping')) {
+            $shipping_amount = 0;
+            $payment_shippings = \Solunes\Payments\App\PaymentShipping::whereIn('parent_id', $payment_ids)->get();
+            foreach($payment_shippings as $payment_shipping){
+                $shipping_amount += $payment_shipping->price;
+            }
+            return $shipping_amount;
+        } else {
+            return 0;
+        }
+    }
+
     public static function generatePaymentCallback($payment_code, $external_payment_code = NULL) {
         $url = url('api/confirmed-payment/'.$payment_code);
         if($external_payment_code){

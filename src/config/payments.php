@@ -57,6 +57,19 @@ return [
 		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
 	],
 
+    'paypal_params' => [
+		'testing' => true, // Utilizar el ambiente de pruebas
+		'live_api_username' => 'bernardapelaez_api1.gmail.com', // Usuario de PayPal Live
+		'live_api_password' => '6HEATXCAZ9RUXC94', // Password de PayPal Live
+		'live_api_signature' => 'AaJHGLAdDj9X3X5RoVTTz4UWvpzEAVFCZSzrpljlYfsJtYzXvPUrqIGl', // Signature de PayPal Live
+		'sandbox_api_username' => 'bernardapelaez-facilitator_api1.gmail.com', // Usuario de PayPal Sandbox
+		'sandbox_api_password' => 'VZPC3H4EMCRB54CC', // Password de PayPal Sandbox
+		'sandbox_api_signature' => 'A5S6uY74MvuexX795XG3CdYBOgQIAs7od-V2hhdZu32vQ2beJFpRRH1j', // Signature de PayPal Sandbox
+		'app_name' => env('APP_NAME', 'PayPal'), // Nombre enviado a Cuentas365
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+	],
+
 	// PARAMETROS
 	'scheduled_transactions' => false,
 	'invoices' => true,
