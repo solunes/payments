@@ -566,6 +566,28 @@ class Pagostt {
         return $final_fields;
     }
 
+    public static function checkInvoice($payment_code, $invoice_data) {
+        $first_transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->first();
+        $inserted = 0;
+        if(!$first_transaction){
+            return $inserted;
+        }
+        $first_transaction_payment = $first_transaction->transaction_payments()->first();
+        if(!$first_transaction_payment){
+            return $inserted;
+        }
+        $first_payment = \Solunes\Payments\App\Payment::find($first_transaction_payment->payment_id);
+        if(!$first_payment){
+            return $inserted;
+        }
+        if($invoice_data&&$first_payment->invoice){
+            $inserted = 1;
+        } else if(!$invoice_data&&!$first_payment->invoice) {
+            $inserted = 1;
+        }
+        return $inserted;
+    }
+
     public static function sendCustomerTo($url, $customer) {
         $url .= '/api/customer/new';
         

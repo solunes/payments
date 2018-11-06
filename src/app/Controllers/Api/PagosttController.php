@@ -47,7 +47,22 @@ class PagosttController extends BaseController {
 
     public function getSuccessfulPayment($payment_code, $external_payment_code = NULL){
         \Log::info('Successful transaction: '.$payment_code.' | '.$external_payment_code.' | '.json_encode(request()->all()));
-        if($payment_code&&request()->has('transaction_id')){
+        if(!$payment_code){
+            \Log::info('No se cuenta con un payment_code.');
+            throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
+        }
+        $checkInvoice = \Pagostt::checkInvoice($payment_code, request()->has('invoice_id'));
+        if(!$checkInvoice){
+            \Log::info('Los datos de facturación no son correctos.');
+            throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Los datos de facturación no son correctos.');
+        }
+        $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
+        if(!$checkItem){
+            \Log::info('Transacción encontrada, no se accede de nuevo.');
+            return redirect('');
+        } 
+        \Log::info('Transaccion aceptada, procesando: '.$payment_code);
+        if(request()->has('transaction_id')){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = true;
