@@ -55,7 +55,7 @@ class Payme {
             $claveSecreta = config('payments.payme_params.sha_key_testing');
             $acquirerId = config('payments.payme_params.acquirer_id_testing');
             $idCommerce = config('payments.payme_params.commerce_id_testing');
-            $model_url = 'https://integracion.alignetsac.com/';
+            $model_url = "'https://integracion.alignetsac.com/'";
         }
         $purchaseOperationNumber = $transaction->external_payment_code;
         $purchaseAmount = 0;
