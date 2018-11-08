@@ -23,6 +23,12 @@ class PaymeController extends Controller {
 	    return view('payments::payme.purchase', $array);
     }
 
+    public function getTransactionFromPayme($payment_code) {
+    	$array['response'] = \Payme::getTransactionFromPayme($payment_code);
+    	$array['page'] = \Solunes\Master\App\Page::first();
+	    return $array['response'];
+    }
+
     public function getMakeAllPayments($customer_id, $custom_app_key = NULL) {
         if(config('payments.payme_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, true, false, $custom_app_key);

@@ -7,18 +7,18 @@
   <input type="hidden" name="purchaseAmount" value="<?php echo $purchaseAmount; ?>" />
   <input type="hidden" name="purchaseCurrencyCode" value="<?php echo $purchaseCurrencyCode; ?>" />
   <input type="hidden" name="language" value="SP" />
-  <input type="hidden" name="shippingFirstName" value="Juan" />
-  <input type="hidden" name="shippingLastName" value="Perez" />
-  <input type="hidden" name="shippingEmail" value="test@test.com" />
-  <input type="hidden" name="shippingAddress" value="Direcion ABC" />
-  <input type="hidden" name="shippingZIP" value="ZIP 123" />
-  <input type="hidden" name="shippingCity" value="City ABC" />
-  <input type="hidden" name="shippingState" value="State ABC" />
-  <input type="hidden" name="shippingCountry" value="PE" />
-  <!--Parametro que contiene el valor del codCardHolderCommerce.-->
-  <input type="hidden" name="userCommerce" value="modal123" />
-  <!--Parametro que contiene el valor del codAsoCardHolderWallet.-->
-  <input type="hidden" name="userCodePayme" value="1--510--1010" />
+  <input type="hidden" name="shippingFirstName" value="Eduardo" />
+  <input type="hidden" name="shippingLastName" value="Mejia" />
+  <input type="hidden" name="shippingEmail" value="edumejia30@gmail.com" />
+  <input type="hidden" name="shippingAddress" value="Direcion-ABC" />
+  <input type="hidden" name="shippingZIP" value="0000" />
+  <input type="hidden" name="shippingCity" value="La-Paz" />
+  <input type="hidden" name="shippingState" value="La Paz" />
+  <input type="hidden" name="shippingCountry" value="BO" />
+  <!--Parametro que contiene el valor del codCardHolderCommerce.
+  <input type="hidden" name="userCommerce" value="Eduardo Mejia" />-->
+  <!--Parametro que contiene el valor del codAsoCardHolderWallet.
+  <input type="hidden" name="userCodePayme" value="1--510--1010" />-->
   <input type="hidden" name="descriptionProducts" value="Producto ABC" />
   <input type="hidden" name="programmingLanguage" value="PHP" />
   <!--Ejemplo envío campos reservados en parametro reserved1.-->

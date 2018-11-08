@@ -62,9 +62,51 @@ class Payme {
         foreach($transaction->transaction_payments as $transaction_payment){
             $purchaseAmount += $transaction_payment->payment->amount;
         }
+        $purchaseAmount = (string) $purchaseAmount;
+        $purchaseAmount = str_replace('.', '', $purchaseAmount);
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
         return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification];
+    }
+
+    public static function getTransactionFromPayme($payment_code) {
+        $transaction = \Solunes\Payments\App\Transaction::where('payment_code', $payment_code)->first();
+        if(config('payments.payme_params.testing')===false){
+            $url = config('payments.payme_params.main_server');
+            $claveSecreta = config('payments.payme_params.sha_key_production');
+            $acquirerId = config('payments.payme_params.acquirer_id_production');
+            $idCommerce = config('payments.payme_params.commerce_id_production');
+            $model_url = "'', '".config('payments.payme_params.design_option')."'";
+        } else {
+            $url = config('payments.payme_params.test_server');
+            $claveSecreta = config('payments.payme_params.sha_key_testing');
+            $acquirerId = config('payments.payme_params.acquirer_id_testing');
+            $idCommerce = config('payments.payme_params.commerce_id_testing');
+            $model_url = "'https://integracion.alignetsac.com/'";
+        }
+        $url .= 'rest/operationAcquirer/consulte';
+        $purchaseOperationNumber = $transaction->external_payment_code;
+        \Log::info($acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$claveSecreta);
+        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
+        \Log::info($purchaseVerification);
+        $dataRest = '{"idAcquirer":"'.$acquirerId.'","idCommerce":"'.$idCommerce.'","operationNumber":"'.$purchaseOperationNumber.'","purchaseVerification":"'.$purchaseVerification.'"}';
+        $header = array('Content-Type: application/json');
+        
+        //Consumo del servicio Rest
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $dataRest);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curl);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+        
+        //Imprimir respuesta
+        \Log::info('Response api get transaction: '.json_encode($response));
+        return $response;
     }
 
     public static function generatePaymentUrl($transaction) {
