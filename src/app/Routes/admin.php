@@ -21,6 +21,7 @@ Route::group(['prefix'=>'payments'], function(){
 Route::group(['prefix'=>'payme'], function(){
     Route::get('/payment-iframe/{payment_code}', 'PaymeController@getPaymentIframe');
     Route::get('/transaction-from-payme/{payment_code}', 'PaymeController@getTransactionFromPayme');
+    Route::post('/successful-payment', 'PaymeController@postSuccessfulPayment');
     Route::get('/make-all-payments/{customer_id}/{custom_app_key?}', 'PaymeController@getMakeAllPayments');
     Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PaymeController@getMakeSinglePayment');
     Route::post('/make-checkbox-payment', 'PaymeController@postMakeCheckboxPayment');

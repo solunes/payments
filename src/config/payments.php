@@ -42,10 +42,13 @@ return [
 
     'payme_params' => [
 		'testing' => true, // Utilizar el ambiente de pruebas
-		'main_server' => 'https://vpayment.verifika.com/VPOS2/', // URL DE PagosTT para Producción
-		'test_server' => 'https://integracion.alignetsac.com/VPOS2/', // URL DE PagosTT para Pruebas
+		'min_amount' => false, // Utilizar el ambiente de pruebas para transacciones de 1 Bs
+		'main_server' => 'https://vpayment.verifika.com/', // URL DE PagosTT para Producción
+		'test_server' => 'https://integracion.alignetsac.com/', // URL DE PagosTT para Pruebas
 		'sha_key_production' => 'cuhceSEkyTVvnbqHSc_95627234825', // ID Adquiriente de Payme Enlace Producción
 		'sha_key_testing' => 'cuhceSEkyTVvnbqHSc_95627234825', // ID Adquiriente de Payme Enlace Testing
+		'shawallet_key_production' => 'sSkzcykQEmnVuqEEGXZ_327276446743', // ID Adquiriente de Payme Enlace Producción
+		'shawallet_key_testing' => 'KPeRTLezvfGKUPAsWTH$688688542255', // ID Adquiriente de Payme Enlace Testing
 		'commerce_id_production' => '8056', // ID Comercio de Payme Enlace Producción
 		'commerce_id_testing' => '8056', // ID Comercio de Payme Enlace Testing
 		'acquirer_id_production' => '99', // ID Adquiriente de Payme Enlace Producción

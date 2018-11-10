@@ -42,8 +42,82 @@ class Payme {
         return $full_token;
     }
 
+    public static function generateWalletAccount($codCardHolderCommerce, $mail, $first_name, $last_name) {
+        if(config('payments.payme_params.testing')===false){
+            $url = 'https://www.pay-me.pe/';
+            $claveSecreta = config('payments.payme_params.shawallet_key_production');
+            $idEntCommerce = config('payments.payme_params.acquirer_id_production');
+        } else {
+            $url = config('payments.payme_params.test_server');
+            $claveSecreta = config('payments.payme_params.shawallet_key_testing');
+            $idEntCommerce = config('payments.payme_params.acquirer_id_testing');
+        }
+        $url .= 'WALLETWS/services/WalletCommerce?wsdl';
+        \Log::info('generateWalletAccount 1: '.$idEntCommerce.' - '.$codCardHolderCommerce.' - '.$mail.' - '.$claveSecreta);
+        $registerVerification = openssl_digest($idEntCommerce . $codCardHolderCommerce . $mail . $claveSecreta, 'sha512');
+
+        //Referencia al Servicio Web de Wallet            
+        $client = new \SoapClient($url);
+
+        //Creación de Arreglo para el almacenamiento y envío de parametros. 
+        $params = array(
+            'idEntCommerce'=>$idEntCommerce,
+            'codCardHolderCommerce'=>$codCardHolderCommerce,
+            'names'=>$first_name,
+            'lastNames'=>$last_name,
+            'mail'=>$mail,
+            'registerVerification'=>$registerVerification
+        );
+        
+        //Consumo del metodo RegisterCardHolder
+        $result = $client->RegisterCardHolder($params);
+        \Log::info('generateWalletAccount 2: '.$result->ansCode.' - '.$result->ansDescription.' - '.$result->codAsoCardHolderWallet.' - '.$result->date.' - '.$result->hour);
+        return ['codCardHolderCommerce'=>$codCardHolderCommerce,'codAsoCardHolderWallet'=>$result->codAsoCardHolderWallet];
+    }
+
     public static function generatePaymentArray($payment_code) {
         $transaction = \Solunes\Payments\App\Transaction::where('payment_code', $payment_code)->where('status', 'holding')->first();
+        $customer = $transaction->customer;
+        $userCommerce = NULL;
+        $userCodePayme = NULL;
+        if($customer){
+            $walletAccount = \Payme::generateWalletAccount($customer->id, $customer->email, $customer->first_name, $customer->last_name);
+            $userCommerce = $walletAccount['codCardHolderCommerce'];
+            $userCodePayme = $walletAccount['codAsoCardHolderWallet'];
+        }
+        if(config('payments.payme_params.testing')===false){
+            $url = config('payments.payme_params.main_server');
+            $claveSecreta = config('payments.payme_params.sha_key_production');
+            $acquirerId = config('payments.payme_params.acquirer_id_production');
+            $idCommerce = config('payments.payme_params.commerce_id_production');
+            $model_url = "'', '".config('payments.payme_params.design_option')."'";
+        } else {
+            $url = config('payments.payme_params.test_server');
+            $claveSecreta = config('payments.payme_params.sha_key_testing');
+            $acquirerId = config('payments.payme_params.acquirer_id_testing');
+            $idCommerce = config('payments.payme_params.commerce_id_testing');
+            $model_url = "'https://integracion.alignetsac.com/'";
+        }
+        $url .= 'VPOS2/';
+        $purchaseOperationNumber = $transaction->external_payment_code;
+        $purchaseOperationNumber = rand(100000000,999999999); // BORRAR
+        if(config('payments.payme_params.min_amount')){
+            $purchaseAmount = '1.00';
+        } else {
+            $purchaseAmount = 0;
+            foreach($transaction->transaction_payments as $transaction_payment){
+                $purchaseAmount += $transaction_payment->payment->amount;
+            }
+        }
+        $purchaseAmount = (string) $purchaseAmount;
+        $purchaseAmount = str_replace('.', '', $purchaseAmount);
+        $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
+        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
+        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
+    }
+
+    public static function successfulPayment($payment_code, $purchaseVerificationRecieved) {
+        $transaction = \Solunes\Payments\App\Transaction::where('payment_code', $payment_code)->first();
         if(config('payments.payme_params.testing')===false){
             $url = config('payments.payme_params.main_server');
             $claveSecreta = config('payments.payme_params.sha_key_production');
@@ -58,15 +132,13 @@ class Payme {
             $model_url = "'https://integracion.alignetsac.com/'";
         }
         $purchaseOperationNumber = $transaction->external_payment_code;
-        $purchaseAmount = 0;
-        foreach($transaction->transaction_payments as $transaction_payment){
-            $purchaseAmount += $transaction_payment->payment->amount;
+        \Log::info('successfulPayment 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$claveSecreta);
+        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
+        \Log::info('successfulPayment 2: '.$purchaseVerification);
+        if($purchaseVerificationRecieved==$purchaseVerification){
+            return true;
         }
-        $purchaseAmount = (string) $purchaseAmount;
-        $purchaseAmount = str_replace('.', '', $purchaseAmount);
-        $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
-        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
-        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification];
+        return false;
     }
 
     public static function getTransactionFromPayme($payment_code) {
@@ -84,7 +156,7 @@ class Payme {
             $idCommerce = config('payments.payme_params.commerce_id_testing');
             $model_url = "'https://integracion.alignetsac.com/'";
         }
-        $url .= 'rest/operationAcquirer/consulte';
+        $url .= 'VPOS2/rest/operationAcquirer/consulte';
         $purchaseOperationNumber = $transaction->external_payment_code;
         \Log::info($acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$claveSecreta);
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');

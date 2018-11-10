@@ -29,6 +29,17 @@ class PaymeController extends Controller {
 	    return $array['response'];
     }
 
+    public function postSuccessfulPayment(Request $request) {
+    	$payment_code = $request->get('payment_code');
+    	$purchaseVerification = $request->get('purchaseVerification');
+    	$successfulPayment = \Payme::successfulPayment($payment_code, $purchaseVerificationRecieved);
+    	if($successfulPayment){
+	      return redirect($this->prev)->with('message_success', 'Su pago fue recibido correctamente.');
+	    } else {
+	      return redirect($this->prev)->with('message_error', 'Hubo un error al realizar su pago.');
+	    }
+    }
+
     public function getMakeAllPayments($customer_id, $custom_app_key = NULL) {
         if(config('payments.payme_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, true, false, $custom_app_key);
