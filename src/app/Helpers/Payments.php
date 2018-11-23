@@ -51,9 +51,10 @@ class Payments {
         $currency = \Solunes\Business\App\Currency::find(2);
         $payment = new \Solunes\Payments\App\Payment;
         $payment->customer_id = $sale->customer_id;
-        $payment->name = 'Compra de productos online';
+        $payment->name = $sale->name;
         $payment->customer_name = $sale->customer->name;
         $payment->customer_email = $sale->customer->email;
+        $payment->date = $sale->created_at;
         $payment->invoice = $sale->invoice;
         $payment->invoice_name = $sale->invoice_name;
         $payment->invoice_nit = $sale->invoice_nit;
