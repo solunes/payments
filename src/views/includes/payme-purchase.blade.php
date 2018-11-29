@@ -16,9 +16,13 @@
   <input type="hidden" name="shippingState" value="La Paz" />
   <input type="hidden" name="shippingCountry" value="BO" />
   <!--Parametro que contiene el valor del codCardHolderCommerce.-->
+  @if($userCommerce)
   <input type="hidden" name="userCommerce" value="<?php echo $userCommerce; ?>" />
+  @endif
   <!--Parametro que contiene el valor del codAsoCardHolderWallet.-->
+  @if($userCodePayme)
   <input type="hidden" name="userCodePayme" value="<?php echo $userCodePayme; ?>" />
+  @endif
   <input type="hidden" name="descriptionProducts" value="Producto ABC" />
   <input type="hidden" name="programmingLanguage" value="PHP" />
   <!--Ejemplo envío campos reservados en parametro reserved1.-->

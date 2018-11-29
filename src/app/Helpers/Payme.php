@@ -53,6 +53,7 @@ class Payme {
             $idEntCommerce = config('payments.payme_params.idEntCommerce_testing');
         }
         $url .= 'WALLETWS/services/WalletCommerce?wsdl';
+        $codCardHolderCommerce = 'J000'.$codCardHolderCommerce;
         \Log::info('generateWalletAccount 1: '.$idEntCommerce.' - '.$codCardHolderCommerce.' - '.$mail.' - '.$claveSecreta);
         $registerVerification = openssl_digest($idEntCommerce . $codCardHolderCommerce . $mail . $claveSecreta, 'sha512');
 
