@@ -53,6 +53,8 @@ return [
 		'commerce_id_testing' => '8056', // ID Comercio de Payme Enlace Testing
 		'acquirer_id_production' => '99', // ID Adquiriente de Payme Enlace Producción
 		'acquirer_id_testing' => '99', // ID Adquiriente de Payme Enlace Testing
+		'idEntCommerce_production' => '1926', // ID Adquiriente de Payme Enlace Producción
+		'idEntCommerce_testing' => '1926', // ID Adquiriente de Payme Enlace Testing
 		'iso_currency_code' => '068', // Codigo ISO de Moneda
 		'design_option' => '1', // Opciones de diseño de iframe 1, 2 o 3
 		'app_name' => env('APP_NAME', 'PagosTT'), // Nombre enviado a Cuentas365

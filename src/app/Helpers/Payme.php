@@ -46,11 +46,11 @@ class Payme {
         if(config('payments.payme_params.testing')===false){
             $url = 'https://www.pay-me.pe/';
             $claveSecreta = config('payments.payme_params.shawallet_key_production');
-            $idEntCommerce = config('payments.payme_params.acquirer_id_production');
+            $idEntCommerce = config('payments.payme_params.idEntCommerce_production');
         } else {
             $url = config('payments.payme_params.test_server');
             $claveSecreta = config('payments.payme_params.shawallet_key_testing');
-            $idEntCommerce = config('payments.payme_params.acquirer_id_testing');
+            $idEntCommerce = config('payments.payme_params.idEntCommerce_testing');
         }
         $url .= 'WALLETWS/services/WalletCommerce?wsdl';
         \Log::info('generateWalletAccount 1: '.$idEntCommerce.' - '.$codCardHolderCommerce.' - '.$mail.' - '.$claveSecreta);
