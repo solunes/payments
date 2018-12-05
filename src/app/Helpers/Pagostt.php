@@ -158,7 +158,12 @@ class Pagostt {
         $transaction_invoice->customer_name = $factura_electronica->cliente_razon_social;
         $transaction_invoice->customer_nit = $factura_electronica->cliente_nit;
         $transaction_invoice->invoice_type = $factura_electronica->tipo_dosificacion;
-        $transaction_invoice->invoice_id = $factura_electronica->identificador;
+        $transaction_invoice->invoice_code = $factura_electronica->identificador;
+        if(config('payments.pagostt_params.testing')){
+            $transaction_invoice->invoice_url = config('payments.pagostt_params.invoice_test_server').$factura_electronica->identificador;
+        } else {
+            $transaction_invoice->invoice_url = config('payments.pagostt_params.invoice_server').$factura_electronica->identificador;
+        }
         if(config('payments.pagostt_params.enable_cycle')&&$ptt_transaction->invoice_type=='C'){
             // TODO REVISAR
             if($factura_electronica->dosificacion){

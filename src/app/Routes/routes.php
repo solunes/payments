@@ -21,5 +21,6 @@ Route::group(['prefix'=>'payments'], function(){
 Route::group(['prefix'=>'pagostt'], function(){
     Route::get('/make-all-payments/{customer_id}/{custom_app_key?}', 'PagosttController@getMakeAllPayments');
     Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PagosttController@getMakeSinglePayment');
+    Route::get('/make-manual-cashier-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PagosttController@getMakeManualCashierPayment');
     Route::post('/make-checkbox-payment', 'PagosttController@postMakeCheckboxPayment');
 });
