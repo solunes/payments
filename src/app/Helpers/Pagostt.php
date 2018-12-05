@@ -124,6 +124,7 @@ class Pagostt {
     public static function putPaymentInvoice($transaction) {
         $transaction->load('transaction_invoice');
         if($transaction_invoice = $transaction->transaction_invoice){
+            $transaction->load('transaction_payments');
             foreach($transaction->transaction_payments as $transaction_payment){
                 $payment = $transaction_payment->payment;
                 if($payment->invoice){
