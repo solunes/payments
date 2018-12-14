@@ -586,9 +586,17 @@ class Pagostt {
         if(!$first_payment){
             return $inserted;
         }
-        if($invoice_data&&$first_payment->invoice){
+        \Log::info('Check payment: '.$invoice_data.' - '.$first_payment->invoice);
+        $invoices_count = 0;
+        foreach($first_transaction->transaction_payments as $transaction_payment){
+            $payment = $transaction_payment->payment;
+            if($payment->invoice){
+                $invoices_count++;
+            }
+        }
+        if($invoice_data&&$invoices_count>0){
             $inserted = 1;
-        } else if(!$invoice_data&&!$first_payment->invoice) {
+        } else if(!$invoice_data&&$invoices_count==0) {
             $inserted = 1;
         }
         return $inserted;
