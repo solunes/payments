@@ -270,7 +270,7 @@ class Pagostt {
         if(isset($payment['shipping_detail'])){
             $final_fields['descripcion_envio'] = $payment['shipping_detail'];
         } else {
-            $final_fields['descripcion_envio'] = "Costo de envío no definido.";
+            $final_fields['descripcion_envio'] = "Costo de envío no detallado.";
         }
         $final_fields['descripcion'] = $payment['name'];
         if(isset($payment['preinvoices'])){
