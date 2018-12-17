@@ -166,13 +166,17 @@ class Payments {
             $payment_shippings = \Solunes\Payments\App\PaymentShipping::whereIn('parent_id', $payment_ids)->get();
             $address_detail = 'Costo de envío: ';
             foreach($payment_shippings as $payment_shipping){
-                if($payment->city){
-                    $address_detail .= $payment->city.' | ';
+                if($payment_shipping->city){
+                    $address_detail .= $payment_shipping->city.' | ';
                 }
-                $address_detail .= $payment->address;
+                $address_detail .= $payment_shipping->address;
                 $shipping_amount += $payment_shipping->price;
             }
-            $payment['shipping_amount'] = $shipping_amount;
+            if(config('customer.enable_test')==1){
+                $payment['shipping_amount'] = 1;
+            } else {
+                $payment['shipping_amount'] = $shipping_amount;
+            }
             $payment['shipping_detail'] = $address_detail;
         } else {
             $payment['shipping_amount'] = 0;
