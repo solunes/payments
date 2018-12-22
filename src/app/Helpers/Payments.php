@@ -68,7 +68,9 @@ class Payments {
             $payment_item->parent_id = $payment->id;
             $payment_item->item_type = 'sale-item';
             $payment_item->item_id = $sale_item->id;
-            if($sale_item->product_bridge->name){
+            if($sale_item->detail){
+                $payment_item->name = $sale_item->detail;
+            } else if($sale_item->product_bridge->name) {
                 $payment_item->name = $sale_item->product_bridge->name;
             } else {
                 $payment_item->name = 'Detalle sin definir';
