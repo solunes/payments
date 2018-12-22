@@ -48,7 +48,10 @@ class Payments {
     }
 
     public static function generatePayment($sale) {
-        $currency = \Solunes\Business\App\Currency::find(2);
+        $currency = $sale->currency;
+        if(!$currency){
+            $currency = \Solunes\Business\App\Currency::find(2);
+        }
         $payment = new \Solunes\Payments\App\Payment;
         $payment->customer_id = $sale->customer_id;
         $payment->name = $sale->name;
