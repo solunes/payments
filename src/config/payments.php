@@ -80,6 +80,7 @@ return [
 	'invoices' => true,
 	'shipping' => false,
 	'online_banks' => false,
+	'custom_key' => false,
 
 	// SEGURIDAD Y ENCRIPTACION
 	'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto

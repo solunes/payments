@@ -83,6 +83,9 @@ class NodesPayments extends Migration
             $table->date('payment_date')->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
+            if(config('payments.custom_key')){
+                $table->string('custom_key')->nullable();
+            }
             $table->timestamps();
         });
         if(config('payments.invoices')){
