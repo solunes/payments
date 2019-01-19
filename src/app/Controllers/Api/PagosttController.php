@@ -59,7 +59,7 @@ class PagosttController extends BaseController {
         $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
         if(!$checkItem){
             \Log::info('Transacción encontrada, no se accede de nuevo.');
-            return redirect('');
+            return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
         } 
         \Log::info('Transaccion aceptada, procesando: '.$payment_code);
         if(request()->has('transaction_id')){
