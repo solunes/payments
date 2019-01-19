@@ -42,7 +42,7 @@ class PaymeController extends BaseController {
                     $customer = \Customer::getCustomer($transaction->customer_id);
                 }
                 \Log::info('Successful Transaction Email: '.$customer['email']);
-                if(!config('payments.pagostt_params.testing')){
+                if(!config('payments.pagostt_params.testing')&&filter_var($customer['email'], FILTER_VALIDATE_EMAIL)){
                     \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
                         if($customer['name']){
                             $name = $customer['name'];
