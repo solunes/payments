@@ -181,7 +181,22 @@ class Pagostt {
         return true;
     }
 
-    public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true) {
+    public static function getItemExtraParameters($payment_item) {
+        $array = [];
+        if(config('payments.sfv_version')>1){
+            $array['codigo_actividad_economica'] = $payment_item->economic_sin_activity;
+            $array['codigo_sin'] = $payment_item->product_sin_code;
+            $array['codigo_interno'] = $payment_item->product_internal_code;
+            $array['serie_producto'] = $payment_item->product_serial_number;
+        }
+        if(config('payments.sfv_version')>1||config('payments.discounts')){
+            $array['descuento_unitario'] = $payment_item->discount_price;
+            $array['descuento_total'] = $payment_item->discount_amount;
+        }
+        return $array;
+    }
+
+    public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true, $extra_parameters = []) {
         $item = [];
         $item['concepto'] = $concept;
         $item['cantidad'] = $quantity;
@@ -189,8 +204,24 @@ class Pagostt {
         if($invoice==false){
             $item['ignorar_factura'] = true;
         }
+        foreach($extra_parameters as $extra_key => $extra_parameter){
+            $item[$extra_key] = $extra_parameter;
+        }
         $encoded_item = json_encode($item);
         return $encoded_item;
+    }
+
+    public static function paymentAddPaymentInvoice($payment_array, $payment) {
+        if($payment||config('payments.sfv_version')>1){
+            $payment_array['commerce_user_code'] = $payment->commerce_user_code;
+            $payment_array['customer_code'] = $payment->customer_code;
+            $payment_array['customer_ci_number'] = $payment->customer_ci_number;
+            $payment_array['customer_ci_extension'] = $payment->customer_ci_extension;
+            $payment_array['customer_ci_expedition'] = $payment->customer_ci_expedition;
+            $payment_array['invoice_type'] = $payment->invoice_type;
+            $payment_array['payment_type_code'] = $payment->payment_type_code;
+        }
+        return $payment_array;
     }
 
     public static function generatePaymentMetadata($nombre, $dato) {
@@ -250,8 +281,23 @@ class Pagostt {
             "razon_social" => $customer['nit_name'],
             "nit" => $customer['nit_number'],
         );
-        if(isset($customer['ci_number'])){
+        if(isset($payment['customer_ci_number'])){
+            $final_fields['ci'] = $payment['customer_ci_number'];
+        } else if(isset($customer['ci_number'])){
             $final_fields['ci'] = $customer['ci_number'];
+        }
+        if(isset($payment['customer_ci_extension'])){
+            $final_fields['ci_extension'] = $payment['customer_ci_extension'];
+        } else if(isset($customer['ci_extension'])){
+            $final_fields['ci_extension'] = $customer['ci_extension'];
+        }
+        if(isset($payment['customer_ci_expedition'])){
+            $final_fields['ci_tipo'] = $payment['customer_ci_expedition'];
+        } else if(isset($customer['ci_expedition'])){
+            $final_fields['ci_tipo'] = $customer['ci_expedition'];
+        }
+        if(isset($customer['customer_code'])){
+            $final_fields['codigo_cliente'] = $customer['customer_code'];
         }
         if(isset($customer['first_name'])){
             $final_fields['nombre_cliente'] = $customer['first_name'];
@@ -261,6 +307,25 @@ class Pagostt {
         }
         if(isset($payment['has_invoice'])){
             $final_fields['emite_factura'] = $payment['has_invoice'];
+        }
+        if(isset($payment['invoice_type'])){
+            $final_fields['factura_tipo'] = $payment['invoice_type'];
+        }
+        if(isset($payment['payment_type_code'])){
+            $final_fields['metodo_pago'] = $payment['payment_type_code'];
+        }
+        if(isset($payment['commerce_user_code'])){
+            $final_fields['usuario_comercio'] = $payment['commerce_user_code'];
+        }
+        if(isset($payment['total_amount'])){
+            $final_fields['monto_total'] = $payment['total_amount'];
+        } else {
+            $final_fields['monto_total'] = 0;
+        }
+        if(isset($payment['discount_amount'])){
+            $final_fields['monto_descuento'] = $payment['discount_amount'];
+        } else {
+            $final_fields['monto_descuento'] = 0;
         }
         if(isset($payment['shipping_amount'])){
             $final_fields['valor_envio'] = $payment['shipping_amount'];
@@ -296,8 +361,8 @@ class Pagostt {
 
     public static function generateTransactionQuery($transaction, $final_fields) {
         $url = \Pagostt::queryTransactiontUrl('deuda/registrar');
+        \Log::info('pagostt_final_fields: '.json_encode($final_fields)); // OCULTAR
         $decoded_result = \Pagostt::queryCurlTransaction($url, $final_fields);
-        
         if(!isset($decoded_result->url_pasarela_pagos)){
             if($decoded_result->error==0&&isset($decoded_result->id_transaccion)){
                 \Log::info('Iniciando Pago en Caja: '.json_encode($final_fields));

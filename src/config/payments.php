@@ -3,6 +3,8 @@
 return [
 
 	'redirect_after_payment' => 'admin/my-payments',
+	'sfv_version' => 1,
+	'discounts' => false,
 
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,
@@ -80,7 +82,7 @@ return [
 	'invoices' => true,
 	'shipping' => false,
 	'online_banks' => false,
-	'custom_key' => false,
+	'custom_key' => false, // Para permitir el campo de custom appkey en tabla pagos
 
 	// SEGURIDAD Y ENCRIPTACION
 	'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto

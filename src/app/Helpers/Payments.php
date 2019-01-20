@@ -52,67 +52,124 @@ class Payments {
         if(!$currency){
             $currency = \Solunes\Business\App\Currency::find(2);
         }
-        $payment = new \Solunes\Payments\App\Payment;
-        $payment->customer_id = $sale->customer_id;
-        $payment->name = $sale->name;
-        $payment->customer_name = $sale->customer->name;
-        $payment->customer_email = $sale->customer->email;
-        $payment->date = $sale->created_at;
-        $payment->invoice = $sale->invoice;
-        $payment->invoice_name = $sale->invoice_name;
-        $payment->invoice_nit = $sale->invoice_nit;
-        $payment->real_amount = \Business::calculate_currency($sale->amount, $currency, $sale->currency);
-        $payment->currency_id = $currency->id;
-        $payment->status = 'holding';
-        $payment->save();
-        $sale->load('sale_items');
-        foreach($sale->sale_items as $sale_item){
-            $payment_item = new \Solunes\Payments\App\PaymentItem;
-            $payment_item->parent_id = $payment->id;
-            $payment_item->item_type = 'sale-item';
-            $payment_item->item_id = $sale_item->id;
-            if($sale_item->detail){
-                $payment_item->name = $sale_item->detail;
-            } else if($sale_item->product_bridge->name) {
-                $payment_item->name = $sale_item->product_bridge->name;
-            } else {
-                $payment_item->name = 'Detalle sin definir';
-            }
-            $payment_item->currency_id = $payment->currency_id;
-            $payment_item->quantity = $sale_item->quantity;
-            $payment_item->price = \Business::calculate_currency($sale_item->price, $payment->currency, $sale_item->currency);
-            $payment_item->save();
-        }
-        if(config('sales.delivery')){
-            $sale->load('sale_deliveries');
-            foreach($sale->sale_deliveries as $sale_delivery){
-                if($city = $sale_delivery->city){
-                    $city_name = $city->name;
-                } else {
-                    $city_name = $sale_delivery->city_other;
-                }
-                if($region = $sale_delivery->region){
-                    $region_name = $region->name;
-                } else {
-                    $region_name = $sale_delivery->region_other;
-                }
-                $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
-                $payment_shipping->parent_id = $payment->id;
-                $payment_shipping->name = $sale->name.' ('.$sale_delivery->total_weight.' Kg.)';
-                $payment_shipping->contact_name = $sale_delivery->name;
-                $payment_shipping->address = $sale_delivery->address;
-                $payment_shipping->address_2 = $sale_delivery->address_extra;
-                $payment_shipping->city = $city_name;
-                $payment_shipping->region = $region_name;
-                $payment_shipping->postal_code = $sale_delivery->postal_code;
-                $payment_shipping->country_code = $sale_delivery->country_code;
-                $payment_shipping->phone = $sale_delivery->phone;
-                $payment_shipping->price = $sale_delivery->shipping_cost;
-                $payment_shipping->save();
-            }
-        }
         $sale->load('sale_payments');
+        $sale->load('sale_items');
+        $sale_payments_array = [];
         foreach($sale->sale_payments as $sale_payment){
+            $sale_payment->load('sale_payment_items');
+            $payment = new \Solunes\Payments\App\Payment;
+            $payment->customer_id = $sale->customer_id;
+            $payment->currency_id = $currency->id;
+            $payment->name = $sale->name;
+            $payment->customer_name = $sale->customer->name;
+            $payment->customer_email = $sale->customer->email;
+            $payment->date = $sale->created_at;
+            $payment->invoice = $sale->invoice;
+            $payment->invoice_name = $sale->invoice_name;
+            $payment->invoice_nit = $sale->invoice_nit;
+            $payment->real_amount = \Business::calculate_currency($sale_payment->amount, $currency, $sale_payment->currency);
+            if(config('payments.sfv_version')>1||config('payments.discounts')){
+                $payment->discount_amount = \Business::calculate_currency($sale_payment->discount_amount, $currency, $sale_payment->currency);
+            }
+            $payment->status = 'holding';
+            if(config('payments.sfv_version')>1){
+                $payment->commerce_user_code = $sale_payment->commerce_user_code;
+                $payment->customer_code = $sale_payment->customer_code;
+                $payment->customer_ci_number = $sale_payment->customer_ci_number;
+                $payment->customer_ci_extension = $sale_payment->customer_ci_extension;
+                $payment->customer_ci_expedition = $sale_payment->customer_ci_expedition;
+                $payment->invoice_type = $sale_payment->invoice_type;
+                $payment->payment_type_code = $sale_payment->payment_type_code;
+            }
+            if(config('payments.sfv_version')>1||config('payments.discounts')){
+                $payment->discount_amount = $sale_payment->discount_amount;
+            }
+            $payment->save();
+            $subitem_total = 0;
+            $salepayment_total = $sale_payment->amount;
+            foreach($sale->sale_items as $sale_item){
+                if($salepayment_total>0&&(!isset($sale_payments_array[$sale_item->id])||$sale_payments_array[$sale_item->id]>0)){
+                    $sale_payment_item = new \Solunes\Sales\App\SalePaymentItem;
+                    $sale_payment_item->parent_id = $sale_payment->id;;
+                    $sale_payment_item->currency_id = $sale_payment->currency_id;;
+                    $sale_payment_item->sale_item_id = $sale_item->id;;
+                    if(isset($sale_payments_array[$sale_item->id])&&$sale_payments_array[$sale_item->id]>0){
+                        $amount = $sale_payments_array[$sale_item->id];
+                    } else {
+                        $amount = $sale_item->price * $sale_item->quantity;
+                    }
+                    $amount = \Business::calculate_currency($amount, $payment->currency, $sale_item->currency);
+                    $subitem_total += $amount;
+                    $salepayment_total -= $amount;
+                    $final_amount = $amount;
+                    if($salepayment_total<0){
+                        $final_amount += $salepayment_total;
+                        $sale_payments_array[$sale_item->id] = $salepayment_total * (-1);
+                        $sale_payment_item->pending_amount = $sale_payments_array[$sale_item->id];
+                    } else {
+                        $sale_payments_array[$sale_item->id] = 0;
+                    }
+                    $sale_payment_item->amount = $final_amount;
+                    $payment_item = new \Solunes\Payments\App\PaymentItem;
+                    $payment_item->parent_id = $payment->id;
+                    $payment_item->item_type = 'sale-item';
+                    $payment_item->item_id = $sale_item->id;
+                    if($sale_item->detail){
+                        $payment_item->name = $sale_item->detail;
+                    } else if($sale_item->product_bridge->name) {
+                        $payment_item->name = $sale_item->product_bridge->name;
+                    } else {
+                        $payment_item->name = 'Detalle sin definir';
+                    }
+                    $payment_item->currency_id = $payment->currency_id;
+                    $payment_item->quantity = $sale_item->quantity;
+                    $payment_item->price = \Business::calculate_currency($sale_item->price, $payment->currency, $sale_item->currency);
+                    $payment_item->amount = $final_amount;
+                    if(config('payments.sfv_version')>1){
+                        $payment_item->economic_sin_activity = $sale_item->economic_sin_activity;
+                        $payment_item->product_sin_code = $sale_item->product_sin_code;
+                        $payment_item->product_internal_code = $sale_item->product_internal_code;
+                        $payment_item->product_serial_number = $sale_item->product_serial_number;
+                    }
+                    if(config('payments.sfv_version')>1||config('payments.discounts')){
+                        $payment_item->discount_price = \Business::calculate_currency($sale_item->discount_price, $payment->currency, $sale_item->currency);
+                        $payment_item->discount_amount = \Business::calculate_currency($sale_item->discount_amount, $payment->currency, $sale_item->currency);
+                    }
+                    $payment_item->save();
+                    $sale_payment_item->save();
+                }
+            }
+            if(config('sales.delivery')){
+                if($sale_payment->pay_delivery){
+                    $sale->load('sale_deliveries');
+                    foreach($sale->sale_deliveries as $sale_delivery){
+                        if($city = $sale_delivery->city){
+                            $city_name = $city->name;
+                        } else {
+                            $city_name = $sale_delivery->city_other;
+                        }
+                        if($region = $sale_delivery->region){
+                            $region_name = $region->name;
+                        } else {
+                            $region_name = $sale_delivery->region_other;
+                        }
+                        $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
+                        $payment_shipping->parent_id = $payment->id;
+                        $payment_shipping->name = $sale->name.' ('.$sale_delivery->total_weight.' Kg.)';
+                        $payment_shipping->contact_name = $sale_delivery->name;
+                        $payment_shipping->address = $sale_delivery->address;
+                        $payment_shipping->address_2 = $sale_delivery->address_extra;
+                        $payment_shipping->city = $city_name;
+                        $payment_shipping->region = $region_name;
+                        $payment_shipping->postal_code = $sale_delivery->postal_code;
+                        $payment_shipping->country_code = $sale_delivery->country_code;
+                        $payment_shipping->phone = $sale_delivery->phone;
+                        $payment_shipping->price = $sale_delivery->shipping_cost;
+                        $payment_shipping->save();
+                    }
+                }
+            }
+
             $sale_payment->payment_id = $payment->id;
             $sale_payment->save();
         }

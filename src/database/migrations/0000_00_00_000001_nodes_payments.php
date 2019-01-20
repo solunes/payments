@@ -71,6 +71,9 @@ class NodesPayments extends Migration
             $table->integer('customer_id')->nullable();
             $table->integer('currency_id')->nullable();
             $table->decimal('real_amount', 10, 2)->nullable();
+            if(config('payments.sfv_version')>1||config('payments.discounts')){
+                $table->decimal('discount_amount', 10, 2)->nullable();
+            }
             $table->string('customer_name')->nullable();
             $table->string('customer_email')->nullable();
             $table->boolean('invoice')->nullable();
@@ -83,6 +86,15 @@ class NodesPayments extends Migration
             $table->date('payment_date')->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
             $table->boolean('active')->nullable()->default(1);
+            if(config('payments.sfv_version')>1){
+                $table->string('commerce_user_code')->nullable();
+                $table->string('customer_code')->nullable();
+                $table->string('customer_ci_number')->nullable();
+                $table->string('customer_ci_extension')->nullable();
+                $table->string('customer_ci_expedition')->nullable();
+                $table->string('invoice_type')->nullable();
+                $table->string('payment_type_code')->nullable();
+            }
             if(config('payments.custom_key')){
                 $table->string('custom_key')->nullable();
             }
@@ -143,6 +155,16 @@ class NodesPayments extends Migration
             $table->decimal('price', 10, 2)->nullable();
             $table->decimal('tax', 10, 2)->nullable();
             $table->decimal('amount', 10, 2)->nullable();
+            if(config('payments.sfv_version')>1){
+                $table->string('economic_sin_activity')->nullable();
+                $table->string('product_sin_code')->nullable();
+                $table->string('product_internal_code')->nullable();
+                $table->string('product_serial_number')->nullable(); // Para linea blanca y celulares
+            }
+            if(config('payments.sfv_version')>1||config('payments.discounts')){
+                $table->decimal('discount_price', 10, 2)->nullable();
+                $table->decimal('discount_amount', 10, 2)->nullable();
+            }
             $table->timestamps();
         });
         Schema::create('transactions', function (Blueprint $table) {
