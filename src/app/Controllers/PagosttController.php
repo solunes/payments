@@ -19,9 +19,9 @@ class PagosttController extends Controller {
 
     public function getCreateCustomPayment($customer_id) {
     	$user = auth()->user();
-    	if(!$user->hasRole('admin')){
+    	/*if(!$user->hasRole('admin')){
 	    	return redirect($this->prev)->with('message_error', 'Debe ser un adminisrador para ingresar.');
-    	}
+    	}*/
     	$customer = \Solunes\Customer\App\Customer::find($customer_id);
     	if(!$customer){
 	    	return redirect($this->prev)->with('message_error', 'No se encuentra un cliente asociado.');
