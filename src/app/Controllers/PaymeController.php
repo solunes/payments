@@ -29,6 +29,10 @@ class PaymeController extends Controller {
 	    return $array['response'];
     }
 
+    public function getTransactionFromPayme($payment_code) {
+	    return view('payments::payme.successful-purchase', $array);
+    }
+
     public function postSuccessfulPayment(Request $request) {
     	\Log::info('postSuccessfulPayment: '.json_encode($request->all()));
     	$payment_code = $request->get('reserved1');
