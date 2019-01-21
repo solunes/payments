@@ -7,14 +7,14 @@
   <input type="hidden" name="purchaseAmount" value="<?php echo $purchaseAmount; ?>" />
   <input type="hidden" name="purchaseCurrencyCode" value="<?php echo $purchaseCurrencyCode; ?>" />
   <input type="hidden" name="language" value="SP" />
-  <input type="hidden" name="shippingFirstName" value="Eduardo" />
-  <input type="hidden" name="shippingLastName" value="Mejia" />
-  <input type="hidden" name="shippingEmail" value="edumejia30@gmail.com" />
-  <input type="hidden" name="shippingAddress" value="Direcion ABC" />
-  <input type="hidden" name="shippingZIP" value="0000" />
-  <input type="hidden" name="shippingCity" value="La-Paz" />
-  <input type="hidden" name="shippingState" value="La Paz" />
-  <input type="hidden" name="shippingCountry" value="BO" />
+  <input type="hidden" name="shippingFirstName" value="<?php echo $firstName; ?>" />
+  <input type="hidden" name="shippingLastName" value="<?php echo $lastName; ?>" />
+  <input type="hidden" name="shippingEmail" value="<?php echo $customerEmail; ?>" />
+  <input type="hidden" name="shippingAddress" value="<?php echo $shippingAddress; ?>" />
+  <input type="hidden" name="shippingZIP" value="<?php echo $shippingZIP; ?>" />
+  <input type="hidden" name="shippingCity" value="<?php echo $shippingCity; ?>" />
+  <input type="hidden" name="shippingState" value="<?php echo $shippingState; ?>" />
+  <input type="hidden" name="shippingCountry" value="<?php echo $shippingCountry; ?>" />
   <!--Parametro que contiene el valor del codCardHolderCommerce.-->
   @if($userCommerce)
   <input type="hidden" name="userCommerce" value="<?php echo $userCommerce; ?>" />
@@ -23,7 +23,7 @@
   @if($userCodePayme)
   <input type="hidden" name="userCodePayme" value="<?php echo $userCodePayme; ?>" />
   @endif
-  <input type="hidden" name="descriptionProducts" value="Producto ABC" />
+  <input type="hidden" name="descriptionProducts" value="{{ $paymentName }}" />
   <input type="hidden" name="programmingLanguage" value="PHP" />
   <!--Ejemplo envío campos reservados en parametro reserved1.-->
   <input type="hidden" name="reserved1" value="<?php echo $payment_code; ?>" />

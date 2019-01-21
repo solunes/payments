@@ -110,11 +110,38 @@ class Payme {
                 $purchaseAmount += $transaction_payment->payment->amount;
             }
         }
+        $paymentName = 'Pago online';
+        $firstName = 'Cliente';
+        $lastName = 'Nuevo';
+        $customerEmail = 'no-reply@solunes.com';
+        $shippingAddress = 'Sin direccion';
+        $shippingZIP = '0001';
+        $shippingCity = 'La Paz';
+        $shippingState = 'La Paz';
+        $shippingCountry = 'BO';
+        if($transaction->transaction_payments as $key => $transaction_payment){
+            $subpayment = $transaction_payment->payment;
+            $paymentName .= ' - '.$subpayment->name;
+            if($key==0){
+                $nameArray = \External::reduceName($payment->customer_name);
+                $firstName = $nameArray['first_name'];
+                $lastName = $nameArray['last_name'];
+                $customerEmail = $payment->customer_email;
+                $payment_shipping = $payment->payment_shipping;
+                if($payment_shipping){
+                    $shippingAddress = $payment_shipping->address;
+                    $shippingZIP = $payment_shipping->postal_code;
+                    $shippingCity = $payment_shipping->city;
+                    $shippingState = $payment_shipping->region;
+                    $shippingCountry = $payment_shipping->country_code;
+                }
+            }
+        }
         $purchaseAmount = (string) $purchaseAmount;
         $purchaseAmount = str_replace('.', '', $purchaseAmount);
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
-        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
+        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
     public static function successfulPayment($payment_code, $purchaseVerificationRecieved) {
