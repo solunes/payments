@@ -26,7 +26,7 @@
   <input type="hidden" name="descriptionProducts" value="Producto ABC" />
   <input type="hidden" name="programmingLanguage" value="PHP" />
   <!--Ejemplo envío campos reservados en parametro reserved1.-->
-  <input type="hidden" name="reserved1" value="Valor Reservado ABC" />
+  <input type="hidden" name="reserved1" value="<?php echo $payment_code; ?>" />
   <input type="hidden" name="purchaseVerification" value="<?php echo $purchaseVerification; ?>" />
   <input type="button" class="btn btn-site" onclick="javascript:AlignetVPOS2.openModal(<?php echo $model_url; ?>)" value="REALIZAR PAGO">
 </form>

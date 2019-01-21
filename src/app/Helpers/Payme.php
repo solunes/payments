@@ -114,7 +114,7 @@ class Payme {
         $purchaseAmount = str_replace('.', '', $purchaseAmount);
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
-        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
+        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
     public static function successfulPayment($payment_code, $purchaseVerificationRecieved) {
@@ -137,6 +137,15 @@ class Payme {
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
         \Log::info('successfulPayment 2: '.$purchaseVerification);
         if($purchaseVerificationRecieved==$purchaseVerification){
+            //$transaction->external_payment_code = $decoded_result->id_transaccion;
+            $transaction->status = 'paid';
+            $transaction->save();
+            $transaction->load('transaction_payments');
+            if(config('payments.pagostt_params.enable_bridge')){
+                $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
+            } else {
+                $payment_registered = \Customer::transactionSuccesful($transaction);
+            }
             return true;
         }
         return false;

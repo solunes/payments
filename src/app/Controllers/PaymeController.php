@@ -30,9 +30,10 @@ class PaymeController extends Controller {
     }
 
     public function postSuccessfulPayment(Request $request) {
-    	$payment_code = $request->get('payment_code');
+    	\Log::info('postSuccessfulPayment: '.json_encode($request->all()));
+    	$payment_code = $request->get('reserved1');
     	$purchaseVerification = $request->get('purchaseVerification');
-    	$successfulPayment = \Payme::successfulPayment($payment_code, $purchaseVerificationRecieved);
+    	$successfulPayment = \Payme::successfulPayment($payment_code, $purchaseVerification);
     	if($successfulPayment){
 	      return redirect($this->prev)->with('message_success', 'Su pago fue recibido correctamente.');
 	    } else {
