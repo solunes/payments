@@ -23,13 +23,15 @@ class PaymeController extends Controller {
 	    return view('payments::payme.purchase', $array);
     }
 
-    public function getTransactionFromPayme($payment_code) {
+    /*public function getTransactionFromPayme($payment_code) {
     	$array['response'] = \Payme::getTransactionFromPayme($payment_code);
     	$array['page'] = \Solunes\Master\App\Page::first();
 	    return $array['response'];
-    }
+    }*/
 
     public function getTransactionFromPayme($payment_code) {
+    	$array['payment_code'] = $payment_code;
+    	$array['page'] = \Solunes\Master\App\Page::first();
 	    return view('payments::payme.successful-purchase', $array);
     }
 
@@ -39,9 +41,9 @@ class PaymeController extends Controller {
     	$purchaseVerification = $request->get('purchaseVerification');
     	$successfulPayment = \Payme::successfulPayment($payment_code, $purchaseVerification);
     	if($successfulPayment){
-	      return redirect('admin/transaction-from-payme/'.$payment_code)->with('message_success', 'Su pago fue recibido correctamente.');
+	      return redirect('payme/transaction-from-payme/'.$payment_code.'?sucess=true')->with('message_success', 'Su pago fue recibido correctamente.');
 	    } else {
-	      return redirect('admin/transaction-from-payme/'.$payment_code)->with('message_error', 'Hubo un error al realizar su pago.');
+	      return redirect('payme/transaction-from-payme/'.$payment_code.'?sucess=true')->with('message_error', 'Hubo un error al realizar su pago.');
 	    }
     }
 
