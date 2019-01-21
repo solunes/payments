@@ -119,15 +119,15 @@ class Payme {
         $shippingCity = 'La Paz';
         $shippingState = 'La Paz';
         $shippingCountry = 'BO';
-        if($transaction->transaction_payments as $key => $transaction_payment){
+        foreach($transaction->transaction_payments as $key => $transaction_payment){
             $subpayment = $transaction_payment->payment;
             $paymentName .= ' - '.$subpayment->name;
             if($key==0){
-                $nameArray = \External::reduceName($payment->customer_name);
+                $nameArray = \External::reduceName($subpayment->customer_name);
                 $firstName = $nameArray['first_name'];
                 $lastName = $nameArray['last_name'];
-                $customerEmail = $payment->customer_email;
-                $payment_shipping = $payment->payment_shipping;
+                $customerEmail = $subpayment->customer_email;
+                $payment_shipping = $subpayment->payment_shipping;
                 if($payment_shipping){
                     $shippingAddress = $payment_shipping->address;
                     $shippingZIP = $payment_shipping->postal_code;
