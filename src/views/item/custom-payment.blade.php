@@ -22,6 +22,7 @@
       {!! Field::form_input(0, 'edit', ['name'=>'customer_ci_expedition','type'=>'string','required'=>true], ['cols'=>4,'label'=>'Tipo de Carnet de Identidad', 'value'=>'1']) !!}
       {!! Field::form_input(0, 'edit', ['name'=>'invoice_type','type'=>'string','required'=>true], ['cols'=>4,'label'=>'Tipo de Factura', 'value'=>'1']) !!}
       {!! Field::form_input(0, 'edit', ['name'=>'payment_type_code','type'=>'string','required'=>true], ['cols'=>4,'label'=>'Código de Tipo de Pago', 'value'=>'1']) !!}
+      {!! Field::form_input(0, 'edit', ['name'=>'card_number','type'=>'string','required'=>true], ['cols'=>4,'label'=>'Número de Tarjeta de Crédito', 'value'=>'4905568712647821']) !!}
     </div>
     {!! Form::hidden('customer_id', $customer->id) !!}
 

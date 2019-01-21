@@ -80,6 +80,7 @@ class Payments {
                 $payment->customer_ci_expedition = $sale_payment->customer_ci_expedition;
                 $payment->invoice_type = $sale_payment->invoice_type;
                 $payment->payment_type_code = $sale_payment->payment_type_code;
+                $payment->card_number = $sale_payment->card_number;
             }
             if(config('payments.sfv_version')>1||config('payments.discounts')){
                 $payment->discount_amount = $sale_payment->discount_amount;

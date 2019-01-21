@@ -92,7 +92,8 @@ class PagosttController extends Controller {
     	$sale_payment->customer_ci_extension = $request->input('customer_ci_extension');
     	$sale_payment->customer_ci_expedition = $request->input('customer_ci_expedition');
     	$sale_payment->invoice_type = $request->input('invoice_type');
-    	$sale_payment->payment_type_code = $request->input('payment_type_code');
+        $sale_payment->payment_type_code = $request->input('payment_type_code');
+        $sale_payment->card_number = $request->input('card_number');
     	$sale_payment->save();
     	$payment = \Payments::generatePayment($sale);
     	$custom_app_key = NULL;

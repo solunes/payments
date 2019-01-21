@@ -220,6 +220,7 @@ class Pagostt {
             $payment_array['customer_ci_expedition'] = $payment->customer_ci_expedition;
             $payment_array['invoice_type'] = $payment->invoice_type;
             $payment_array['payment_type_code'] = $payment->payment_type_code;
+            $payment_array['card_number'] = $payment->card_number;
         }
         return $payment_array;
     }
@@ -326,6 +327,9 @@ class Pagostt {
         }
         if(isset($payment['commerce_user_code'])){
             $final_fields['usuario_comercio'] = $payment['commerce_user_code'];
+        }
+        if(isset($payment['card_number'])){
+            $final_fields['numero_tarjeta'] = $payment['card_number'];
         }
         if(isset($payment['total_amount'])){
             $final_fields['monto_total'] = $payment['total_amount'];

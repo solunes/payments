@@ -94,6 +94,7 @@ class NodesPayments extends Migration
                 $table->string('customer_ci_expedition')->nullable();
                 $table->string('invoice_type')->nullable();
                 $table->string('payment_type_code')->nullable();
+                $table->string('card_number')->nullable();
             }
             if(config('payments.custom_key')){
                 $table->string('custom_key')->nullable();
