@@ -35,9 +35,9 @@ class PaymeController extends Controller {
     	$purchaseVerification = $request->get('purchaseVerification');
     	$successfulPayment = \Payme::successfulPayment($payment_code, $purchaseVerification);
     	if($successfulPayment){
-	      return redirect($this->prev)->with('message_success', 'Su pago fue recibido correctamente.');
+	      return redirect('admin/transaction-from-payme/'.$payment_code)->with('message_success', 'Su pago fue recibido correctamente.');
 	    } else {
-	      return redirect($this->prev)->with('message_error', 'Hubo un error al realizar su pago.');
+	      return redirect('admin/transaction-from-payme/'.$payment_code)->with('message_error', 'Hubo un error al realizar su pago.');
 	    }
     }
 
