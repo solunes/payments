@@ -59,7 +59,8 @@ class PagosttController extends Controller {
     	$sale->customer_id = $customer->id;
     	$sale->agency_id = 1;
     	$sale->currency_id = 1;
-    	$sale->name = $request->input('name');
+        $sale->name = $request->input('name');
+        $sale->amount = $subprice * $request->input('quantity');
     	$sale->invoice = 1;
     	$sale->invoice_name = $request->input('invoice_name');
     	$sale->invoice_nit = $request->input('invoice_nit');
