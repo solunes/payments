@@ -33,6 +33,27 @@ class PagosttController extends Controller {
     public function postCreateCustomPayment(Request $request) {
     	$user = auth()->user();
     	$customer = \Solunes\Customer\App\Customer::find($request->input('customer_id'));
+        $subprice = $request->input('price') - $request->input('discount_price');
+        $category = \Solunes\Product\App\Category::first();
+        if(!$category){
+            $category = new \Solunes\Product\App\Category;
+            $category->level = 1;
+            $category->name = 'General';
+            $category->save();
+        }
+        $product = new \Solunes\Product\App\Product;
+        $product->category_id = $category->id;
+        $product->currency_id = 1;
+        $product->name = $request->input('name');
+        $product->price = $request->input('price');
+        $product->discount_price = $subprice;
+        $product->economic_sin_activity = $request->input('economic_sin_activity');
+        $product->product_sin_code = $request->input('product_sin_code');
+        $product->product_internal_code = $request->input('product_internal_code');
+        $product->product_serial_number = $request->input('product_serial_number');
+        $product->active = 1;
+        $product->save();
+        $product_bridge = \Solunes\Business\App\ProductBridge::where('product_type', 'product')->where('product_id', $product->id)->first();
     	$sale = new \Solunes\Sales\App\Sale;
     	$sale->user_id = $user->id;
     	$sale->customer_id = $customer->id;
@@ -45,12 +66,12 @@ class PagosttController extends Controller {
     	$sale->save();
     	$sale_item = new \Solunes\Sales\App\SaleItem;
     	$sale_item->parent_id = $sale->id;
-    	$sale_item->product_bridge_id = 1;
+    	$sale_item->product_bridge_id = $product_bridge->id;
     	$sale_item->currency_id = $sale->currency_id;
-    	$sale_item->price = $request->input('price');
+    	$sale_item->price = $subprice;
     	$sale_item->discount_price = $request->input('discount_price');
     	$sale_item->quantity = $request->input('quantity');
-    	$sale_item->total = $request->input('price') * $request->input('quantity');
+    	$sale_item->total = $subprice * $request->input('quantity');
     	$sale_item->discount_amount = $request->input('discount_price') * $request->input('quantity');
     	$sale_item->economic_sin_activity = $request->input('economic_sin_activity');
     	$sale_item->product_sin_code = $request->input('product_sin_code');
@@ -81,7 +102,7 @@ class PagosttController extends Controller {
             $customer_object = \Customer::getCustomer($customer->id, false, false, $custom_app_key);
     		$payment_object = \Customer::getPayment($payment->id, $custom_app_key);
         }
-	    if($customer&&$payment_object){
+	    if($customer_object&&$payment_object){
 	      $payment_object = \Payments::getShippingCost($payment_object, [$payment->id]);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer->id, [$payment->id], $payment_object['amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer_object, $payment_object, $pagostt_transaction, $custom_app_key);
