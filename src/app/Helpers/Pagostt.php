@@ -274,12 +274,22 @@ class Pagostt {
         if(config('payments.pagostt_params.finish_payment_verification')){
             $payment = \PagosttBridge::finishPaymentVerification($payment, $transaction);
         }
+        if(isset($payment['nit_name'])){
+            $nit_name = $payment['nit_name'];
+        } else if(isset($customer['nit_name'])){
+            $nit_name = $customer['nit_name'];
+        }
+        if(isset($payment['nit_number'])){
+            $nit_number = $payment['nit_number'];
+        } else if(isset($customer['nit_number'])){
+            $nit_number = $customer['nit_number'];
+        }
         $final_fields = array(
             "appkey" => $app_key,
             "email_cliente" => $customer['email'],
             "callback_url" => $callback_url,
-            "razon_social" => $customer['nit_name'],
-            "nit" => $customer['nit_number'],
+            "razon_social" => $nit_name,
+            "nit" => $nit_number,
         );
         if(isset($payment['customer_ci_number'])){
             $final_fields['ci'] = $payment['customer_ci_number'];
