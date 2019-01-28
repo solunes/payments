@@ -45,6 +45,9 @@ class PaymeController extends Controller {
     	$purchaseCurrencyCode = $request->get('purchaseCurrencyCode');
     	$authorizationResult = $request->get('authorizationResult');
     	$purchaseVerification = $request->get('purchaseVerification');
+        if($authorizationResult!='00'){
+          return redirect(config('payments.redirect_after_payment_error'))->with('message_error', 'Hubo un error al realizar su pago.');
+        }
     	$successfulPayment = \Payme::successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerification);
     	if($successfulPayment){
 	      return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue procesado correctamente.');
