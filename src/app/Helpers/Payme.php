@@ -56,6 +56,7 @@ class Payme {
         $codCardHolderCommerce = 'J000'.$codCardHolderCommerce;
         \Log::info('generateWalletAccount 1: '.$idEntCommerce.' - '.$codCardHolderCommerce.' - '.$mail.' - '.$claveSecreta);
         $registerVerification = openssl_digest($idEntCommerce . $codCardHolderCommerce . $mail . $claveSecreta, 'sha512');
+        \Log::info('generateWalletAccount 2: '.$registerVerification);
 
         //Referencia al Servicio Web de Wallet            
         $client = new \SoapClient($url);
@@ -147,36 +148,21 @@ class Payme {
         return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
-    public static function successfulPayment($payment_code, $purchaseVerificationRecieved) {
+    public static function successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerification) {
         $transaction = \Solunes\Payments\App\Transaction::where('payment_code', $payment_code)->first();
         if(config('payments.payme_params.testing')===false){
-            $url = config('payments.payme_params.main_server');
             $claveSecreta = config('payments.payme_params.sha_key_production');
-            $acquirerId = config('payments.payme_params.acquirer_id_production');
-            $idCommerce = config('payments.payme_params.commerce_id_production');
             $model_url = "'', '".config('payments.payme_params.design_option')."'";
         } else {
-            $url = config('payments.payme_params.test_server');
             $claveSecreta = config('payments.payme_params.sha_key_testing');
-            $acquirerId = config('payments.payme_params.acquirer_id_testing');
-            $idCommerce = config('payments.payme_params.commerce_id_testing');
             $model_url = "'https://integracion.alignetsac.com/'";
         }
-        if(config('payments.payme_params.min_amount')){
-            $purchaseAmount = '1.00';
-        } else {
-            $purchaseAmount = 0;
-            foreach($transaction->transaction_payments as $transaction_payment){
-                $purchaseAmount += $transaction_payment->payment->amount;
-            }
-        }
-        $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
-        $purchaseOperationNumber = $transaction->external_payment_code;
-        \Log::info('successfulPayment 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$purchaseAmount.' - '.$purchaseCurrencyCode.' - '.$claveSecreta);
-        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
+        \Log::info('successfulPayment 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$purchaseAmount.' - '.$purchaseCurrencyCode.' - '.$authorizationResult.' - '.$claveSecreta);
+        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $authorizationResult . $claveSecreta, 'sha512');
         //$purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
         \Log::info('successfulPayment 2: '.$purchaseVerification);
-        if($purchaseVerificationRecieved==$purchaseVerification){
+        \Log::info('successfulPayment 3 purchaseVerificationRecieved: '.$purchaseVerificationRecieved);
+        if($purchaseVerificationRecieved==$purchaseVerification&&$authorizationResult=='00'){
             //$transaction->external_payment_code = $decoded_result->id_transaccion;
             $transaction->status = 'paid';
             $transaction->save();
