@@ -104,7 +104,7 @@ class Payme {
         $purchaseOperationNumber = $transaction->external_payment_code;
         //$purchaseOperationNumber = rand(100000000,999999999); // BORRAR
         if(config('payments.payme_params.min_amount')){
-            $purchaseAmount = '1.00';
+            $purchaseAmount = 1;
         } else {
             $purchaseAmount = 0;
             foreach($transaction->transaction_payments as $transaction_payment){
@@ -143,8 +143,7 @@ class Payme {
                 }
             }
         }
-        $purchaseAmount = (string) $purchaseAmount;
-        $purchaseAmount = str_replace('.', '', $purchaseAmount);
+        $purchaseAmount = $purchaseAmount * 100;
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         \Log::info('generatePaymentArray 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$purchaseAmount.' - '.$purchaseCurrencyCode.' - '.$claveSecreta);
         //$purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
