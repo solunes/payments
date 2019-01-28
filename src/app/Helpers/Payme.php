@@ -101,7 +101,7 @@ class Payme {
         }
         $url .= 'VPOS2/';
         $purchaseOperationNumber = $transaction->external_payment_code;
-        $purchaseOperationNumber = rand(100000000,999999999); // BORRAR
+        //$purchaseOperationNumber = rand(100000000,999999999); // BORRAR
         if(config('payments.payme_params.min_amount')){
             $purchaseAmount = '1.00';
         } else {
@@ -140,7 +140,10 @@ class Payme {
         $purchaseAmount = (string) $purchaseAmount;
         $purchaseAmount = str_replace('.', '', $purchaseAmount);
         $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
+        \Log::info('generatePaymentArray 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$purchaseAmount.' - '.$purchaseCurrencyCode.' - '.$claveSecreta);
+        //$purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
+        \Log::info('generatePaymentArray 2: '.$purchaseVerification);
         return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
@@ -159,9 +162,19 @@ class Payme {
             $idCommerce = config('payments.payme_params.commerce_id_testing');
             $model_url = "'https://integracion.alignetsac.com/'";
         }
+        if(config('payments.payme_params.min_amount')){
+            $purchaseAmount = '1.00';
+        } else {
+            $purchaseAmount = 0;
+            foreach($transaction->transaction_payments as $transaction_payment){
+                $purchaseAmount += $transaction_payment->payment->amount;
+            }
+        }
+        $purchaseCurrencyCode = config('payments.payme_params.iso_currency_code');
         $purchaseOperationNumber = $transaction->external_payment_code;
-        \Log::info('successfulPayment 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$claveSecreta);
-        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
+        \Log::info('successfulPayment 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$purchaseAmount.' - '.$purchaseCurrencyCode.' - '.$claveSecreta);
+        $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
+        //$purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
         \Log::info('successfulPayment 2: '.$purchaseVerification);
         if($purchaseVerificationRecieved==$purchaseVerification){
             //$transaction->external_payment_code = $decoded_result->id_transaccion;
@@ -264,7 +277,9 @@ class Payme {
             $acquirerId = config('payments.payme_params.acquirer_id_production');
             $idCommerce = config('payments.payme_params.commerce_id_production');
         }
+        \Log::info('getShaKey 1: '.$acquirerId.' - '.$idCommerce.' - '.$purchaseOperationNumber.' - '.$claveSecreta);
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
+        \Log::info('getShaKey 2: '.$purchaseVerification);
         return $purchaseVerification;
     }
 
