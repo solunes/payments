@@ -148,7 +148,7 @@ class Payme {
         return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
-    public static function successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerification) {
+    public static function successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerificationRecieved) {
         $transaction = \Solunes\Payments\App\Transaction::where('payment_code', $payment_code)->first();
         if(config('payments.payme_params.testing')===false){
             $claveSecreta = config('payments.payme_params.sha_key_production');
