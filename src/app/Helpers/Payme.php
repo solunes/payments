@@ -130,14 +130,16 @@ class Payme {
                 $firstName = $nameArray['first_name'];
                 $lastName = $nameArray['last_name'];
                 $customerEmail = $subpayment->customer_email;
-                $payment_shipping = $subpayment->payment_shipping;
-                if($payment_shipping){
-                    $shippingAddress = $payment_shipping->address;
-                    $shippingZIP = $payment_shipping->postal_code;
-                    $shippingCity = $payment_shipping->city;
-                    $shippingState = $payment_shipping->region;
-                    $shippingCountry = $payment_shipping->country_code;
-                    $purchaseAmount += $payment_shipping->price;
+                if(config('payments.shipping')){
+                    $payment_shipping = $subpayment->payment_shipping;
+                    if($payment_shipping){
+                        $shippingAddress = $payment_shipping->address;
+                        $shippingZIP = $payment_shipping->postal_code;
+                        $shippingCity = $payment_shipping->city;
+                        $shippingState = $payment_shipping->region;
+                        $shippingCountry = $payment_shipping->country_code;
+                        $purchaseAmount += $payment_shipping->price;
+                    }
                 }
             }
         }

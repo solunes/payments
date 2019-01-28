@@ -1,4 +1,4 @@
-<div class="payme-payment mitru-colors">
+<div class="payme-payment">
   <h1>Finalizar Pago en Payme</h1>
   <div class="row">
     <div class="col-md-6">
@@ -22,7 +22,7 @@
         <td>{{ $count+1 }}</td>
         <td>{{ $payment_item->name }}</td> 
         <td>{{ $payment_item->quantity }}</td>
-        <td>{{ $payment_item->currency->name.' '.$payment_item->amount }}</td>
+        <td>{{ $payment->currency->name.' '.$payment_item->amount }}</td>
       </tr>
       @endforeach
     @endforeach
