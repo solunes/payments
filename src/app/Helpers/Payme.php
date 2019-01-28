@@ -120,8 +120,10 @@ class Payme {
         $shippingCity = 'La Paz';
         $shippingState = 'La Paz';
         $shippingCountry = 'BO';
+        $payments_array = [];
         foreach($transaction->transaction_payments as $key => $transaction_payment){
             $subpayment = $transaction_payment->payment;
+            $payments_array[] = $subpayment;
             $paymentName .= ' - '.$subpayment->name;
             if($key==0){
                 $nameArray = \External::reduceName($subpayment->customer_name);
@@ -135,6 +137,7 @@ class Payme {
                     $shippingCity = $payment_shipping->city;
                     $shippingState = $payment_shipping->region;
                     $shippingCountry = $payment_shipping->country_code;
+                    $purchaseAmount += $payment_shipping->price;
                 }
             }
         }
@@ -145,7 +148,7 @@ class Payme {
         //$purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $claveSecreta, 'sha512');
         $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecreta, 'sha512');
         \Log::info('generatePaymentArray 2: '.$purchaseVerification);
-        return ['url'=>$url, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
+        return ['url'=>$url, 'payments_array'=>$payments_array, 'model_url'=>$model_url, 'acquirerId'=>$acquirerId, 'payment_code'=>$payment_code, 'paymentName'=>$paymentName, 'firstName'=>$firstName, 'lastName'=>$lastName, 'customerEmail'=>$customerEmail, 'shippingAddress'=>$shippingAddress, 'shippingZIP'=>$shippingZIP, 'shippingCity'=>$shippingCity, 'shippingState'=>$shippingState, 'shippingCountry'=>$shippingCountry, 'idCommerce'=>$idCommerce, 'purchaseOperationNumber'=>$purchaseOperationNumber, 'purchaseAmount'=>$purchaseAmount, 'purchaseCurrencyCode'=>$purchaseCurrencyCode, 'purchaseVerification'=>$purchaseVerification, 'userCommerce'=>$userCommerce, 'userCodePayme'=>$userCodePayme];
     }
 
     public static function successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerificationRecieved) {
