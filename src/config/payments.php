@@ -3,6 +3,7 @@
 return [
 
 	'redirect_after_payment' => 'admin/my-payments',
+	'redirect_after_payment_error' => 'admin/my-payments',
 	'sfv_version' => 1,
 	'discounts' => false,
 
