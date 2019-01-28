@@ -44,7 +44,8 @@ class PaymeController extends Controller {
     	$purchaseAmount = $request->get('purchaseAmount');
     	$purchaseCurrencyCode = $request->get('purchaseCurrencyCode');
     	$authorizationResult = $request->get('authorizationResult');
-    	$successfulPayment = \Payme::successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult);
+    	$purchaseVerification = $request->get('purchaseVerification');
+    	$successfulPayment = \Payme::successfulPayment($payment_code, $acquirerId, $idCommerce, $purchaseOperationNumber, $purchaseAmount, $purchaseCurrencyCode, $authorizationResult, $purchaseVerification);
     	if($successfulPayment){
 	      return redirect('payme/transaction-from-payme/'.$payment_code.'?sucess=true')->with('message_success', 'Su pago fue recibido correctamente.');
 	    } else {
