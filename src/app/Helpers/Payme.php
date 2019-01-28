@@ -82,7 +82,7 @@ class Payme {
         $customer = $transaction->customer;
         $userCommerce = NULL;
         $userCodePayme = NULL;
-        if($customer){
+        if($customer&&config('payments.payme_params.enable_wallet')){
             $walletAccount = \Payme::generateWalletAccount($customer->id, $customer->email, $customer->first_name, $customer->last_name);
             $userCommerce = $walletAccount['codCardHolderCommerce'];
             $userCodePayme = $walletAccount['codAsoCardHolderWallet'];
