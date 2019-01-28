@@ -44,7 +44,7 @@
         </h4>
       </div>
       <div class="col-md-4">
-        <h4><strong>Total:</strong> {{ $payment->currency->name.' '.$purchaseAmount }}</h4>
+        <h4><strong>Total:</strong> {{ $payment->currency->name.' '.round($purchaseAmount/100, 2) }}</h4>
       </div>
     </div>
   </div>
