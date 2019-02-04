@@ -269,7 +269,7 @@ class Pagostt {
         return $full_token;
     }
 
-    public static function generateTransactionArray($customer, $payment, $transaction, $custom_app_key = NULL) {
+    public static function generateTransactionArray($customer, $payment, $transaction, $custom_app_key = 'default') {
         $callback_url = \Pagostt::generatePaymentCallback($transaction->payment_code);
         $app_key = \Pagostt::getAppKey(NULL, $custom_app_key);
         if(config('payments.pagostt_params.finish_payment_verification')){

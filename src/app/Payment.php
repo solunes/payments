@@ -71,6 +71,10 @@ class Payment extends Model {
         }
     }
 
+    public function cashier_user() {
+        return $this->belongsTo('App\User');
+    }
+        
     public function payment_item() {
         return $this->hasOne('Solunes\Payments\App\PaymentItem', 'parent_id');
     }

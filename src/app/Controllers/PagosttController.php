@@ -96,7 +96,7 @@ class PagosttController extends Controller {
         $sale_payment->card_number = $request->input('card_number');
     	$sale_payment->save();
     	$payment = \Payments::generatePayment($sale);
-    	$custom_app_key = NULL;
+    	$custom_app_key = 'default';
         if(config('payments.pagostt_params.enable_bridge')){
             $customer_object = \PagosttBridge::getCustomer($customer->id, false, false, $custom_app_key);
     		$payment_object = \PagosttBridge::getPayment($payment->id, $custom_app_key);
@@ -121,7 +121,7 @@ class PagosttController extends Controller {
     	}
     }
 
-    public function getMakeAllPayments($customer_id, $custom_app_key = NULL) {
+    public function getMakeAllPayments($customer_id, $custom_app_key = 'default') {
         if(config('payments.pagostt_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, true, false, $custom_app_key);
         } else {
@@ -149,7 +149,7 @@ class PagosttController extends Controller {
 	    }
     }
   
-    public function getMakeSinglePayment($customer_id, $payment_id, $custom_app_key = NULL) {
+    public function getMakeSinglePayment($customer_id, $payment_id, $custom_app_key = 'default') {
         if(config('payments.pagostt_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, false, false, $custom_app_key);
     		$payment = \PagosttBridge::getPayment($payment_id, $custom_app_key);
@@ -176,7 +176,7 @@ class PagosttController extends Controller {
 	    }
     }
   
-    public function getMakeManualCashierPayment($customer_id, $payment_id, $custom_app_key = NULL) {
+    public function getMakeManualCashierPayment($customer_id, $payment_id, $custom_app_key = 'default') {
         if(config('payments.pagostt_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, false, false, $custom_app_key);
     		$payment = \PagosttBridge::getPayment($payment_id, $custom_app_key);
@@ -201,6 +201,12 @@ class PagosttController extends Controller {
 		      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
 		      if($api_url){
 		      	if($api_url=='success-cashier'){
+                    $payment = \Solunes\Payments\App\Payment::find($payment_id);
+                    if($payment){
+                        $payment->cashier_payment = true;
+                        $payment->cashier_user_id = $user->id;
+                        $payment->save();
+                    }
 		      		return redirect($this->prev)->with('message_success', 'Su pago en caja fue procesado correctamente.');
 		      	} else {
 		      		return redirect($api_url);
