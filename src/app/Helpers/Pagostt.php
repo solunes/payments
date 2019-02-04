@@ -359,7 +359,7 @@ class Pagostt {
         }
         // Habilitar Pago en Caja
         if(config('payments.pagostt_params.enable_cashier')&&isset($payment['canal_caja'])&&$payment['canal_caja']==true){
-            $cashierKey = \Pagostt::getCashierKey();
+            $cashierKey = \Pagostt::getCashierKey($app_key, $custom_app_key);
             if($cashierKey&&isset($payment['canal_caja_sucursal'])&&isset($payment['canal_caja_usuario'])){
                 $final_fields['canal_caja'] = $cashierKey;
                 $final_fields['canal_caja_sucursal'] = $payment['canal_caja_sucursal'];
