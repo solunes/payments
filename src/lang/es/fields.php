@@ -12,6 +12,8 @@ return [
     'id' => 'ID',
     'parent' => 'Padre',
     'payment' => 'Pago',
+    'cashier_payment' => '¿Pago en Caja?',
+    'cashier_user' => 'Usuario de Pago en Caja',
     'payment_code' => 'Código de Pago',
     'ptt_transaction_payments' => 'Pagos de Transacción',
     'status' => 'Estado',
