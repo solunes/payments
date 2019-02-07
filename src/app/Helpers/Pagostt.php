@@ -279,11 +279,15 @@ class Pagostt {
             $nit_name = $payment['nit_name'];
         } else if(isset($customer['nit_name'])){
             $nit_name = $customer['nit_name'];
+        } else {
+            $nit_name = 'Sin Nombre';
         }
         if(isset($payment['nit_number'])){
             $nit_number = $payment['nit_number'];
         } else if(isset($customer['nit_number'])){
             $nit_number = $customer['nit_number'];
+        } else {
+            $nit_number = 0;
         }
         $final_fields = array(
             "appkey" => $app_key,
