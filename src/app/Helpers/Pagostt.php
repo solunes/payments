@@ -269,9 +269,9 @@ class Pagostt {
         return $full_token;
     }
 
-    public static function generateTransactionArray($customer, $payment, $transaction, $custom_app_key = 'default') {
+    public static function generateTransactionArray($customer, $payment, $transaction, $custom_app_key = 'default', $app_key = NULL, $cashier_app_key = NULL) {
         $callback_url = \Pagostt::generatePaymentCallback($transaction->payment_code);
-        $app_key = \Pagostt::getAppKey(NULL, $custom_app_key);
+        $app_key = \Pagostt::getAppKey($app_key, $custom_app_key);
         if(config('payments.pagostt_params.finish_payment_verification')){
             $payment = \PagosttBridge::finishPaymentVerification($payment, $transaction);
         }
@@ -363,7 +363,7 @@ class Pagostt {
         }
         // Habilitar Pago en Caja
         if(config('payments.pagostt_params.enable_cashier')&&isset($payment['canal_caja'])&&$payment['canal_caja']==true){
-            $cashierKey = \Pagostt::getCashierKey(NULL, $custom_app_key);
+            $cashierKey = \Pagostt::getCashierKey($cashier_app_key, $custom_app_key);
             if($cashierKey&&isset($payment['canal_caja_sucursal'])&&isset($payment['canal_caja_usuario'])){
                 $final_fields['canal_caja'] = $cashierKey;
                 $final_fields['canal_caja_sucursal'] = $payment['canal_caja_sucursal'];
