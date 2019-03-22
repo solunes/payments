@@ -94,9 +94,6 @@ class Payments {
                     $sale_payment_item->parent_id = $sale_payment->id;
                     $sale_payment_item->currency_id = $sale_payment->currency_id;
                     $sale_payment_item->sale_item_id = $sale_item->id;
-                    if(config('sales.delivery')){
-                        $sale_payment_item->pay_delivery = 1;
-                    }
                     if(isset($sale_payments_array[$sale_item->id])&&$sale_payments_array[$sale_item->id]>0){
                         $amount = $sale_payments_array[$sale_item->id];
                     } else {
