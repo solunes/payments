@@ -20,7 +20,11 @@ class OnlineBankDeposit extends Model {
 		'parent_id'=>'required',
 		'payment_id'=>'required',
 	);
-    
+        
+    public function parent() {
+        return $this->belongsTo('Solunes\Payments\App\OnlineBank');
+    }
+
     public function online_bank() {
         return $this->belongsTo('Solunes\Payments\App\OnlineBank', 'parent_id');
     }

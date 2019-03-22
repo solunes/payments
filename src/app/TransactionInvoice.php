@@ -24,5 +24,9 @@ class TransactionInvoice extends Model {
     public function parent() {
         return $this->belongsTo('Solunes\Payments\App\Transaction');
     }
-    
+        
+    public function transaction() {
+        return $this->belongsTo('Solunes\Payments\App\Transaction', 'parent_id');
+    }
+
 }

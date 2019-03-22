@@ -20,7 +20,11 @@ class PaymentShipping extends Model {
 		'parent_id'=>'required',
 		'payment_id'=>'required',
 	);
-    
+        
+    public function parent() {
+        return $this->belongsTo('Solunes\Payments\App\Payment');
+    }
+
     public function payment() {
         return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
     }

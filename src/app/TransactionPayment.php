@@ -20,13 +20,13 @@ class TransactionPayment extends Model {
 		'parent_id'=>'required',
 		'payment_id'=>'required',
 	);
-    
-    public function transaction() {
-        return $this->belongsTo('Solunes\Payments\App\Transaction', 'parent_id');
-    }
-        
+            
     public function parent() {
         return $this->belongsTo('Solunes\Payments\App\Transaction');
+    }
+
+    public function transaction() {
+        return $this->belongsTo('Solunes\Payments\App\Transaction', 'parent_id');
     }
 
     public function payment() {

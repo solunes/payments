@@ -21,6 +21,10 @@ class ScheduledTransactionItem extends Model {
 		'payment_id'=>'required',
 	);
     
+    public function parent() {
+        return $this->belongsTo('Solunes\Payments\App\ScheduledTransaction');
+    }
+    
     public function scheduled_transaction() {
         return $this->belongsTo('Solunes\Payments\App\ScheduledTransaction', 'parent_id');
     }

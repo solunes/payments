@@ -22,7 +22,11 @@ class PaymentItem extends Model {
 		'name'=>'required',
 		'price'=>'required',
 	);
-    
+        
+    public function parent() {
+        return $this->belongsTo('Solunes\Payments\App\Payment');
+    }
+
     public function payment() {
         return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
     }

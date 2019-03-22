@@ -18,13 +18,13 @@ class PaymentInvoice extends Model {
 	public static $rules_edit = array(
 		'parent_id'=>'required',
 	);
-    
-    public function payment() {
-        return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
-    }
-        
+            
     public function parent() {
         return $this->belongsTo('Solunes\Payments\App\Payment');
     }
-    
+
+    public function payment() {
+        return $this->belongsTo('Solunes\Payments\App\Payment', 'parent_id');
+    }
+
 }
