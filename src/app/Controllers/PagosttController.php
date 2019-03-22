@@ -46,11 +46,13 @@ class PagosttController extends Controller {
         $product->currency_id = 1;
         $product->name = $request->input('name');
         $product->price = $request->input('price');
-        $product->discount_price = $subprice;
-        $product->economic_sin_activity = $request->input('economic_sin_activity');
-        $product->product_sin_code = $request->input('product_sin_code');
-        $product->product_internal_code = $request->input('product_internal_code');
-        $product->product_serial_number = $request->input('product_serial_number');
+        if(config('payments.sfv_version')>1){
+            $product->discount_price = $subprice;
+            $product->economic_sin_activity = $request->input('economic_sin_activity');
+            $product->product_sin_code = $request->input('product_sin_code');
+            $product->product_internal_code = $request->input('product_internal_code');
+            $product->product_serial_number = $request->input('product_serial_number');
+        }
         $product->active = 1;
         $product->save();
         $product_bridge = \Solunes\Business\App\ProductBridge::where('product_type', 'product')->where('product_id', $product->id)->first();
@@ -69,31 +71,42 @@ class PagosttController extends Controller {
     	$sale_item->parent_id = $sale->id;
     	$sale_item->product_bridge_id = $product_bridge->id;
     	$sale_item->currency_id = $sale->currency_id;
-    	$sale_item->price = $subprice;
-    	$sale_item->discount_price = $request->input('discount_price');
+        if(config('sales.delivery')){
+            $sale_item->weight = 0;
+        }
+        $sale_item->price = $subprice;
+        if(config('payments.sfv_version')>1||config('payments.discounts')){
+    	   $sale_item->discount_price = $request->input('discount_price');
+            $sale_item->discount_amount = $request->input('discount_price') * $request->input('quantity');
+        }
     	$sale_item->quantity = $request->input('quantity');
     	$sale_item->total = $subprice * $request->input('quantity');
-    	$sale_item->discount_amount = $request->input('discount_price') * $request->input('quantity');
-    	$sale_item->economic_sin_activity = $request->input('economic_sin_activity');
-    	$sale_item->product_sin_code = $request->input('product_sin_code');
-    	$sale_item->product_internal_code = $request->input('product_internal_code');
-    	$sale_item->product_serial_number = $request->input('product_serial_number');
+        if(config('payments.sfv_version')>1){
+        	$sale_item->economic_sin_activity = $request->input('economic_sin_activity');
+        	$sale_item->product_sin_code = $request->input('product_sin_code');
+        	$sale_item->product_internal_code = $request->input('product_internal_code');
+        	$sale_item->product_serial_number = $request->input('product_serial_number');
+        }
     	$sale_item->save();
     	$sale_payment = new \Solunes\Sales\App\SalePayment;
     	$sale_payment->parent_id = $sale->id;
     	$sale_payment->currency_id = $sale->currency_id;
     	$sale_payment->payment_method_id = 3; // PAGOSTT
     	$sale_payment->amount = $sale_item->total;
-    	$sale_payment->discount_amount = $sale_item->discount_amount;
+        if(config('payments.sfv_version')>1||config('payments.discounts')){
+    	   $sale_payment->discount_amount = $sale_item->discount_amount;
+        }
     	$sale_payment->pay_delivery = 1;
     	$sale_payment->commerce_user_code = $request->input('commerce_user_code');
     	$sale_payment->customer_code = $request->input('customer_code');
     	$sale_payment->customer_ci_number = $request->input('customer_ci_number');
     	$sale_payment->customer_ci_extension = $request->input('customer_ci_extension');
     	$sale_payment->customer_ci_expedition = $request->input('customer_ci_expedition');
-    	$sale_payment->invoice_type = $request->input('invoice_type');
-        $sale_payment->payment_type_code = $request->input('payment_type_code');
-        $sale_payment->card_number = $request->input('card_number');
+        if(config('payments.sfv_version')>1){
+            $sale_payment->invoice_type = $request->input('invoice_type');
+            $sale_payment->payment_type_code = $request->input('payment_type_code');
+            $sale_payment->card_number = $request->input('card_number');
+        }
     	$sale_payment->save();
     	$payment = \Payments::generatePayment($sale);
     	$custom_app_key = 'default';
