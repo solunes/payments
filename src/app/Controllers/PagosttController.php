@@ -96,7 +96,9 @@ class PagosttController extends Controller {
         if(config('payments.sfv_version')>1||config('payments.discounts')){
     	   $sale_payment->discount_amount = $sale_item->discount_amount;
         }
-    	$sale_payment->pay_delivery = 1;
+        if(config('sales.delivery')){
+    	   $sale_payment->pay_delivery = 1;
+        }
     	$sale_payment->commerce_user_code = $request->input('commerce_user_code');
     	$sale_payment->customer_code = $request->input('customer_code');
     	$sale_payment->customer_ci_number = $request->input('customer_ci_number');
