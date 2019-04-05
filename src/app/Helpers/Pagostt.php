@@ -198,6 +198,7 @@ class Pagostt {
 
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true, $extra_parameters = []) {
         $item = [];
+        $concept = preg_replace('/[^A-Za-z0-9\-\(\) ]/', '', $concept); //removes ALL characters
         $item['concepto'] = $concept;
         $item['cantidad'] = $quantity;
         $item['costo_unitario'] = $cost;
@@ -337,21 +338,22 @@ class Pagostt {
         }
         if(isset($payment['total_amount'])){
             $final_fields['monto_total'] = $payment['total_amount'];
-        } else {
+        }/* else {
             $final_fields['monto_total'] = 0;
-        }
+        }*/
         if(isset($payment['discount_amount'])){
             $final_fields['monto_descuento'] = $payment['discount_amount'];
-        } else {
+        }/* else {
             $final_fields['monto_descuento'] = 0;
-        }
+        }*/
         if(isset($payment['shipping_amount'])){
             $final_fields['valor_envio'] = $payment['shipping_amount'];
         } else {
             $final_fields['valor_envio'] = 0;
         }
         if(isset($payment['shipping_detail'])){
-            $final_fields['descripcion_envio'] = $payment['shipping_detail'];
+            $shipping_detail = preg_replace('/[^A-Za-z0-9\-\(\) ]/', '', $payment['shipping_detail']); //removes ALL characters
+            $final_fields['descripcion_envio'] = $shipping_detail;
         } else {
             $final_fields['descripcion_envio'] = "Costo de envío no detallado.";
         }
