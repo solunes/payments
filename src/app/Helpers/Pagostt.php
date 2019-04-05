@@ -198,7 +198,7 @@ class Pagostt {
 
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true, $extra_parameters = []) {
         $item = [];
-        $concept = preg_replace('/[^A-Za-z0-9\-\(\) ]/', '', $concept); //removes ALL characters
+        //$concept = preg_replace('/[^A-Za-z0-9\-\(\) ]/', '', $concept); //removes ALL characters
         $item['concepto'] = $concept;
         $item['cantidad'] = $quantity;
         $item['costo_unitario'] = $cost;
