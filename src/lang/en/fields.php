@@ -130,4 +130,18 @@ return [
     'payment_invoices' => 'Facturas de Pago',
     'real_amount' => 'Monto Total',
     'transaction_invoices' => 'Facturas de Transacción',
+    'card_number' => 'Número de Tarjeta',
+    'commerce_user_code' => 'Código de Empleado',
+    'customer_ci_expedition' => 'Expedición de CI',
+    'customer_ci_extension' => 'Extensión de CI',
+    'customer_ci_number' => 'Número de CI',
+    'customer_code' => 'Código de Cliente',
+    'discount_amount' => 'Monto de Descuento',
+    'discount_price' => 'Precio con Descuento',
+    'economic_sin_activity' => 'Actividad Económica SIN',
+    'payment_type_code' => 'Código de Pago',
+    'product_internal_code' => 'Código Interno de Producto',
+    'product_serial_number' => 'Número de Serie de Producto',
+    'product_sin_code' => 'Código de SIN de Producto',
+    
 ];
