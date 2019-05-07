@@ -203,7 +203,7 @@ class PagosttController extends Controller {
 	      $payment = \Payments::getShippingCost($payment, [$payment_id]);
           $user = auth()->user();
           if($user->hasPermission('manual_payments')){
-        	  if(config('pagostt.enable_bridge')){
+        	  if(config('payments.pagostt_params.enable_bridge')){
 		      	$cashier_data = \PagosttBridge::cashierPaymentData($user);
 		  	  } else {
 		      	$cashier_data = \Customer::cashierPaymentData($user);
