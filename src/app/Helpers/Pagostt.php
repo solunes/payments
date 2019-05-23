@@ -196,6 +196,11 @@ class Pagostt {
         return $array;
     }
 
+    public static function transformCurrency($amount, $currency_exchange) {
+        $amount = $amount * $currency_exchange;
+        return $amount;
+    }
+    
     public static function generatePaymentItem($concept, $quantity, $cost, $invoice = true, $extra_parameters = []) {
         $item = [];
         //$concept = preg_replace('/[^A-Za-z0-9\-\(\) ]/', '', $concept); //removes ALL characters
