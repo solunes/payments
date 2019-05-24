@@ -235,6 +235,9 @@ class Payments {
                 $address_detail .= $payment_shipping->address;
                 $shipping_amount += $payment_shipping->price;
             }
+            if(isset($payment['currency_exchange'])){
+                $shipping_amount = $shipping_amount * $payment['currency_exchange'];
+            }
             if(config('customer.enable_test')==1){
                 $payment['shipping_amount'] = 1;
             } else {
