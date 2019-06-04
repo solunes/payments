@@ -67,7 +67,9 @@ class NodesPayments extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
-            $table->integer('company_id')->nullable();
+            if(config('business.companies')){
+                $table->integer('company_id')->nullable();
+            }
             $table->integer('customer_id')->nullable();
             $table->integer('currency_id')->nullable();
             $table->decimal('real_amount', 10, 2)->nullable();
