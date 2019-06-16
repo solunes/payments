@@ -26,3 +26,15 @@ Route::group(['prefix'=>'pagostt'], function(){
     Route::get('/make-manual-cashier-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PagosttController@getMakeManualCashierPayment');
     Route::post('/make-checkbox-payment', 'PagosttController@postMakeCheckboxPayment');
 });
+
+Route::group(['prefix'=>'paypal'], function(){
+    Route::get('/make-all-payments/{customer_id}/{custom_app_key?}', 'PaypalPaymentController@getMakeAllPayments');
+    Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PaypalPaymentController@getMakeSinglePayment');
+    Route::post('/make-checkbox-payment', 'PaypalPaymentController@postMakeCheckboxPayment');
+    Route::get('/make-paypal', 'PaypalPaymentController@paywithPaypal');
+    Route::get('/make-credit-card', 'PaypalPaymentController@paywithCreditCard');
+    Route::get('/test-token', 'Api\PaypalController@getToken');
+    Route::get('/test-checkout', 'Api\PaypalController@getCheckoutOrder');
+    Route::get('/test-checkout-order/{code}', 'Api\PaypalController@getCheckoutOrderItem');
+    Route::get('/test-checkout-order-capture/{code}', 'Api\PaypalController@getCheckoutOrderItemCapture');
+});
