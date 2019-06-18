@@ -57,9 +57,11 @@ class Payments {
         $sale_payments_array = [];
         foreach($sale->sale_payments as $sale_payment){
             $sale_payment->load('sale_payment_items');
-            $payment = new \Solunes\Payments\App\Payment;
-            $payment->customer_id = $sale->customer_id;
-            $payment->currency_id = $currency->id;
+            if(!$payment = $sale_payment->payment){
+                $payment = new \Solunes\Payments\App\Payment;
+                $payment->customer_id = $sale->customer_id;
+                $payment->currency_id = $currency->id;
+            }
             $payment->name = $sale->name;
             $payment->customer_name = $sale->customer->name;
             $payment->customer_email = $sale->customer->email;
@@ -86,14 +88,17 @@ class Payments {
                 $payment->discount_amount = $sale_payment->discount_amount;
             }
             $payment->save();
+
             $subitem_total = 0;
             $salepayment_total = $sale_payment->amount;
             foreach($sale->sale_items as $sale_item){
                 if($salepayment_total>0&&(!isset($sale_payments_array[$sale_item->id])||$sale_payments_array[$sale_item->id]>0)){
-                    $sale_payment_item = new \Solunes\Sales\App\SalePaymentItem;
-                    $sale_payment_item->parent_id = $sale_payment->id;
-                    $sale_payment_item->currency_id = $sale_payment->currency_id;
-                    $sale_payment_item->sale_item_id = $sale_item->id;
+                    if(!$sale_payment_item = \Solunes\Sales\App\SalePaymentItem::where('parent_id', $sale_payment->id)->where('sale_item_id', $sale_item->id)->first()){
+                        $sale_payment_item = new \Solunes\Sales\App\SalePaymentItem;
+                        $sale_payment_item->parent_id = $sale_payment->id;
+                        $sale_payment_item->currency_id = $sale_payment->currency_id;
+                        $sale_payment_item->sale_item_id = $sale_item->id;
+                    }
                     if(isset($sale_payments_array[$sale_item->id])&&$sale_payments_array[$sale_item->id]>0){
                         $amount = $sale_payments_array[$sale_item->id];
                     } else {
@@ -111,10 +116,12 @@ class Payments {
                         $sale_payments_array[$sale_item->id] = 0;
                     }
                     $sale_payment_item->amount = $final_amount;
-                    $payment_item = new \Solunes\Payments\App\PaymentItem;
-                    $payment_item->parent_id = $payment->id;
-                    $payment_item->item_type = 'sale-item';
-                    $payment_item->item_id = $sale_item->id;
+                    if(!$payment_item = \Solunes\Payments\App\PaymentItem::where('parent_id', $sale_payment->id)->where('item_type', 'sale-item')->where('item_id', $sale_item->id)->first()){
+                        $payment_item = new \Solunes\Payments\App\PaymentItem;
+                        $payment_item->parent_id = $payment->id;
+                        $payment_item->item_type = 'sale-item';
+                        $payment_item->item_id = $sale_item->id;
+                    }
                     if($sale_item->detail){
                         $payment_item->name = $sale_item->detail;
                     } else if($sale_item->product_bridge->name) {
@@ -154,8 +161,10 @@ class Payments {
                         } else {
                             $region_name = $sale_delivery->region_other;
                         }
-                        $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
-                        $payment_shipping->parent_id = $payment->id;
+                        if(!$payment_shipping = \Solunes\Payments\App\PaymentShipping::where('parent_id', $payment->id)->first()){
+                            $payment_shipping = new \Solunes\Payments\App\PaymentShipping;
+                            $payment_shipping->parent_id = $payment->id;
+                        }
                         $payment_shipping->name = $sale->name.' ('.$sale_delivery->total_weight.' Kg.)';
                         $payment_shipping->contact_name = $sale_delivery->name;
                         $payment_shipping->address = $sale_delivery->address;
@@ -170,9 +179,10 @@ class Payments {
                     }
                 }
             }
-
-            $sale_payment->payment_id = $payment->id;
-            $sale_payment->save();
+            if(!$sale_payment->payment_id){
+                $sale_payment->payment_id = $payment->id;
+                $sale_payment->save();
+            }
         }
         return $payment;
     }
