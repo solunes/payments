@@ -15,6 +15,7 @@ return [
 	'payme' => false,
 	'tigo-money' => false,
 	'pagosnet' => false,
+	'test-payment' => false,
 
     'pagostt_params' => [
 		'testing' => true, // Utilizar el ambiente de pruebas

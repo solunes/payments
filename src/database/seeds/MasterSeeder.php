@@ -65,6 +65,9 @@ class MasterSeeder extends Seeder {
         if(config('payments.pagosnet')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosNet', 'code'=>'pagosnet', 'model'=>'PagosNet', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'active'=>0]);
         }
+        if(config('payments.test-payment')){
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Test Payment', 'code'=>'test-payment', 'model'=>'TestPayment', 'content'=>'<p>Realiza un pago de prueba.</p>', 'active'=>1]);
+        }
 
         // Usuarios
         $admin = \Solunes\Master\App\Role::where('name', 'admin')->first();

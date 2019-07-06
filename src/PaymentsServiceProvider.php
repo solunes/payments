@@ -37,6 +37,7 @@ class PaymentsServiceProvider extends ServiceProvider {
         $loader->alias('Paypal', '\Solunes\Payments\App\Helpers\Paypal');
         $loader->alias('Payme', '\Solunes\Payments\App\Helpers\Payme');
         $loader->alias('Payments', '\Solunes\Payments\App\Helpers\Payments');
+        $loader->alias('TestPayment', '\Solunes\Payments\App\Helpers\TestPayment');
 
         /* Comandos de Consola */
         $this->commands([
