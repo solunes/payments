@@ -34,9 +34,9 @@ class PagosttController extends Controller {
     	$user = auth()->user();
     	$customer = \Solunes\Customer\App\Customer::find($request->input('customer_id'));
         $subprice = $request->input('price') - $request->input('discount_price');
-        $category = \Solunes\Product\App\Category::first();
+        $category = \Solunes\Business\App\Category::first();
         if(!$category){
-            $category = new \Solunes\Product\App\Category;
+            $category = new \Solunes\Business\App\Category;
             $category->level = 1;
             $category->name = 'General';
             $category->save();
