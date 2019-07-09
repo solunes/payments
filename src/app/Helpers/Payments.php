@@ -55,6 +55,7 @@ class Payments {
         $sale->load('sale_payments');
         $sale->load('sale_items');
         $sale_payments_array = [];
+        $payment = NULL;
         foreach($sale->sale_payments as $sale_payment){
             $sale_payment->load('sale_payment_items');
             if(!$payment = $sale_payment->payment){
