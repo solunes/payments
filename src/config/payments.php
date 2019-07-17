@@ -13,6 +13,7 @@ return [
 	'pagostt' => true,
 	'paypal' => false,
 	'payme' => false,
+	'payu' => false,
 	'tigo-money' => false,
 	'pagosnet' => false,
 	'test-payment' => false,

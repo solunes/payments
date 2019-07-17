@@ -56,6 +56,9 @@ class MasterSeeder extends Seeder {
         if(config('payments.paypal')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayPal', 'code'=>'paypal', 'model'=>'Paypal', 'content'=>'<p>Realiza una transferencia por tu cuenta de PayPal o paga por tarjeta de crédito desde cualquier parte del mundo. Sabemos que tu seguridad es importante y es por eso que trabajamos con la empresa de pagos más grande del mundo.</p>', 'recurrent_payments'=>1]);
         }
+        if(config('payments.payu')){
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayU', 'code'=>'payu', 'model'=>'Payu', 'content'=>'<p>Realiza un pago a través de tu tarjeta de crédito/débito:</p>', 'active'=>1]);
+        }
         if(config('payments.payme')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayMe', 'code'=>'payme', 'model'=>'Payme', 'content'=>'<p>Realiza un pago a través de tu tarjeta de crédito/débito:</p>', 'active'=>0]);
         }
