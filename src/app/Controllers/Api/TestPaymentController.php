@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller\Api;
 
-class PagosttController extends BaseController {
+class TestPaymentController extends BaseController {
 
     public function getCustomerPayments($app_key, $customer_id, $external_payment_code = NULL){
         if($app_key==config('payments.pagostt_params.app_key')||in_array($app_key, config('payments.pagostt_params.custom_app_keys'), true)){
@@ -50,11 +50,6 @@ class PagosttController extends BaseController {
         if(!$payment_code){
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
-        }
-        $checkInvoice = \Pagostt::checkInvoice($payment_code, request()->has('invoice_id'));
-        if(!$checkInvoice){
-            \Log::info('Los datos de facturación no son correctos.');
-            throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Los datos de facturación no son correctos.');
         }
         $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
         if(!$checkItem){
