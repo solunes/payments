@@ -27,11 +27,11 @@ class PaymentsServiceProvider extends ServiceProvider {
 
     public function register() {
         /* Registrar ServiceProvider Internos */
-        $this->app->register('Anouar\Paypalpayment\PaypalpaymentServiceProvider');
+        $this->app->register('Ignited\LaravelOmnipay\LaravelOmnipayServiceProvider');
 
         /* Registrar Alias */
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-        $loader->alias('Paypalpayment', 'Anouar\Paypalpayment\Facades\PaypalPayment');
+        $loader->alias('Omnipay', 'Ignited\LaravelOmnipay\Facades\OmnipayFacade');
 
         $loader->alias('Pagostt', '\Solunes\Payments\App\Helpers\Pagostt');
         $loader->alias('Paypal', '\Solunes\Payments\App\Helpers\Paypal');

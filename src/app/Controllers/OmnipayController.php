@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 
 use Paypalpayment;
 
-class PaypalPaymentController extends Controller {
+class OmnipayPaymentController extends Controller {
 
 
     public function getMakeAllPayments($customer_id, $custom_app_key = NULL) {

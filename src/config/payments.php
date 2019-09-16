@@ -10,6 +10,7 @@ return [
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,
 	'bank-deposit' => false,
+	'omnipay' => true,
 	'pagostt' => true,
 	'paypal' => false,
 	'payme' => false,
@@ -69,6 +70,21 @@ return [
 	],
 
     'paypal_params' => [
+		'testing' => true, // Utilizar el ambiente de pruebas
+		'live_api_account' => 'bernardapelaez_api1.gmail.com', // Usuario de PayPal Live
+		'live_api_client' => '6HEATXCAZ9RUXC94', // Password de PayPal Live
+		'live_api_secret' => 'AaJHGLAdDj9X3X5RoVTTz4UWvpzEAVFCZSzrpljlYfsJtYzXvPUrqIGl', // Signature de PayPal Live
+		'live_access_token' => false, // Acccess Token de PayPal Live
+		'sandbox_api_account' => 'edumejia30-facilitator@gmail.com', // Account de PayPal Sandbox
+		'sandbox_api_client' => 'AbDLG2VusaA4UUZ-8S4k1dB-vcCwfQSpVbD_2tIEYxMSUUQiQRKe_HniUfj7kf53q-qlIDh8Y_y-ElXa', // Client ID de PayPal Sandbox
+		'sandbox_api_secret' => 'ENiz9hQCUgLNBguv4c_vm10B-irgzVJL6GkykEWOEfFESth-ExQZ1nMpNNmTDV_acxtTdnxlbNMB1rHF', // Secret de PayPal Sandbox
+		'sandbox_access_token' => false, // Acccess Token de PayPal Sandbox
+		'app_name' => env('APP_NAME', 'PayPal'), // Nombre enviado a Cuentas365
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+	],
+
+    'omnipay_params' => [
 		'testing' => true, // Utilizar el ambiente de pruebas
 		'live_api_account' => 'bernardapelaez_api1.gmail.com', // Usuario de PayPal Live
 		'live_api_client' => '6HEATXCAZ9RUXC94', // Password de PayPal Live
