@@ -6,7 +6,7 @@ use Validator;
 
 class OmnipayGateway {
     
-    public static function generateSalePayment($payment, $cancel_url) {
+    public static function generateSalePayment($payment, $cancel_url, $type) {
         $custom_app_key = NULL;
         if(config('payments.pagostt_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($payment->customer_id, false, false, $custom_app_key);
@@ -17,9 +17,9 @@ class OmnipayGateway {
         }
         if($customer&&$payment){
           $payment_object = \Payments::getShippingCost($payment_object, [$payment->id]);
-          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], 'omnipay', $payment_object['amount']);
-          $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $payments_transaction, $custom_app_key);
-          $api_url = \OmnipayGateway::generateTransactionQuery($payments_transaction, $parameters);
+          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $type, $payment_object['amount']);
+          $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($payments_transaction, $parameters, $type);
           if($api_url){
             return $api_url;
           } else {
@@ -31,21 +31,34 @@ class OmnipayGateway {
         }
     }
 
-    public static function generateTransactionArray($customer, $payment, $payments_transaction, $custom_app_key){
+    public static function generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key){
         $items = [];
         $amount = 0;
+        $return_url = url('inicio');
         $payment->load('payment_items');
         foreach($payment->payment_items as $payment_item){
             $amount += $payment_item->amount;
-            $items[] = ['name'=>$payment_item->name,'description'=>$payment_item->detail,'unit_amount'=>['currency_code'=>'USD','value'=>$payment_item->price],'quantity'=>$payment_item->quantity,'item_total'=>$payment_item->amount,'category'=>'PHYSICAL_GOODS'];
+            if($type=='paypal'){
+                $items[] = ['name'=>$payment_item->name,'description'=>$payment_item->detail,'unit_amount'=>['currency_code'=>'USD','value'=>$payment_item->price],'quantity'=>$payment_item->quantity,'item_total'=>$payment_item->amount,'category'=>'PHYSICAL_GOODS'];
+            } else if($type=='payu') {
+                $items[] = ['name'=>$payment_item->name,'unitPrice'=>$payment_item->price,'quantity'=>$payment_item->quantity];
+            } else {
+                $items[] = ['name'=>$payment_item->name,'description'=>$payment_item->detail,'unit_amount'=>['currency_code'=>'USD','value'=>$payment_item->price],'quantity'=>$payment_item->quantity,'item_total'=>$payment_item->amount,'category'=>'PHYSICAL_GOODS'];
+            }
         }
-        $parameters = ['reference_id'=>'PAY-'.$payment->id,'amount'=>$amount,'currency'=>'BOB','items'=>$items];
+        if($type=='paypal'){
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'BOB','items'=>$items];
+        } else if($type=='payu') {
+            $parameters = ['customerIp'=>'PAY-'.$payment->id,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items];
+        } else {
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'BOB','items'=>$items];
+        }
         return $parameters;
     }
 
-    public static function generateTransactionQuery($transaction, $parameters){
+    public static function generateTransactionQuery($transaction, $parameters, $type){
         $url = \OmnipayGateway::getUrl();
-        $response = \Omnipay::purchase($parameters)->send();
+        $response = \Omnipay::gateway($type)->purchase($parameters)->send();
         if ($response->isSuccessful()) {
             // payment was successful: update database
             print_r($response);
@@ -55,6 +68,8 @@ class OmnipayGateway {
             return $response->getRedirectUrl();
         } else {
             // payment failed: display message to customer
+            \Log::info('payment_error: '.json_encode($response->getMessage()));
+            aasd();
             return false;
         }
     }

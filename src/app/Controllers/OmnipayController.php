@@ -20,6 +20,7 @@ class OmnipayPaymentController extends Controller {
             $customer = \Customer::getCustomer($customer_id, true, false, $custom_app_key);
         }
         if($customer){
+          $type = 'payu';
           $total_amount = 0;
           $payment_ids = [];
           $items = [];
@@ -32,8 +33,8 @@ class OmnipayPaymentController extends Controller {
           }
           $payment = ['name'=>'Múltiples pagos', 'items'=>$items];
           $paypal_transaction = \OmnipayGateway::generatePaymentTransaction($customer_id, $payment_ids, $total_amount);
-          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $custom_app_key);
-          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields);
+          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $type, $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields, $type);
           if($api_url){
             return redirect($api_url);
           } else {
@@ -53,9 +54,10 @@ class OmnipayPaymentController extends Controller {
             $payment = \Customer::getPayment($payment_id, $custom_app_key);
         }
         if($customer&&$payment){
+          $type = 'payu';
           $paypal_transaction = \OmnipayGateway::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
-          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $custom_app_key);
-          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields);
+          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $type, $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields, $type);
           if($api_url){
             return redirect($api_url);
           } else {
@@ -77,11 +79,12 @@ class OmnipayPaymentController extends Controller {
             $payments = \Customer::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);
         }
         if($customer&&count($payments)>0){
+          $type = 'payu';
           $total_amount = 0;
           $payment = ['name'=>'Múltiples pagos seleccionados', 'items'=>$payments];
           $paypal_transaction = \OmnipayGateway::generatePaymentTransaction($customer_id, $payment_ids, $total_amount);
-          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $custom_app_key);
-          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields);
+          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $type, $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields, $type);
           if($api_url){
             return redirect($api_url);
           } else {

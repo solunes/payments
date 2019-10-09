@@ -6,12 +6,16 @@ use Validator;
 
 class Payments {
 
-    public static function generateSalePayment($sale, $model, $redirect) {
+    public static function generateSalePayment($sale, $model_name, $redirect, $type) {
         $payment = \Payments::generatePayment($sale);
         $cancel_url = url('payments/finish-payment/'.$payment->id);
 
-        $model = new $model;
-        $api_url = $model->generateSalePayment($payment, $cancel_url);
+        $model = new $model_name;
+        if($model_name=='\OmnipayGateway'){
+            $api_url = $model->generateSalePayment($payment, $cancel_url, $type);
+        } else {
+            $api_url = $model->generateSalePayment($payment, $cancel_url);
+        }
         if($api_url){
             return redirect($api_url);
         } else {

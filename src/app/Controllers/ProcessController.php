@@ -38,16 +38,14 @@ class ProcessController extends Controller {
     $model = '\Pagostt';
     if($type=='pagostt'){
       $model = '\Pagostt';
-    } else if($type=='paypal'){
-      $model = '\Paypal';
+    } else if($type=='paypal'||$type=='payu'||$type=='neteller'){
+      $model = '\OmnipayGateway';
     } else if($type=='payme'){
       $model = '\Payme';
-    } else if($type=='payu'){
-      $model = '\Payu';
     } else if($type=='test-payment'&&config('payments.test-payment')){
       $model = '\TestPayment';
     }
-    return \Payments::generateSalePayment($sale, $model, 'inicio');
+    return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
   }
 
 }
