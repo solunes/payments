@@ -107,7 +107,16 @@ class PagosttController extends BaseController {
             if($api_transaction){
                 return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
             } else {
-                return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente.');
+                $payment = $transaction->transaction_payment->payment;
+                $sale = $payment->sale_payment->parent;
+                $sale_item = $sale->sale_item;
+                $sale_product_bridge = $sale_item->product_bridge;
+                if($sale_product_bridge&&$sale_product_bridge->delivery_type=='subscription'){
+                    $redirect = 'account/my-subscriptions/1354351278';
+                } else {
+                    $redirect = config('payments.redirect_after_payment');
+                }
+                return redirect($redirect)->with('message_success', 'Su pago fue realizado correctamente.');
             }
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Operación no permitida.');

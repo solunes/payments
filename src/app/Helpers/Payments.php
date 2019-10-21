@@ -253,7 +253,7 @@ class Payments {
             if(isset($payment['currency_exchange'])){
                 $shipping_amount = $shipping_amount * $payment['currency_exchange'];
             }
-            if(config('customer.enable_test')==1){
+            if(config('customer.enable_test')==1&&$shipping_amount>0){
                 $payment['shipping_amount'] = 1;
             } else {
                 $payment['shipping_amount'] = $shipping_amount;
