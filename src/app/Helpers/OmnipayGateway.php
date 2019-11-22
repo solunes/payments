@@ -17,7 +17,7 @@ class OmnipayGateway {
         }
         if($customer&&$payment){
           $payment_object = \Payments::getShippingCost($payment_object, [$payment->id]);
-          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $type, $payment_object['amount']);
+          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $payment_object['amount']);
           $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key);
           $api_url = \OmnipayGateway::generateTransactionQuery($payments_transaction, $parameters, $type);
           if($api_url){
@@ -47,11 +47,11 @@ class OmnipayGateway {
             }
         }
         if($type=='paypal'){
-            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'BOB','items'=>$items];
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
         } else if($type=='payu') {
             $parameters = ['customerIp'=>'PAY-'.$payment->id,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items];
         } else {
-            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'BOB','items'=>$items];
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
         }
         return $parameters;
     }
@@ -59,12 +59,14 @@ class OmnipayGateway {
     public static function generateTransactionQuery($transaction, $parameters, $type){
         $url = \OmnipayGateway::getUrl();
         $response = \Omnipay::gateway($type)->purchase($parameters)->send();
+        \Log::info('parameters: '.json_encode($parameters));
         if ($response->isSuccessful()) {
             // payment was successful: update database
-            print_r($response);
-            return $redirectHomeSuccess;
+            \Log::info('success: '.json_encode($response));
+            return $response->getRedirectUrl();
         } else if ($response->isRedirect()) {
             // redirect to offsite payment gateway
+            \Log::info('redirects: '.json_encode($response));
             return $response->getRedirectUrl();
         } else {
             // payment failed: display message to customer

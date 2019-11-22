@@ -53,9 +53,11 @@ class PaypalPaymentController extends Controller {
             $payment = \Customer::getPayment($payment_id, $custom_app_key);
         }
         if($customer&&$payment){
-          $paypal_transaction = \OmnipayGateway::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
-          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment, $paypal_transaction, $custom_app_key);
-          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields);
+          \Log::info(json_encode($payment));
+          $payment = \Payments::getShippingCost($payment, [$payment_id]);
+          $paypal_transaction = \Payments::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
+          $final_fields = \OmnipayGateway::generateTransactionArray($customer, $payment['payment'], $paypal_transaction, 'paypal', $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($paypal_transaction, $final_fields, 'paypal');
           if($api_url){
             return redirect($api_url);
           } else {
