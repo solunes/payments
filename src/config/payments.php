@@ -6,6 +6,7 @@ return [
 	'redirect_after_payment_error' => 'admin/my-payments',
 	'sfv_version' => 1,
 	'discounts' => false,
+	'open_custom_app_keys' => false,
 
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,

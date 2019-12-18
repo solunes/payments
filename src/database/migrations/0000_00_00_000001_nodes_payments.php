@@ -70,6 +70,9 @@ class NodesPayments extends Migration
             if(config('business.companies')){
                 $table->integer('company_id')->nullable();
             }
+            if(config('business.agencies')){
+                $table->integer('agency_id')->nullable();
+            }
             $table->integer('customer_id')->nullable();
             $table->integer('currency_id')->nullable();
             $table->decimal('real_amount', 10, 2)->nullable();
