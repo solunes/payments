@@ -1,7 +1,7 @@
 {
     "name": "solunes/payments",
     "description": "Paquete adicional de Pagos para Solunes Digital.",
-    "keywords": ["laravel", "solunes", "payments"],
+    "keywords": ["laravel", "solunes", "payments","package"],
     "license": "MIT",
     "authors": [
         {
