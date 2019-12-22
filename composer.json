@@ -14,7 +14,7 @@
         "ignited/laravel-omnipay": "2.3",
         "omnipay/paypal": "*",
         "dercoder/omnipay-neteller": "*",
-        "bileto/omnipay-payu": "^0.6.0",
+        "bileto/omnipay-payu": "^0.6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "4.8.*"
