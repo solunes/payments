@@ -38,7 +38,7 @@ class ProcessController extends Controller {
     $model = '\Pagostt';
     if($type=='pagostt'){
       $model = '\Pagostt';
-    } else if($type=='paypal'||$type=='payu'||$type=='neteller'){
+    } else if($type=='paypal'||$type=='braintree'||$type=='payu'||$type=='neteller'){
       $model = '\OmnipayGateway';
     } else if($type=='payme'){
       $model = '\Payme';

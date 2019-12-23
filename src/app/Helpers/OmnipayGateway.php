@@ -32,6 +32,7 @@ class OmnipayGateway {
     }
 
     public static function generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key){
+        \Omnipay::setGateway($type);
         $items = [];
         $amount = 0;
         $return_url = url('inicio');
@@ -39,6 +40,9 @@ class OmnipayGateway {
         foreach($payment->payment_items as $payment_item){
             $amount += $payment_item->amount;
             if($type=='paypal'){
+                $items[] = ['name'=>$payment_item->name,'description'=>$payment_item->detail,'unit_amount'=>['currency_code'=>'USD','value'=>$payment_item->price],'quantity'=>$payment_item->quantity,'item_total'=>$payment_item->amount,'category'=>'PHYSICAL_GOODS'];
+            } else if($type=='braintree') {
+                // Corregir
                 $items[] = ['name'=>$payment_item->name,'description'=>$payment_item->detail,'unit_amount'=>['currency_code'=>'USD','value'=>$payment_item->price],'quantity'=>$payment_item->quantity,'item_total'=>$payment_item->amount,'category'=>'PHYSICAL_GOODS'];
             } else if($type=='payu') {
                 $items[] = ['name'=>$payment_item->name,'unitPrice'=>$payment_item->price,'quantity'=>$payment_item->quantity];
@@ -48,6 +52,21 @@ class OmnipayGateway {
         }
         if($type=='paypal'){
             $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
+        } else if($type=='braintree') {
+            \Log::info('customer: '.$customer['id']);
+            $api_customer = \Omnipay::findCustomer($customer['id'])->send();
+            if(!$api_customer){
+                $api_customer = \Omnipay::createCustomer([
+                    'customerData' => [
+                        'id' => $customer['id'],
+                        'email' => $customer['email'],
+                        'firstName' => $customer['first_name'],
+                        'lastName' => $customer['last_name']
+                    ]
+                ])->send();
+            }
+            $token = \Omnipay::clientToken()->send()->getToken();
+            $parameters = ['customerId'=>$customer['id'],'token'=>$token,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items,'token'=>$items];
         } else if($type=='payu') {
             $parameters = ['customerIp'=>'PAY-'.$payment->id,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items];
         } else {
