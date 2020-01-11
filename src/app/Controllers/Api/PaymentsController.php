@@ -45,8 +45,8 @@ class PaymentsController extends BaseController {
         } 
     }
 
-    public function getSuccessfulPayment($payment_code, $external_payment_code = NULL){
-        \Log::info('Successful transaction: '.$payment_code.' | '.$external_payment_code.' | '.json_encode(request()->all()));
+    public function getSuccessfulPayment($payment_code){
+        \Log::info('Successful transaction: '.$payment_code.' | '.json_encode(request()->all()));
         if(!$payment_code){
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
@@ -58,13 +58,14 @@ class PaymentsController extends BaseController {
         } 
         \Log::info('Transaccion aceptada, procesando: '.$payment_code);
         $api_transaction = false;
-        if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
-            $api_transaction = true;
-        } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','holding')->first()){
+        if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('status','holding')->first()){
             $api_transaction = false;
-        } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','paid')->first()){
+            \OmnipayGateway::checkExternalTransactionCode($transaction);
+        } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('status','paid')->first()){
+            \OmnipayGateway::checkExternalTransactionCode($transaction);
             return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
-        } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','cancelled')->first()){
+        } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('status','cancelled')->first()){
+            \OmnipayGateway::checkExternalTransactionCode($transaction);
             return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');

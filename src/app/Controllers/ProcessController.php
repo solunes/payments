@@ -48,4 +48,19 @@ class ProcessController extends Controller {
     return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
   }
 
+  public function getSuccessfulSalePayment($sale_id, $type) {
+    $sale = \Solunes\Sales\App\Sale::find($sale_id);
+    $model = '\Pagostt';
+    if($type=='pagostt'){
+      $model = '\Pagostt';
+    } else if($type=='paypal'||$type=='braintree'||$type=='payu'||$type=='neteller'){
+      $model = '\OmnipayGateway';
+    } else if($type=='payme'){
+      $model = '\Payme';
+    } else if($type=='test-payment'&&config('payments.test-payment')){
+      $model = '\TestPayment';
+    }
+    return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
+  }
+
 }

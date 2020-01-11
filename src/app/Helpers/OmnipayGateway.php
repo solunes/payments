@@ -17,7 +17,7 @@ class OmnipayGateway {
         }
         if($customer&&$payment){
           $payment_object = \Payments::getShippingCost($payment_object, [$payment->id]);
-          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $payment_object['amount']);
+          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $type, $payment_object['amount']);
           $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key);
           $api_url = \OmnipayGateway::generateTransactionQuery($payments_transaction, $parameters, $type);
           if($api_url){
@@ -32,11 +32,13 @@ class OmnipayGateway {
     }
 
     public static function generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key){
+        $callback_url = \Payments::generatePaymentCallback($payments_transaction->payment_code);
         \Omnipay::setGateway($type);
         $items = [];
         $amount = 0;
         $return_url = url('inicio');
         $payment->load('payment_items');
+
         foreach($payment->payment_items as $payment_item){
             $amount += $payment_item->amount;
             if($type=='paypal'){
@@ -51,7 +53,7 @@ class OmnipayGateway {
             }
         }
         if($type=='paypal'){
-            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$callback_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
         } else if($type=='braintree') {
             \Log::info('customer: '.$customer['id']);
             $api_customer = \Omnipay::findCustomer($customer['id'])->send();
@@ -66,11 +68,11 @@ class OmnipayGateway {
                 ])->send();
             }
             $token = \Omnipay::clientToken()->send()->getToken();
-            $parameters = ['customerId'=>$customer['id'],'token'=>$token,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items,'token'=>$items];
+            $parameters = ['customerId'=>$customer['id'],'token'=>$token,'continueUrl'=>$return_url,'returnUrl'=>$callback_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items,'token'=>$items];
         } else if($type=='payu') {
-            $parameters = ['customerIp'=>'PAY-'.$payment->id,'continueUrl'=>$return_url,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items];
+            $parameters = ['customerIp'=>'PAY-'.$payment->id,'continueUrl'=>$return_url,'returnUrl'=>$callback_url,'cancelUrl'=>$return_url,'amount'=>$amount,'totalAmount'=>$amount,'currencyCode'=>'USD','products'=>$items];
         } else {
-            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$return_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
+            $parameters = ['reference_id'=>'PAY-'.$payment->id,'returnUrl'=>$callback_url,'cancelUrl'=>$return_url,'amount'=>$amount,'currency'=>'USD','items'=>$items];
         }
         return $parameters;
     }
@@ -81,11 +83,27 @@ class OmnipayGateway {
         \Log::info('parameters: '.json_encode($parameters));
         if ($response->isSuccessful()) {
             // payment was successful: update database
-            \Log::info('success: '.json_encode($response));
+            if($type=='paypal'||$type=='braintree'){
+                $transaction_token = $response->getTransactionReference();
+            } else if($type=='payu'){
+                $transaction_token = $response->getTransactionId();
+            } else {
+                $transaction_token = $response->getTransactionReference();
+            }
+            \OmnipayGateway::saveTransactionToken($transaction, $transaction_token);
+            \Log::info('success '.$type.': '.json_encode($transaction_token));
             return $response->getRedirectUrl();
         } else if ($response->isRedirect()) {
             // redirect to offsite payment gateway
-            \Log::info('redirects: '.json_encode($response));
+            if($type=='paypal'||$type=='braintree'){
+                $transaction_token = $response->getTransactionReference();
+            } else if($type=='payu'){
+                $transaction_token = $response->getTransactionId();
+            } else {
+                $transaction_token = $response->getTransactionReference();
+            }
+            \OmnipayGateway::saveTransactionToken($transaction, $transaction_token);
+            \Log::info('redirect '.$type.': '.json_encode($transaction_token));
             return $response->getRedirectUrl();
         } else {
             // payment failed: display message to customer
@@ -93,6 +111,34 @@ class OmnipayGateway {
             aasd();
             return false;
         }
+    }
+
+    public static function saveTransactionToken($transaction, $transaction_token){
+        // Guardado de transaction_id generado por el canal de pago
+        $transaction->external_payment_code = $transaction_token;
+        $transaction->save();
+    }
+
+    public static function checkExternalTransactionCode($transaction){
+        //Paypal
+        if($transaction->payment_method->code=='paypal'||$transaction->payment_method->code=='braintree'){
+            if($transaction->external_payment_code==request()->input('paymentId')){
+                return true;
+            }
+        }
+        //PayU TODO
+        if($transaction->payment_method->code=='payu'){
+            if($transaction->external_payment_code==request()->input('paymentId')){
+                return true;
+            }
+        }
+        //Neteller TODO
+        if($transaction->payment_method->code=='neteller'){
+            if($transaction->external_payment_code==request()->input('paymentId')){
+                return true;
+            }
+        }
+        throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Validación de Omnipay Fallida.');
     }
 
     public static function getUrl(){
@@ -134,5 +180,14 @@ class OmnipayGateway {
         }
         return $access_token;
     }
+
+    public static function generatePaymentCallback($payment_code, $transaction_id = NULL) {
+        $url = url('api/paypal-success/'.$payment_code);
+        if($transaction_id){
+            $url .= '/'.$transaction_id.'?transaction_id='.$transaction_id;
+        }
+        return $url;
+    }
+
 
 }
