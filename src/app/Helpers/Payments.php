@@ -294,6 +294,11 @@ class Payments {
         return $transaction;
     }
 
+    public static function completePaymentTransaction($customer_id, $payment_code) {
+        $transaction = \Solunes\Payments\App\Transaction::where('customer_id',$customer_id)->where('payment_code',$payment_code)->first();
+        return $transaction;
+    }
+
     public static function calculateMultiplePayments($payments_array, $amount = 0) {
         $total_amount = 0;
         $payment_ids = [];
