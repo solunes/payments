@@ -44,6 +44,7 @@ class ProcessController extends Controller {
       $model = '\Payme';
     } else if($type=='test-payment'&&config('payments.test-payment')){
       $model = '\TestPayment';
+      asd();
     }
     return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
   }

@@ -138,6 +138,10 @@ class OmnipayGateway {
                 return true;
             }
         }
+        //Test TODO
+        if($transaction->payment_method->code=='test-payment'&&config('customer.enable_test')===true){
+            return true;
+        }
         throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Validación de Omnipay Fallida.');
     }
 
