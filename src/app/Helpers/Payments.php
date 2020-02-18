@@ -121,7 +121,7 @@ class Payments {
                         $sale_payments_array[$sale_item->id] = 0;
                     }
                     $sale_payment_item->amount = $final_amount;
-                    if(!$payment_item = \Solunes\Payments\App\PaymentItem::where('parent_id', $sale_payment->id)->where('item_type', 'sale-item')->where('item_id', $sale_item->id)->first()){
+                    if(!$payment_item = \Solunes\Payments\App\PaymentItem::where('parent_id', $payment->id)->where('item_type', 'sale-item')->where('item_id', $sale_item->id)->first()){
                         $payment_item = new \Solunes\Payments\App\PaymentItem;
                         $payment_item->parent_id = $payment->id;
                         $payment_item->item_type = 'sale-item';
@@ -291,6 +291,11 @@ class Payments {
             $transaction_payment->payment_id = $payment_id;
             $transaction_payment->save();
         }
+        return $transaction;
+    }
+
+    public static function completePaymentTransaction($customer_id, $payment_code) {
+        $transaction = \Solunes\Payments\App\Transaction::where('customer_id',$customer_id)->where('payment_code',$payment_code)->first();
         return $transaction;
     }
 

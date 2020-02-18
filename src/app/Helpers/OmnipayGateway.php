@@ -113,6 +113,43 @@ class OmnipayGateway {
         }
     }
 
+    public static function completeTransactionQuery($transaction, $payment_code, $request_object){
+        $custom_app_key = NULL;
+        $transaction_payments = $transaction->transaction_payments;
+        if(config('payments.pagostt_params.enable_bridge')){
+            $customer = \PagosttBridge::getCustomer($transaction->customer_id, false, false, $custom_app_key);
+        } else {
+            $customer = \Customer::getCustomer($transaction->customer_id, false, false, $custom_app_key);
+        }
+        $url = \OmnipayGateway::getUrl();
+        if($transaction&&$customer&&$payment_code&&count($transaction_payments)>0){
+            $success_count = 0;
+            $type = $transaction->payment_method->code;
+            foreach($transaction_payments as $transaction_payment){
+                $payment = $transaction_payment->payment;
+                $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $transaction, $type, $custom_app_key);
+                if($type=='paypal'){
+                    $parameters['transactionReference'] = $request_object['paymentId'];
+                    $parameters['payerId'] = $request_object['PayerID'];
+                }
+                $response = \Omnipay::gateway($type)->completePurchase($parameters)->send();
+                \Log::info('success payment parameters: '.json_encode($parameters));
+                if ($response->isSuccessful()) {
+                    \Log::info('payment_confirmation_sucess: '.json_encode($response->getMessage()));
+                    $success_count++;
+                } else {
+                    \Log::info('payment_confirmation_error: '.json_encode($response->getMessage()));
+                }
+            }
+            if($success_count==count($transaction_payments)){
+                return true;
+            } else {
+                throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Veificación incorrecta, segunda instancia completePurchase.');
+            }
+        }
+
+    }
+
     public static function saveTransactionToken($transaction, $transaction_token){
         // Guardado de transaction_id generado por el canal de pago
         $transaction->external_payment_code = $transaction_token;
@@ -138,8 +175,7 @@ class OmnipayGateway {
                 return true;
             }
         }
-        //Test TODO
-        if($transaction->payment_method->code=='test-payment'&&config('customer.enable_test')===true){
+        if($transaction->payment_method->code=='test-payment'&&config('customer.enable_test')==true){
             return true;
         }
         throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Validación de Omnipay Fallida.');

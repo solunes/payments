@@ -53,6 +53,10 @@ class Payment extends Model {
         return $this->belongsTo('Solunes\Business\App\Currency');
     }
     
+    public function agency() {
+        return $this->belongsTo('Solunes\Business\App\Agency');
+    }
+        
     public function company() {
         return $this->belongsTo('Solunes\Business\App\Company');
     }

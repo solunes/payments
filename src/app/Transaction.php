@@ -42,7 +42,11 @@ class Transaction extends Model {
     public function transaction_payments() {
         return $this->hasMany('Solunes\Payments\App\TransactionPayment', 'parent_id');
     }
-  
+      
+    public function processed_transaction_payments() {
+        return $this->hasMany('Solunes\Payments\App\TransactionPayment', 'parent_id')->where('processed', 1);
+    }
+    
     public function transaction_payment() {
         return $this->hasOne('Solunes\Payments\App\TransactionPayment', 'parent_id');
     }
