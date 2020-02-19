@@ -111,6 +111,21 @@ class Payment extends Model {
         return $this->hasMany('Solunes\Payments\App\TransactionPayment')->where('processed', 1);
     }
 
+    public function payment_check_inverse() {
+        return $this->hasOne('Solunes\Payments\App\Payment', 'payment_check_id', 'id');
+    }
+
+    public function payment_check() {
+        return $this->hasOne('Solunes\Payments\App\Payment', 'id', 'payment_check_id');
+    }
+    
+    public function getCanPayAttribute() {
+        if($this->message_block||$this->payment_check){
+            return false;
+        }
+        return true;
+    }
+
     public function getAmountAttribute() {
         $total = 0;
         foreach($this->payment_items as $item){

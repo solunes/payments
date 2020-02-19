@@ -90,6 +90,10 @@ class NodesPayments extends Migration
             $table->date('due_date')->nullable();
             $table->date('payment_date')->nullable();
             $table->enum('status', ['holding','paid','cancelled'])->default('holding');
+            if(config('payments.payment_blocks')){
+                $table->integer('payment_check_id')->nullable();
+                $table->string('message_block')->nullable();
+            }
             $table->integer('cashier_user_id')->nullable();
             $table->boolean('cashier_payment')->default(0);
             $table->boolean('active')->nullable()->default(1);
