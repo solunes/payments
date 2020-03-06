@@ -33,6 +33,16 @@ class ProcessController extends Controller {
     }
   }
 
+  public function getCancelPayment($payment_id) {
+    if($payment = \Solunes\Payments\App\Payment::findId($payment_id)->checkOwner()->first()){
+      $payment->status = 'cancelled';
+      $payment->save();
+      return redirect($this->prev)->with('message_success', 'Su pago fue cancelado correctamente.');
+    } else {
+      return redirect($this->prev)->with('message_error', 'Hubo un error al cancelar su pago.');
+    }
+  }
+  
   public function getFinishSalePayment($sale_id, $type) {
     $sale = \Solunes\Sales\App\Sale::find($sale_id);
     $model = '\Pagostt';
