@@ -7,6 +7,7 @@ return [
 	'sfv_version' => 1,
 	'discounts' => false,
 	'open_custom_app_keys' => false,
+	'customer_cancel_payments' => false,
 
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,

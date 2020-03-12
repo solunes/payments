@@ -15,6 +15,7 @@ Route::group(['prefix'=>'payments'], function(){
     Route::get('/make-all-payments/{customer_id}', 'ProcessController@getMakeAllPayments');
     Route::get('/make-single-payment/{customer_id}/{payment_id}', 'ProcessController@getMakeSinglePayment');
     Route::get('/payment/{payment_id}', 'ProcessController@getPayment');
+    Route::get('/cancel-payment/{payment_id}', 'ProcessController@getCancelPayment');
     Route::get('/finish-sale-payment/{sale_id}/{type}', 'ProcessController@getFinishSalePayment');
 });
 

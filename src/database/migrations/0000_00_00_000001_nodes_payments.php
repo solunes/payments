@@ -94,6 +94,9 @@ class NodesPayments extends Migration
                 $table->integer('payment_check_id')->nullable();
                 $table->string('message_block')->nullable();
             }
+            if(config('payments.customer_cancel_payments')){
+                $table->boolean('customer_cancel_payments')->nullable()->default(true);
+            }
             $table->integer('cashier_user_id')->nullable();
             $table->boolean('cashier_payment')->default(0);
             $table->boolean('active')->nullable()->default(1);
