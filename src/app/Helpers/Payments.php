@@ -75,6 +75,18 @@ class Payments {
             $payment->invoice_name = $sale->invoice_name;
             $payment->invoice_nit = $sale->invoice_nit;
             $payment->real_amount = \Business::calculate_currency($sale_payment->amount, $currency, $sale_payment->currency);
+            if(config('payments.customer_cancel_payments')){
+                if(config('payments.custom_customer_cancel_payments')){
+                    $payment->customer_cancel_payments = \CustomFunc::custom_customer_cancel_payments($sale, $payment);
+                } else {
+                    foreach($sale->sale_items as $sale_item){
+                        if($sale_item->product_bridge->type=='recurrent'){
+                            $payment->customer_cancel_payments = 1;
+                        }
+                    }
+                }
+            }
+
             if(config('payments.sfv_version')>1||config('payments.discounts')){
                 $payment->discount_amount = \Business::calculate_currency($sale_payment->discount_amount, $currency, $sale_payment->currency);
             }

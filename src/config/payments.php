@@ -2,12 +2,13 @@
 
 return [
 
-	'redirect_after_payment' => 'admin/my-payments',
-	'redirect_after_payment_error' => 'admin/my-payments',
+	'redirect_after_payment' => 'account/my-payments/456452332',
+	'redirect_after_payment_error' => 'account/my-payments/456452332',
 	'sfv_version' => 1,
 	'discounts' => false,
 	'open_custom_app_keys' => false,
 	'customer_cancel_payments' => false,
+	'custom_customer_cancel_payments' => false,
 
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,
