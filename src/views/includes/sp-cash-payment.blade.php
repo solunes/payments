@@ -9,7 +9,7 @@
       </div>
       <div class="col-md-12">
         <input name="sale_payment_id" type="hidden" value="{{ $sale_payment->id }}">
-        <input class="btn btn-site" type="submit" value="Definir Monto de Pago">
+        <input class="btn btn-site" type="submit" value="Confirmar y Finalizar Compra">
       </div>
     </div>
 {!! Form::close(); !!}

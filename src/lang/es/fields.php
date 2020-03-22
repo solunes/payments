@@ -6,6 +6,7 @@ return [
     |--------------------------------------------------------------------------
     |
     */
+    'sale_payment' => 'Pago de Venta',
     'amount' => 'Monto',
     'created_at' => 'Fecha de Creación',
     'customer' => 'Cliente',

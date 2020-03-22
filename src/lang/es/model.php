@@ -9,6 +9,7 @@ return [
     |
     */
 
+	'cash-payment' => 'Pago en Efectivo|Pagos en Efectivo',
 	'online-bank' => 'Banco Online|Bancos Online',
 	'online-bank-deposit' => 'Depósito de Banco|Depósitos de Banco',
 	'payment' => 'Pago|Pagos',

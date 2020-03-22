@@ -89,7 +89,7 @@ class NodesPayments extends Migration
             $table->date('date')->nullable();
             $table->date('due_date')->nullable();
             $table->date('payment_date')->nullable();
-            $table->enum('status', ['holding','paid','cancelled'])->default('holding');
+            $table->enum('status', ['holding','to-pay','paid','cancelled'])->default('holding');
             if(config('payments.payment_blocks')){
                 $table->integer('payment_check_id')->nullable();
                 $table->string('message_block')->nullable();

@@ -9,6 +9,7 @@ return array(
 	// CUSTOM TRANS
 	'cancelled' => 'Cancelado',
 	'holding' => 'Pendiente',
+	'to-pay' => 'En Efectivo',
 	'paid' => 'Pagado',
 	'0' => 'No',
 	'1' => 'Si',

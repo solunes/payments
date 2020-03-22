@@ -109,7 +109,7 @@ class ProcessController extends Controller {
     $sale_payment = \Solunes\Sales\App\SalePayment::find($sale_payment_id);
     if(!$validator->passes()){
       return redirect($this->prev)->with('message_error', 'Debe llenar todos los campos obligatorios.')->withErrors($validator)->withInput();
-    } else if(round($sale_payment->amount)<round(intval($request->input('amount')))) {
+    } else if(round($sale_payment->amount)>round(intval($request->input('amount')))) {
       return redirect($this->prev)->with('message_error', 'El monto introducido debe ser mayor a la compra.')->withErrors($validator)->withInput();
     } else {
       $sale = \Solunes\Sales\App\Sale::findId($sale_payment->parent_id)->checkOwner()->first();
@@ -127,6 +127,9 @@ class ProcessController extends Controller {
         $cash_payment->save();
         $sale_payment->status = 'to-pay';
         $sale_payment->save();
+        $payment = $sale_payment->payment;
+        $payment->status = 'to-pay';
+        $payment->save();
         return redirect($this->prev)->with('message_success', 'Muchas gracias, marcamos la orden como procesada y procederemos a realizar el cobro en el momento del envío.');
       } else {
         return redirect($this->prev)->with('message_error', 'Hubo un error al encontrar su pago.');
