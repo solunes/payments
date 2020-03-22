@@ -45,3 +45,8 @@ Route::group(['prefix'=>'neteller'], function(){
     Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PaypalPaymentController@getMakeSinglePayment');
     Route::post('/make-checkbox-payment', 'PaypalPaymentController@postMakeCheckboxPayment');
 });
+
+Route::group(['prefix'=>'process'], function(){
+    Route::post('/bank-deposit', 'ProcessController@postBankDeposit')->middleware('auth');
+    Route::post('/cash-payment', 'ProcessController@postCashPayment')->middleware('auth');
+});

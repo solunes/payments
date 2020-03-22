@@ -244,7 +244,7 @@ class NodesPayments extends Migration
                 $table->timestamps();
             });
         }
-        if(config('payments.online_banks')){
+        if(config('payments.online_banks')||config('payments.bank-deposit')){
             Schema::create('online_banks', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name')->nullable();
@@ -256,14 +256,23 @@ class NodesPayments extends Migration
             });
             Schema::create('online_bank_deposits', function (Blueprint $table) {
                 $table->increments('id');
-                $table->integer('online_bank_id')->unsigned();
-                $table->integer('payment_transaction_id')->unsigned();
+                $table->integer('parent_id')->unsigned();
+                $table->integer('sale_payment_id')->nullable();
+                $table->integer('transaction_id')->nullable();
                 $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
                 $table->string('image')->nullable();
                 $table->text('observations')->nullable();
                 $table->timestamps();
-                $table->foreign('online_bank_id')->references('id')->on('online_banks')->onDelete('cascade');
-                $table->foreign('payment_transaction_id')->references('id')->on('payment_transactions')->onDelete('cascade');
+                $table->foreign('parent_id')->references('id')->on('online_banks')->onDelete('cascade');
+            });
+        }
+        if(config('payments.cash')){
+            Schema::create('cash_payments', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('sale_payment_id')->nullable();
+                $table->integer('transaction_id')->nullable();
+                $table->integer('amount')->nullable();
+                $table->timestamps();
             });
         }
     }
@@ -276,6 +285,7 @@ class NodesPayments extends Migration
     public function down()
     {
         // Módulo General de PagosTT
+        Schema::dropIfExists('cash_payments');
         Schema::dropIfExists('online_bank_deposits');
         Schema::dropIfExists('online_banks');
         if(config('payments.pagostt_params.enable_preinvoice')){

@@ -13,7 +13,10 @@ class TruncateSeeder extends Seeder {
      */
     public function run()
     {
-        if(config('payments.online_banks')){
+        if(config('payments.cash')){
+            \Solunes\Payments\App\CashPayment::truncate();
+        }
+        if(config('payments.online_banks')||config('payments.bank-deposit')){
             \Solunes\Payments\App\OnlineBankDeposit::truncate();
             \Solunes\Payments\App\OnlineBank::truncate();
         }

@@ -38,6 +38,8 @@ class PaymentsServiceProvider extends ServiceProvider {
         $loader->alias('OmnipayGateway', '\Solunes\Payments\App\Helpers\OmnipayGateway');
         $loader->alias('Payments', '\Solunes\Payments\App\Helpers\Payments');
         $loader->alias('TestPayment', '\Solunes\Payments\App\Helpers\TestPayment');
+        $loader->alias('CashPayment', '\Solunes\Payments\App\Helpers\CashPayment');
+        $loader->alias('BankDeposit', '\Solunes\Payments\App\Helpers\BankDeposit');
 
         /* Comandos de Consola */
         $this->commands([

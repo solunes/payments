@@ -23,6 +23,31 @@ class Payments {
         }
     }
 
+    public static function generateManualSalePayment($payment, $cancel_url, $type) {
+        $custom_app_key = NULL;
+        if(config('payments.pagostt_params.enable_bridge')){
+            $customer = \PagosttBridge::getCustomer($payment->customer_id, false, false, $custom_app_key);
+            $payment_object = \PagosttBridge::getPayment($payment->id, $custom_app_key);
+        } else {
+            $customer = \Customer::getCustomer($payment->customer_id, false, false, $custom_app_key);
+            $payment_object = \Customer::getPayment($payment->id, $custom_app_key);
+        }
+        if($customer&&$payment){
+          $payment_object = \Payments::getShippingCost($payment_object, [$payment->id]);
+          $payments_transaction = \Payments::generatePaymentTransaction($payment->customer_id, [$payment->id], $type, $payment_object['amount']);
+          $parameters = \OmnipayGateway::generateTransactionArray($customer, $payment, $payments_transaction, $type, $custom_app_key);
+          $api_url = \OmnipayGateway::generateTransactionQuery($payments_transaction, $parameters, $type);
+          if($api_url){
+            return $api_url;
+          } else {
+            return NULL;
+          }
+        } else {
+          \Log::info('Error, no hay Customer ('.json_encode($customer).') y Payment ('.json_encode($payment).')');
+          return NULL;
+        }
+    }
+
     public static function getSalePaymentBridge($sale) {
         $item['id'] = $sale->id;
         $item['name'] = $sale->name;

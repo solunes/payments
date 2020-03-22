@@ -12,6 +12,7 @@ return [
 
 	// ACTIVE PAYMENT METHODS
 	'manual' => true,
+	'cash' => false,
 	'bank-deposit' => false,
 	'pagostt' => true,
 	'paypal' => false,

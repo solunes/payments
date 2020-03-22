@@ -1,7 +1,4 @@
-<form action="{{ url('process/finish-sale') }}" method="post">
-  <h3>PAGO PENDIENTE</h3>
-  <div class="store-form">           
+<form action="#" method="get">
     <p>Su pago aún no fue recibido en PagosTT, una vez lo haga se registrará automáticamente y efectuaremos el envío.</p>
   	<a href="{{ url('payments/finish-sale-payment/'.$sale->id.'/pagostt') }}"><div class="btn btn-site">Realizar Pago</div></a>
-  </div>
 </form>          

@@ -38,20 +38,32 @@ class MasterSeeder extends Seeder {
             $node_preinvoice = \Solunes\Master\App\Node::create(['name'=>'preinvoice', 'location'=>'payments', 'folder'=>'parameters']);
             \Solunes\Master\App\Node::create(['name'=>'preinvoice-item', 'location'=>'payments', 'folder'=>'payments', 'type'=>'child', 'parent_id'=>$node_preinvoice->id]);
         }
-        if(config('payments.online_banks')){
+        if(config('payments.online_banks')||config('payments.bank-deposit')){
             $node_online_bank = \Solunes\Master\App\Node::create(['name'=>'online-bank', 'location'=>'payments', 'folder'=>'parameters']);
             \Solunes\Master\App\Node::create(['name'=>'online-bank-deposit', 'location'=>'payments', 'folder'=>'payments', 'type'=>'child', 'parent_id'=>$node_online_bank->id]);
+            $image_folder = \Solunes\Master\App\ImageFolder::create(['site_id'=>1, 'name'=>'online-bank-image', 'extension'=>'jpg']);
+            \Solunes\Master\App\ImageSize::create(['parent_id'=>$image_folder->id, 'code'=>'normal', 'type'=>'resize', 'width'=>'400']);
+            $image_folder = \Solunes\Master\App\ImageFolder::create(['site_id'=>1, 'name'=>'online-bank-deposit-image', 'extension'=>'jpg']);
+            \Solunes\Master\App\ImageSize::create(['parent_id'=>$image_folder->id, 'code'=>'normal', 'type'=>'original', 'width'=>'600']);
+            \Solunes\Master\App\ImageSize::create(['parent_id'=>$image_folder->id, 'code'=>'thumb', 'type'=>'resize', 'width'=>'300']);
+        }
+        if(config('payments.cash')){
+            $node_cash_payment = \Solunes\Master\App\Node::create(['name'=>'cash-payment', 'location'=>'payments', 'folder'=>'parameters']);
         }
 
         // Crear Métodos de Pago por Defecto
         if(config('payments.manual')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Pago Manual', 'code'=>'manual-payment', 'model'=>NULL, 'content'=>'<p>Método de pagos registrados manualmente por el administrador.</p>', 'automatic'=>0, 'active'=>0]);
         }
+        if(config('payments.cash')){
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Pago en Efectivo', 'code'=>'cash-payment', 'model'=>'CashPayment', 'content'=>'<p>Paga directamente en efectivo cuando recibas tu pedido en tu domicilio.</p>', 'automatic'=>0, 'active'=>1]);
+        }
         if(config('payments.bank-deposit')){
-            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Transferencia Bancaria', 'code'=>'bank-deposit', 'model'=>'BankDeposit', 'content'=>'<p>Realiza una transferencia bancaria a:</p>', 'automatic'=>0]);
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Transferencia Bancaria', 'code'=>'bank-deposit', 'model'=>'BankDeposit', 'content'=>'<p>Realiza una transferencia bancaria corriente y directa.</p>', 'automatic'=>0]);
+            \Solunes\Payments\App\OnlineBank::create(['name'=>'Banco BISA', 'account_number'=>'240550-401-7', 'currency_id'=>'1', 'content'=>'<p>Caja de Ahorros a nombre de Eduardo Mejia Silva (Carnet de Identidad: 4768578 LP)</p>']);
         }
         if(config('payments.pagostt')){
-            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosTT', 'code'=>'pagostt', 'model'=>'Pagostt', 'content'=>'<p>Realiza una transferencia por medio de PagosTT. Un canal de pagos integrado a:<br>- Tarjetas de Crédito y Débito<br>- PagosNet (Más de 3000 agencias en Bolivia)<br>- Tigo Money (Puede utilizarse sin Tigo)<br>- BNB (Banca por Internet)</p>']);
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosTT', 'code'=>'pagostt', 'model'=>'Pagostt', 'content'=>'<p>Realiza una transferencia por medio de PagosTT, un canal de pagos integrado a los siguientes canales:</p><ul><li>Tarjetas de Crédito y Débito</li><li>Pagos Simple por QR</li><li>Tigo Money (Puede utilizarse sin Tigo)</li><li>BNB (Banca por Internet)</li><li>BCP (Banca por Internet)</li></ul>']);
         }
         if(config('payments.paypal')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayPal', 'code'=>'paypal', 'model'=>'Paypal', 'content'=>'<p>Realiza una transferencia por tu cuenta de PayPal o paga por tarjeta de crédito desde cualquier parte del mundo. Sabemos que tu seguridad es importante y es por eso que trabajamos con la empresa de pagos más grande del mundo.</p>', 'recurrent_payments'=>1]);
