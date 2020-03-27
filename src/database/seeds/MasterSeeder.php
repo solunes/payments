@@ -63,7 +63,7 @@ class MasterSeeder extends Seeder {
             \Solunes\Payments\App\OnlineBank::create(['name'=>'Banco BISA', 'account_number'=>'240550-401-7', 'currency_id'=>'1', 'content'=>'<p>Caja de Ahorros a nombre de Eduardo Mejia Silva (Carnet de Identidad: 4768578 LP)</p>']);
         }
         if(config('payments.pagostt')){
-            \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagosTT', 'code'=>'pagostt', 'model'=>'Pagostt', 'content'=>'<p>Realiza una transferencia por medio de PagosTT, un canal de pagos integrado a los siguientes canales:</p><ul><li>Tarjetas de Crédito y Débito</li><li>Pagos Simple por QR</li><li>Tigo Money (Puede utilizarse sin Tigo)</li><li>BNB (Banca por Internet)</li><li>BCP (Banca por Internet)</li></ul>']);
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Libelula', 'code'=>'pagostt', 'model'=>'Pagostt', 'content'=>'<p>Realiza una transferencia por medio de Libelula, un canal de pagos integrado a los siguientes canales:</p><ul><li>Tarjetas de Crédito y Débito</li><li>Pagos Simple por QR</li><li>Tigo Money (Puede utilizarse sin Tigo)</li><li>BNB (Banca por Internet)</li><li>BCP (Banca por Internet)</li></ul>']);
         }
         if(config('payments.paypal')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PayPal', 'code'=>'paypal', 'model'=>'Paypal', 'content'=>'<p>Realiza una transferencia por tu cuenta de PayPal o paga por tarjeta de crédito desde cualquier parte del mundo. Sabemos que tu seguridad es importante y es por eso que trabajamos con la empresa de pagos más grande del mundo.</p>', 'recurrent_payments'=>1]);
