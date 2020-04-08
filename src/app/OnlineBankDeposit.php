@@ -38,4 +38,8 @@ class OnlineBankDeposit extends Model {
         return $this->belongsTo('Solunes\Payments\App\OnlineBank', 'parent_id');
     }
 
+    public function sale_payment() {
+        return $this->belongsTo('Solunes\Sale\App\SalePayment');
+    }
+
 }
