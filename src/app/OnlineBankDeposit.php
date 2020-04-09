@@ -39,7 +39,11 @@ class OnlineBankDeposit extends Model {
     }
 
     public function sale_payment() {
-        return $this->belongsTo('Solunes\Sale\App\SalePayment');
+        return $this->belongsTo('Solunes\Sales\App\SalePayment');
+    }
+
+    public function transaction() {
+        return $this->belongsTo('Solunes\Payments\App\Transaction');
     }
 
 }
