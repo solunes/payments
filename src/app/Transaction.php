@@ -50,6 +50,10 @@ class Transaction extends Model {
     public function transaction_payment() {
         return $this->hasOne('Solunes\Payments\App\TransactionPayment', 'parent_id');
     }
+   
+    public function online_bank_deposit() {
+        return $this->hasOne('Solunes\Payments\App\OnlineBankDeposit');
+    }
 
     public function transaction_invoices() {
         return $this->hasMany('Solunes\Payments\App\TransactionInvoice', 'parent_id');

@@ -88,6 +88,15 @@ return [
 		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
 	],
 
+    'cash_params' => [
+		'testing' => true, // Utilizar el ambiente de pruebas
+		'redirect' => false, // Nombre enviado a Cuentas365
+		'redirect_url' => null, // Nombre enviado a Cuentas365
+		'app_name' => env('APP_NAME', 'PayPal'), // Nombre enviado a Cuentas365
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+	],
+
 	// PARAMETROS
 	'scheduled_transactions' => false,
 	'invoices' => true,

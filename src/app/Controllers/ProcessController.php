@@ -54,6 +54,8 @@ class ProcessController extends Controller {
       $model = '\Payme';
     } else if($type=='test-payment'&&config('payments.test-payment')){
       $model = '\TestPayment';
+    } else if($type=='bank-deposit'){
+      $model = '\BankDeposit';
     }
     return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
   }
@@ -69,6 +71,8 @@ class ProcessController extends Controller {
       $model = '\Payme';
     } else if($type=='test-payment'&&config('payments.test-payment')){
       $model = '\TestPayment';
+    } else if($type=='bank-deposit'){
+      $model = '\BankDeposit';
     }
     return \Payments::generateSalePayment($sale, $model, 'inicio', $type);
   }
@@ -95,7 +99,11 @@ class ProcessController extends Controller {
         $online_bank_deposit->transaction_id = $transaction->id;
         $online_bank_deposit->image = \Asset::upload_image($request->file('image'), 'online-bank-deposit-image');
         $online_bank_deposit->save();
-        return redirect($this->prev)->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
+        if(config('payments.cash_params.redirect')&&config('payments.cash_params.redirect_url')){
+          return redirect(config('payments.cash_params.redirect_url'))->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
+        } else {
+          return redirect($this->prev)->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
+        }
       } else {
         return redirect($this->prev)->with('message_error', 'Hubo un error al encontrar su pago.');
       }

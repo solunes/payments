@@ -70,7 +70,7 @@ class PaymentsController extends BaseController {
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
         }
-        if($transaction->payment_method->code!='test-payment'){
+        if($transaction->payment_method->code!='test-payment'&&$transaction->payment_method->code!='bank-deposit'){
             $request_object = request()->all();
             \OmnipayGateway::completeTransactionQuery($transaction, $payment_code,$request_object);
         }

@@ -175,6 +175,11 @@ class OmnipayGateway {
                 return true;
             }
         }
+        //Cash Payment
+        if($transaction->payment_method->code=='bank-deposit'&&$transaction->online_bank_deposit->status=='confirmed'){
+            return true;
+        }
+        //Test Payment
         if($transaction->payment_method->code=='test-payment'&&config('customer.enable_test')==true){
             return true;
         }
