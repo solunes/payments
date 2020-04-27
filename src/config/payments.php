@@ -6,6 +6,7 @@ return [
 	'redirect_after_payment_error' => 'account/my-payments/456452332',
 	'sfv_version' => 1,
 	'discounts' => false,
+	'default_payment_method_code' => 'pagostt',
 	'open_custom_app_keys' => false,
 	'customer_cancel_payments' => false,
 	'custom_customer_cancel_payments' => false,
