@@ -260,7 +260,7 @@ class NodesPayments extends Migration
                 $table->integer('sale_payment_id')->nullable();
                 $table->integer('transaction_id')->nullable();
                 $table->enum('status', ['holding','confirmed','denied'])->nullable()->default('holding');
-                $table->string('image')->nullable();
+                $table->string('file')->nullable();
                 $table->text('observations')->nullable();
                 $table->timestamps();
                 $table->foreign('parent_id')->references('id')->on('online_banks')->onDelete('cascade');

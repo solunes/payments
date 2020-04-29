@@ -13,21 +13,21 @@ class OnlineBankDeposit extends Model {
 	public static $rules_send = array(
 		'online_bank_id'=>'required',
 		'sale_payment_id'=>'required',
-		'image'=>'required|file',
+		'file'=>'required|file',
 	);
 
 	/* Creating rules */
 	public static $rules_create = array(
 		'sale_payment_id'=>'required',
 		'transaction_id'=>'required',
-		'image'=>'required',
+		'file'=>'required|file',
 	);
 
 	/* Updating rules */
 	public static $rules_edit = array(
 		'sale_payment_id'=>'required',
 		'transaction_id'=>'required',
-		'image'=>'required',
+		'file'=>'required|file',
 	);
         
     public function parent() {

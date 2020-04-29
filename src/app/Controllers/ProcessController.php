@@ -97,7 +97,7 @@ class ProcessController extends Controller {
         }
         $online_bank_deposit->parent_id = $request->input('online_bank_id');
         $online_bank_deposit->transaction_id = $transaction->id;
-        $online_bank_deposit->image = \Asset::upload_image($request->file('image'), 'online-bank-deposit-image');
+        $online_bank_deposit->file = \Asset::upload_file($request->file('file'), 'online-bank-deposit-file');
         $online_bank_deposit->save();
         if(config('payments.cash_params.redirect')&&config('payments.cash_params.redirect_url')){
           return redirect(config('payments.cash_params.redirect_url'))->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');

@@ -12,8 +12,8 @@
         <p><strong>Comprobante cargado.. Procesando pago..</strong></p>
         <p>Ya cargó el siguiente comprobante que será validado en las próximas horas, sin embargo si hubo un error le recomendamos recargarlo:</p>
         @foreach($sale_payment->online_bank_deposits as $online_bank_deposit)
-          <a target="_blank" href="{{ Asset::get_image_path('online-bank-deposit-image', 'normal', $online_bank_deposit->image) }}"> 
-            {!! Asset::get_image('online-bank-deposit-image', 'thumb', $online_bank_deposit->image) !!}
+          <a target="_blank" href="{{ Asset::get_file('online-bank-deposit-file',$online_bank_deposit->file) }}"> 
+            <button type="button" class="btn btn-site">Ver Archivo Cargado</button>
           </a>
         @endforeach
         <br><br>
@@ -27,8 +27,8 @@
     </div>
     <div class="col-md-12">
       <div class="checkout-form-list">
-        <label>Cargar imagen comprobante de depósito <span class="required">*</span></label>
-        {!! Form::file('image', NULL) !!}                   
+        <label>Cargar comprobante de depósito <span class="required">*</span></label>
+        {!! Form::file('file', NULL) !!}                   
       </div>
     </div>
     <div class="col-md-12">
