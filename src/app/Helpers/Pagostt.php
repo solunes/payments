@@ -407,6 +407,15 @@ class Pagostt {
                     $payment_registered = \Customer::transactionSuccesful($transaction);
                 }
                 \Log::info('Pago en Caja Generado: '.json_encode($payment_registered).' - '.json_encode($decoded_result));
+                $transaction->load('processed_transaction_payments');
+                if(count($transaction->processed_transaction_payments)>0){
+                    foreach($transaction->processed_transaction_payments as $transaction_payment){
+                        $payment = $transaction_payment->payment;
+                        $payment->cashier_payment = true;
+                        $payment->cashier_user_id = auth()->user()->id;
+                        $payment->save();
+                    }
+                }
                 return 'success-cashier';
             } else {
                 \Log::info('Error en PagosTT Deuda: '.json_encode($decoded_result));

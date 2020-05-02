@@ -23,9 +23,11 @@ Route::group(['prefix'=>'pagostt'], function(){
     Route::get('/create-custom-payment/{customer_id}', 'PagosttController@getCreateCustomPayment');
     Route::post('/create-custom-payment', 'PagosttController@postCreateCustomPayment');
     Route::get('/make-all-payments/{customer_id}/{custom_app_key?}', 'PagosttController@getMakeAllPayments');
+    Route::get('/make-manual-cashier-customer-all-payments/{customer_id}/{custom_app_key?}', 'PagosttController@getMakeManualCashierCustomerAllPayments');
     Route::get('/make-single-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PagosttController@getMakeSinglePayment');
     Route::get('/make-manual-cashier-payment/{customer_id}/{payment_id}/{custom_app_key?}', 'PagosttController@getMakeManualCashierPayment');
     Route::post('/make-checkbox-payment', 'PagosttController@postMakeCheckboxPayment');
+    Route::post('/make-checkbox-manual-cashier-payment', 'PagosttController@postMakeCheckboxManualCashierPayment');
 });
 
 Route::group(['prefix'=>'paypal'], function(){
