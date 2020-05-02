@@ -60,7 +60,11 @@ class Payment extends Model {
     public function company() {
         return $this->belongsTo('Solunes\Business\App\Company');
     }
-        
+                
+    public function customer_payment() {
+        return $this->belongsTo('Solunes\Customer\App\CustomerPayment');
+    }
+
     public function sale_payment() {
         return $this->hasOne('Solunes\Sales\App\SalePayment');
     }

@@ -74,6 +74,9 @@ class NodesPayments extends Migration
                 $table->integer('agency_id')->nullable();
             }
             $table->integer('customer_id')->nullable();
+            if(config('customer.payments')){
+                $table->integer('customer_payment_id')->nullable();
+            }
             $table->integer('currency_id')->nullable();
             $table->decimal('real_amount', 10, 2)->nullable();
             if(config('payments.sfv_version')>1||config('payments.discounts')){
@@ -85,6 +88,9 @@ class NodesPayments extends Migration
             $table->string('invoice_name')->nullable();
             $table->string('invoice_nit')->nullable();
             $table->string('invoice_url')->nullable();
+            if(config('payments.receipts')){
+                $table->string('receipt_url')->nullable();
+            }
             $table->string('preinvoice')->nullable();
             $table->date('date')->nullable();
             $table->date('due_date')->nullable();

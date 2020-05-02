@@ -381,4 +381,28 @@ class Payments {
         return $result;
     }
 
+    public static function generateReceipt($customer, $receipt_number, $receipt_payments) {
+        $month = date('m');
+        $months = ['01'=>'enero','02'=>'febrero','03'=>'marzo','04'=>'abril','05'=>'mayo','06'=>'junio','07'=>'julio','08'=>'agosto','09'=>'septiembre','10'=>'octubre','11'=>'noviembre','12'=>'diciembre'];
+        $date = date('d').' de '.$months[$month].' del '.date('Y');
+        $total = 0;
+        foreach($receipt_payments as $receipt_payment){
+          $total += $receipt_payment->amount;
+        }
+        $total_text = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
+        $decimal = (round(round($total,2)-floor($total),2)*100);
+        if(strlen($decimal)==1){
+          $decimal = '0'.$decimal;
+        }
+        $total_text = mb_strtoupper($total_text->format(floor($total)), 'UTF-8').' '.$decimal.'/100';
+        if(substr($total_text, 0, 3)=='MIL'){
+          $total_text = 'UN '.$total_text;
+        }
+        $pdf = \PDF::loadView('payments::pdf.receipt', ['items'=>$receipt_payments, 'customer'=>$customer, 'date'=>$date, 'receipt_number'=>$receipt_number, 'total'=>$total, 'total_text'=>$total_text]);
+        $pdf_response = $pdf->setPaper('letter')->setOrientation('portrait')->save($receipt_number.'.pdf');
+        $file_name = \Asset::upload_file($receipt_number.'.pdf', 'payment-receipt_file');
+        unlink($receipt_number.'.pdf');
+        return $file_name;
+    }
+
 }

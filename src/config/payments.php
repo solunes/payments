@@ -6,6 +6,7 @@ return [
 	'redirect_after_payment_error' => 'account/my-payments/456452332',
 	'sfv_version' => 1,
 	'discounts' => false,
+	'receipts' => false,
 	'default_payment_method_code' => 'pagostt',
 	'open_custom_app_keys' => false,
 	'customer_cancel_payments' => false,
@@ -25,7 +26,7 @@ return [
 	'test-payment' => false,
 
     'pagostt_params' => [
-		'testing' => true, // Utilizar el ambiente de pruebas
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
 		'main_server' => 'http://www.todotix.com:10365/rest/', // URL DE PagosTT para Producción
 		'test_server' => 'http://www.todotix.com:10888/rest/', // URL DE PagosTT para Pruebas
 		'salt' => 'GfFJo519zBd7gzmIBhNd0vBK2Co375bS', // Llave de encriptación, reemplazar por la del proyecto
@@ -52,7 +53,7 @@ return [
 	],
 
     'payme_params' => [
-		'testing' => true, // Utilizar el ambiente de pruebas
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
 		'min_amount' => false, // Utilizar el ambiente de pruebas para transacciones de 1 Bs
 		'main_server' => 'https://vpayment.verifika.com/', // URL DE PagosTT para Producción
 		'test_server' => 'https://integracion.alignetsac.com/', // URL DE PagosTT para Pruebas
@@ -75,7 +76,7 @@ return [
 	],
 
     'paypal_params' => [
-		'testing' => true, // Utilizar el ambiente de pruebas
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
 		'live_api_account' => 'bernardapelaez_api1.gmail.com', // Usuario de PayPal Live
 		'live_api_client' => '6HEATXCAZ9RUXC94', // Password de PayPal Live
 		'live_api_secret' => 'AaJHGLAdDj9X3X5RoVTTz4UWvpzEAVFCZSzrpljlYfsJtYzXvPUrqIGl', // Signature de PayPal Live
@@ -90,7 +91,7 @@ return [
 	],
 
     'cash_params' => [
-		'testing' => true, // Utilizar el ambiente de pruebas
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
 		'redirect' => false, // Nombre enviado a Cuentas365
 		'redirect_url' => null, // Nombre enviado a Cuentas365
 		'app_name' => env('APP_NAME', 'PayPal'), // Nombre enviado a Cuentas365
