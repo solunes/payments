@@ -66,9 +66,9 @@
       </div>
       <div class="col-sm-6 right">
         <div class="description-rcp">
-          <p style="text-align:left;"><span>NIT:</span> 1006821025</p>
+          <p style="text-align:left;"><span></span> </p>
           <p style="text-align:left;"><span>Recibo N°:</span> {{ $receipt_number }}</p>
-          <p style="text-align:left;"><span>Autorización N°:</span> 0</p>
+          <p style="text-align:left;"><br> </p>
         </div>
       </div>
     </div>

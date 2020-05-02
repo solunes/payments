@@ -90,6 +90,7 @@ class NodesPayments extends Migration
             $table->string('invoice_url')->nullable();
             if(config('payments.receipts')){
                 $table->string('receipt_url')->nullable();
+                $table->integer('receipt_code')->nullable();
             }
             $table->string('preinvoice')->nullable();
             $table->date('date')->nullable();

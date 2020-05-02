@@ -145,5 +145,10 @@ return [
     'product_serial_number' => 'Número de Serie de Producto',
     'product_sin_code' => 'Código de SIN de Producto',
     'agency' => 'Agencia',
+    'customer_payment' => 'Pago de Cliente',
+    'file' => 'Archivo',
+    'message_block' => 'Mensaje de Bloqueo de Pago',
+    'payment_check' => 'Revisión de Pago',
+    'receipt_url' => 'URL de Recibo',
 
 ];
