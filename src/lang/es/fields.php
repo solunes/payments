@@ -150,5 +150,6 @@ return [
     'message_block' => 'Mensaje de Bloqueo de Pago',
     'payment_check' => 'Revisión de Pago',
     'receipt_url' => 'URL de Recibo',
+    'receipt_code' => 'Código de Recibo',
 
 ];
