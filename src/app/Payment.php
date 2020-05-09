@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model {
     
     protected $table = 'payments';
+    protected $appends = array('amount','can_pay','can_pay_two');
     public $timestamps = true;
 
     /* Creating rules */
@@ -124,6 +125,13 @@ class Payment extends Model {
     }
     
     public function getCanPayAttribute() {
+        if($this->message_block||$this->payment_check){
+            return false;
+        }
+        return true;
+    }
+    
+    public function getCanPayTwoAttribute() {
         if($this->message_block||$this->payment_check){
             return false;
         }

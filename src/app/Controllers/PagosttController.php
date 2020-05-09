@@ -276,6 +276,9 @@ class PagosttController extends Controller {
         $custom_app_key = $request->input('custom_app_key');
         $customer_id = $request->input('customer_id');
         $payments_array = $request->input('check');
+        if(!is_array($payments_array)){
+            $payments_array = json_decode($payments_array, true);
+        }
         if(config('payments.pagostt_params.enable_bridge')){
             $customer = \PagosttBridge::getCustomer($customer_id, false, false, $custom_app_key);
             $payments = \PagosttBridge::getCheckboxPayments($customer_id, $payments_array, $custom_app_key);
