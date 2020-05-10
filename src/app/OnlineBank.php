@@ -23,7 +23,11 @@ class OnlineBank extends Model {
 		'account_number'=>'required',
 		'currency_id'=>'required',
 	);
-    
+        
+    public function agency() {
+        return $this->belongsTo('Solunes\Business\App\Agency');
+    }
+
     public function currency() {
         return $this->belongsTo('Solunes\Business\App\Currency');
     }

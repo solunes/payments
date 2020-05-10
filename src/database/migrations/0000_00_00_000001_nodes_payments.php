@@ -254,6 +254,9 @@ class NodesPayments extends Migration
         if(config('payments.online_banks')||config('payments.bank-deposit')){
             Schema::create('online_banks', function (Blueprint $table) {
                 $table->increments('id');
+                if(config('sales.sales_agency')){
+                    $table->integer('agency_id')->nullable();
+                }
                 $table->string('name')->nullable();
                 $table->string('account_number')->nullable();
                 $table->integer('currency_id')->nullable();
