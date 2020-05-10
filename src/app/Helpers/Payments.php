@@ -92,6 +92,9 @@ class Payments {
                 $payment->customer_id = $sale->customer_id;
                 $payment->currency_id = $currency->id;
             }
+            if(config('business.agencies')){
+                $payment->agency_id = $sale->agency_id;
+            }
             $payment->name = $sale->name;
             $payment->customer_name = $sale->customer->name;
             $payment->customer_email = $sale->customer->email;
