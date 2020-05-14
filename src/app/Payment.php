@@ -41,13 +41,15 @@ class Payment extends Model {
         return $query->where('status', $status);
     }
         
-    public function scopeCheckOwner($query, $customer_id) {
-        if(\Auth::check()){
-            $user_id = \Auth::user()->customers()->lists('id')->toArray();
+    public function scopeCheckOwner($query, $customer_id = NULL) {
+        if(is_array($customer_ids)&&count($customer_ids)>0){
+            //$customer_ids = $customer_ids;
+        } else if(\Auth::check()){
+            $customer_ids = \Auth::user()->customers()->lists('id')->toArray();
         } else {
-            $user_id = 0;
+            $customer_ids = [0];
         }
-        return $query->whereIn('customer_id', $customer_id);
+        return $query->whereIn('customer_id', $customer_ids);
     }
 
     public function currency() {
