@@ -2,7 +2,14 @@
   <div class="row">
     <div class="col-md-12"><p>Puede realizar su deposito a cualquiera de las siguientes cuentas bancarias:</p></div>
     <ul>
-      @foreach(\Solunes\Payments\App\OnlineBank::where('currency_id', $sale->currency_id)->get() as $online_bank)
+      <?php 
+      if(config('business.agency_payment_methods')&&$sale->agency_id){
+        $online_banks = \Solunes\Payments\App\OnlineBank::where('agency_id', $sale->agency_id)->get();
+      } else {
+        $online_banks = \Solunes\Payments\App\OnlineBank::whereNull('agency_id')->get();
+      }
+      ?>
+      @foreach($online_banks as $online_bank)
         <li><strong>{{ $online_bank->name }} - {{ $online_bank->currency->name }} - {{ $online_bank->account_number }}</strong><br>{!! $online_bank->content !!}</li>
       @endforeach
     </ul>

@@ -38,4 +38,8 @@ class PaymentMethod extends Model {
         return $query->orderBy('id', 'ASC');
     }
 
+    public function agency_payment_method() {
+        return $this->belongsToMany('Solunes\Payments\App\PaymentMethod', 'agency_payment_method', 'payment_method_id', 'agency_id');
+    }
+   
 }
