@@ -85,6 +85,7 @@ class ProcessController extends Controller {
       return redirect($this->prev)->with('message_error', 'Debe llenar todos los campos obligatorios.')->withErrors($validator)->withInput();
     } else {
       $sale_payment = \Solunes\Sales\App\SalePayment::find($sale_payment_id);
+      $sale = $sale_payment->sale;
       if($sale_payment->status=='holding'&&$sale = \Solunes\Sales\App\Sale::findId($sale_payment->parent_id)->checkOwner()->first()){
         $cancel_url = url('');
         $transaction = \BankDeposit::generateSalePayment($sale_payment->payment, $cancel_url);
@@ -100,6 +101,9 @@ class ProcessController extends Controller {
         $online_bank_deposit->file = \Asset::upload_file($request->file('file'), 'online-bank-deposit-file');
         $online_bank_deposit->save();
         if(config('payments.cash_params.redirect')&&config('payments.cash_params.redirect_url')){
+          if(config('payments.notify_agency_on_payment')&&$sale->agency){
+            \FuncNode::make_email('verify-payment', [$sale->agency->email], []);
+          }
           return redirect(config('payments.cash_params.redirect_url'))->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
         } else {
           return redirect($this->prev)->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
@@ -145,6 +149,9 @@ class ProcessController extends Controller {
         }
         if(config('customer.custom_successful_payment')){
             \CustomFunc::customer_successful_payment($payment);
+        }
+        if(config('payments.notify_agency_on_payment')&&$sale->agency){
+          \FuncNode::make_email('successful-payment', [$sale->agency->email], []);
         }
         return redirect($this->prev)->with('message_success', 'Muchas gracias, marcamos la orden como procesada y procederemos a realizar el cobro en el momento del envío.');
       } else {

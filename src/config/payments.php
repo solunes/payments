@@ -8,6 +8,7 @@ return [
 	'discounts' => false,
 	'receipts' => false,
 	'default_payment_method_code' => 'pagostt',
+	'notify_agency_on_payment' => false,
 	'open_custom_app_keys' => false,
 	'customer_cancel_payments' => false,
 	'custom_customer_cancel_payments' => false,
