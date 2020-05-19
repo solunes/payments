@@ -39,7 +39,7 @@ class PaymentMethod extends Model {
     }
 
     public function agency_payment_method() {
-        return $this->belongsToMany('Solunes\Payments\App\PaymentMethod', 'agency_payment_method', 'payment_method_id', 'agency_id');
+        return $this->belongsToMany('Solunes\Business\App\Agency', 'agency_payment_method', 'payment_method_id', 'agency_id');
     }
    
 }

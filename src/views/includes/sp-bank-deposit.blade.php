@@ -5,8 +5,10 @@
       <?php 
       if(config('business.agency_payment_methods')&&$sale->agency_id){
         $online_banks = \Solunes\Payments\App\OnlineBank::where('agency_id', $sale->agency_id)->get();
+        $online_banks_array = \Solunes\Payments\App\OnlineBank::where('agency_id', $sale->agency_id)->get()->lists('full_name','id')->toArray();
       } else {
         $online_banks = \Solunes\Payments\App\OnlineBank::whereNull('agency_id')->get();
+        $online_banks_array = \Solunes\Payments\App\OnlineBank::whereNull('agency_id')->get()->lists('full_name','id')->toArray();
       }
       ?>
       @foreach($online_banks as $online_bank)
@@ -29,7 +31,7 @@
     <div class="col-md-12">
       <div class="checkout-form-list">
         <label>Seleccione la cuenta bancaria a la que está depositando <span class="required">*</span></label>
-        {!! Form::select('online_bank_id', \Solunes\Payments\App\OnlineBank::where('currency_id', $sale->currency_id)->get()->lists('full_name','id')->toArray(), NULL) !!}                   
+        {!! Form::select('online_bank_id', $online_banks_array, NULL) !!}                   
       </div>
     </div>
     <div class="col-md-12">
