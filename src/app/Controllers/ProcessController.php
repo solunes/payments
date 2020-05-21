@@ -104,9 +104,9 @@ class ProcessController extends Controller {
           if(config('payments.notify_agency_on_payment')&&$sale->agency){
             \FuncNode::make_email('verify-payment', [$sale->agency->email], []);
           }
-          return redirect(config('payments.cash_params.redirect_url'))->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
+          return redirect(config('payments.cash_params.redirect_url'))->with('message_success', 'Su pago fue recibido, deberá ser confirmado en las próximas horas y le enviaremos un email confirmando la recepción del pago. ¡Muchas gracias!');
         } else {
-          return redirect($this->prev)->with('message_success', 'Su pago fue recibido, sin embargo aún debe ser confirmado por nuestros administradores.');
+          return redirect($this->prev)->with('message_success', 'Su pago fue recibido, deberá ser confirmado en las próximas horas y le enviaremos un email confirmando la recepción del pago. ¡Muchas gracias!');
         }
       } else {
         return redirect($this->prev)->with('message_error', 'Hubo un error al encontrar su pago.');
