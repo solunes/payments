@@ -41,7 +41,7 @@ class Payment extends Model {
         return $query->where('status', $status);
     }
         
-    public function scopeCheckOwner($query, $customer_id = NULL) {
+    public function scopeCheckOwner($query, $customer_ids = NULL) {
         if(is_array($customer_ids)&&count($customer_ids)>0){
             //$customer_ids = $customer_ids;
         } else if(\Auth::check()){
