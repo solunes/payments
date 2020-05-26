@@ -142,16 +142,9 @@ class ProcessController extends Controller {
         $payment = $sale_payment->payment;
         $payment->status = 'to-pay';
         $payment->save();
-        $sale->status = 'pending-delivery';
-        $sale->save();
-        if(config('sales.send_confirmation_purchase_email')){
-          \Sales::sendConfirmationSaleEmail($sale, $sale->customer);
-        }
+        \Sales::customerSuccessfulPayment($sale, $sale->customer);
         if(config('customer.custom_successful_payment')){
             \CustomFunc::customer_successful_payment($payment);
-        }
-        if(config('payments.notify_agency_on_payment')&&$sale->agency){
-          \FuncNode::make_email('successful-payment', [$sale->agency->email], []);
         }
         return redirect($this->prev)->with('message_success', 'Muchas gracias, marcamos la orden como procesada y procederemos a realizar el cobro en el momento del envío.');
       } else {

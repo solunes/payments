@@ -76,6 +76,7 @@ class PaymentsController extends BaseController {
         }
         $transaction->status = 'paid';
         $transaction->save();
+        \Log::info('transaccion procesada a full');
         if(config('payments.pagostt_params.enable_bridge')){
             $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
         } else {
