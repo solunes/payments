@@ -139,6 +139,8 @@ class ProcessController extends Controller {
         $cash_payment->save();
         $sale_payment->status = 'to-pay';
         $sale_payment->save();
+        $sale->status = 'pending-delivery';
+        $sale->save();
         $payment = $sale_payment->payment;
         $payment->status = 'to-pay';
         $payment->save();
