@@ -388,11 +388,17 @@ class Pagostt {
         $url = \Pagostt::queryTransactiontUrl('deuda/registrar');
         \Log::info('pagostt_final_fields: '.json_encode($final_fields)); // OCULTAR
         $decoded_result = \Pagostt::queryCurlTransaction($url, $final_fields);
-        if(!isset($decoded_result->url_pasarela_pagos)){
+        if(!isset($decoded_result->url_pasarela_pagos)||!$decoded_result->url_pasarela_pagos){
+            \Log::info('Iniciando Pago en Caja: '.json_encode($decoded_result));
             if($decoded_result->error==0&&isset($decoded_result->id_transaccion)){
-                \Log::info('Iniciando Pago en Caja: '.json_encode($final_fields));
                 if(isset($decoded_result->facturas_electronicas)){
                     foreach($decoded_result->facturas_electronicas as $factura_electronica){
+                        \Pagostt::putInoviceParametersCashier($transaction, $factura_electronica);
+                        \Pagostt::putPaymentInvoice($transaction);
+                    }
+                }
+                if(isset($decoded_result->datos)){
+                    foreach($decoded_result->datos as $factura_electronica){
                         \Pagostt::putInoviceParametersCashier($transaction, $factura_electronica);
                         \Pagostt::putPaymentInvoice($transaction);
                     }
