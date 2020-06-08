@@ -189,10 +189,10 @@ class Pagostt {
             $array['codigo_interno'] = $payment_item->product_internal_code;
             $array['serie_producto'] = $payment_item->product_serial_number;
         }
-        /*if(config('payments.sfv_version')>1||config('payments.discounts')){
+        if(config('payments.sfv_version')>1||config('payments.discounts')){
             $array['descuento_unitario'] = $payment_item->discount_price;
             $array['descuento_total'] = $payment_item->discount_amount;
-        }*/
+        }
         return $array;
     }
 
@@ -328,6 +328,9 @@ class Pagostt {
         }
         if(isset($payment['has_invoice'])){
             $final_fields['emite_factura'] = $payment['has_invoice'];
+        }
+        if(isset($payment['currency'])){
+            $final_fields['moneda'] = $payment['currency'];
         }
         if(isset($payment['invoice_type'])){
             $final_fields['factura_tipo'] = $payment['invoice_type'];
