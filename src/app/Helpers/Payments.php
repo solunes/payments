@@ -96,8 +96,13 @@ class Payments {
                 $payment->agency_id = $sale->agency_id;
             }
             $payment->name = $sale->name;
-            $payment->customer_name = $sale->customer->name;
-            $payment->customer_email = $sale->customer->email;
+            if($sale->customer){
+                $payment->customer_name = $sale->customer->name;
+                $payment->customer_email = $sale->customer->email;
+            } else {
+                $payment->customer_name = 'Indefinido';
+                $payment->customer_email = config('customer.global_email');
+            }
             $payment->date = $sale->created_at;
             $payment->invoice = $sale->invoice;
             $payment->invoice_name = $sale->invoice_name;
