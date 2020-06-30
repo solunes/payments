@@ -395,7 +395,7 @@ class Payments {
         $date = date('d').' de '.$months[$month].' del '.date('Y');
         $total = 0;
         foreach($receipt_payments as $receipt_payment){
-          $total += $receipt_payment->amount;
+          $total += $receipt_payment->amount - $receipt_payment->discount_amount;
         }
         $total_text = new \NumberFormatter('es', \NumberFormatter::SPELLOUT);
         $decimal = (round(round($total,2)-floor($total),2)*100);

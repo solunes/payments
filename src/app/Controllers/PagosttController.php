@@ -77,7 +77,7 @@ class PagosttController extends Controller {
         $sale_item->price = $subprice;
         if(config('payments.sfv_version')>1||config('payments.discounts')){
     	   $sale_item->discount_price = $request->input('discount_price');
-            $sale_item->discount_amount = $request->input('discount_price') * $request->input('quantity');
+           $sale_item->discount_amount = $request->input('discount_price') * $request->input('quantity');
         }
     	$sale_item->quantity = $request->input('quantity');
     	$sale_item->total = $subprice * $request->input('quantity');

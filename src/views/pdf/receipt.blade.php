@@ -106,10 +106,16 @@
       </thead>
       <tbody>
         @foreach($items as $item)
+          @foreach($item->payment_items as $payment_item)
             <tr>
-              <td>{!! $item->name !!}</td>
-              <td style="white-space: nowrap;">Bs. {{ number_format(round($item->amount, 2),2) }}</td>
+              <td>{!! $payment_item->name !!}
+                @if($payment_item->discount_price>0)
+                  <br>Descuento: Bs. {{ number_format($payment_item->discount_price, 2) }}
+                @endif
+              </td>
+              <td style="white-space: nowrap;">Bs. {{ number_format(round($item->amount - $item->discount_amount, 2),2) }}</td>
             </tr>
+          @endforeach
         @endforeach
       </tbody>
       <tfoot>
