@@ -113,7 +113,7 @@
                   <br>Descuento: Bs. {{ number_format($payment_item->discount_price, 2) }}
                 @endif
               </td>
-              <td style="white-space: nowrap;">Bs. {{ number_format(round($item->amount - $item->discount_amount, 2),2) }}</td>
+              <td style="white-space: nowrap;">Bs. {{ number_format(round($payment_item->amount - $payment_item->discount_amount, 2),2) }}</td>
             </tr>
           @endforeach
         @endforeach
