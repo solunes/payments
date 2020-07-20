@@ -120,9 +120,9 @@ class Payments {
                 }
             }
 
-            if(config('payments.sfv_version')>1||config('payments.discounts')){
-                $payment->discount_amount = \Business::calculate_currency($sale_payment->discount_amount, $currency, $sale_payment->currency);
-            }
+            /*if(config('payments.sfv_version')>1||config('payments.discounts')){
+                $payment->discount_amount = \Business::calculate_currency($sale_payment->discount_amount - $sale->order_amount, $currency, $sale_payment->currency);
+            }*/
             $payment->status = 'holding';
             if(config('payments.sfv_version')>1){
                 $payment->commerce_user_code = $sale_payment->commerce_user_code;
@@ -135,7 +135,7 @@ class Payments {
                 $payment->card_number = $sale_payment->card_number;
             }
             if(config('payments.sfv_version')>1||config('payments.discounts')){
-                $payment->discount_amount = $sale_payment->discount_amount;
+                $payment->discount_amount = $sale_payment->amount - $sale->order_amount;
             }
             $payment->save();
 

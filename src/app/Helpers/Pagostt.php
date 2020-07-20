@@ -350,7 +350,7 @@ class Pagostt {
             $final_fields['monto_total'] = 0;
         }*/
         if(isset($payment['discount_amount'])){
-            $final_fields['monto_descuento'] = $payment['discount_amount'];
+            $final_fields['descuento_global'] = $payment['discount_amount'];
         }/* else {
             $final_fields['monto_descuento'] = 0;
         }*/
