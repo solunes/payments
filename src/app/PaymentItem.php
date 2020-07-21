@@ -36,7 +36,7 @@ class PaymentItem extends Model {
     }
 
     public function getAmountAttribute() {
-        return ($this->price * $this->quantity) + $this->tax;
+        return (floatval($this->price) * floatval($this->quantity)) + floatval($this->tax);
     }
 
 }
