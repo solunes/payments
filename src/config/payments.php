@@ -44,6 +44,7 @@ return [
 		'enable_cashier' => false, // Definir si se habilita el pago en caja
 		'cashier_payments' => ['default'=>NULL], // Definir la llave de pagos en caja de PagosTT para la compañia
 		'test_cashier_payments' => ['default'=>'e93a676e14f672667ab6f7fe863061822331b13b258afd8cb14e0e5cd46c6ff1'], // Definir la llave de pagos en caja de PagosTT para la compañia en Modo Testing
+		'enable_custom_func' => false, // Habilitar si se habilita el CustomFunc
 		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
 		'enable_cycle' => false, // Habilitar la facturación por ciclos
 		'enable_preinvoice' => false, // Habilitar la generación de prefacturas

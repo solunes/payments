@@ -384,6 +384,9 @@ class Pagostt {
         if(isset($payment['metadata'])){
             $final_fields['lineas_metadatos'] = $payment['metadata'];
         }
+        if(config('payments.pagostt_params.enable_custom_func')){
+            $final_fields = \CustomFunc::pagostt_params($final_fields, $customer, $payment, $transaction, $custom_app_key, $app_key, $cashier_app_key);
+        }
         return $final_fields;
     }
 
