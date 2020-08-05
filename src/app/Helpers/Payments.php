@@ -407,10 +407,10 @@ class Payments {
           $total_text = 'UN '.$total_text;
         }
         $pdf = \PDF::loadView('payments::pdf.receipt', ['items'=>$receipt_payments, 'customer'=>$customer, 'date'=>$date, 'receipt_number'=>$receipt_number, 'total'=>$total, 'total_text'=>$total_text]);
-        $file_name = rand(10000,99999).$receipt_number.'.pdf';
-        $pdf_response = $pdf->setPaper('letter')->setOrientation('portrait')->save($file_name);
-        $file_name = \Asset::upload_file($file_name, 'payment-receipt_file');
-        unlink($file_name);
+        $original_file_name = rand(10000,99999).$receipt_number.'.pdf';
+        $pdf_response = $pdf->setPaper('letter')->setOrientation('portrait')->save($original_file_name);
+        $file_name = \Asset::upload_file($original_file_name, 'payment-receipt_file');
+        unlink($original_file_name);
         return $file_name;
     }
 
