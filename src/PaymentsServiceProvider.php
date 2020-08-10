@@ -34,6 +34,7 @@ class PaymentsServiceProvider extends ServiceProvider {
         $loader->alias('Omnipay', 'Ignited\LaravelOmnipay\Facades\OmnipayFacade');
 
         $loader->alias('Pagostt', '\Solunes\Payments\App\Helpers\Pagostt');
+        $loader->alias('Pagatodo', '\Solunes\Payments\App\Helpers\Pagatodo');
         $loader->alias('Payme', '\Solunes\Payments\App\Helpers\Payme');
         $loader->alias('OmnipayGateway', '\Solunes\Payments\App\Helpers\OmnipayGateway');
         $loader->alias('Payments', '\Solunes\Payments\App\Helpers\Payments');

@@ -24,6 +24,7 @@ return [
 	'neteller' => false,
 	'tigo-money' => false,
 	'pagosnet' => false,
+	'pagatodo' => false,
 	'test-payment' => false,
 
     'pagostt_params' => [
@@ -90,6 +91,27 @@ return [
 		'app_name' => env('APP_NAME', 'PayPal'), // Nombre enviado a Cuentas365
 		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
 		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+	],
+
+    'pagatodo_params' => [
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
+		'main_server' => 'https://lyon.pagatodo360.net:4000/', // URL DE PagosTT para Producción
+		'test_server' => 'https://lyon.pagatodo360.net:4000/', // URL DE PagosTT para Pruebas
+		'user' => 'test', // AppKey generado por PagosTT
+		'pass' => 'test', // AppKey generado por PagosTT
+		'test_user' => 'test', // AppKey generado por PagosTT
+		'test_pass' => 'test', // AppKey generado por PagosTT
+		'custom_users' => ['default'=>'test'], // AppKey personalizados para ser utilizados
+		'custom_test_users' => ['default'=>'test'], // AppKey personalizados para ser utilizados en modo Testing
+		'custom_passwords' => ['default'=>'test'], // AppKey personalizados para ser utilizados
+		'custom_test_passwords' => ['default'=>'test'], // AppKey personalizados para ser utilizados en 
+		'idempresa' => 31, // Notificar la recepción del pago por correo electrónico
+		'idempresa_test' => 31, // Notificar la recepción del pago por correo electrónico
+		'notify_email' => true, // Notificar la recepción del pago por correo electrónico
+		'enable_custom_func' => false, // Habilitar si se habilita el CustomFunc
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+		'customer_all_payments' => true, // Habilitar si se desea aceptar pagos en masa
 	],
 
     'cash_params' => [
