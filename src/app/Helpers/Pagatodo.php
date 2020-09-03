@@ -61,7 +61,9 @@ class Pagatodo {
     public static function getSessionQuery($appuser, $apppassword) {
         $url = \Pagatodo::queryTransactiontUrl('SessionRest');
         $final_fields = ['user'=>$appuser, 'pass'=>$apppassword];
+        \Log::info('final_fields: '.json_encode($final_fields));
         $response = \Pagatodo::queryCurlTransaction($url, $final_fields);
+        \Log::info(json_encode($response));
         if($response->token){
             return $response->token;
         }
@@ -138,8 +140,12 @@ class Pagatodo {
     }
 
     public static function generateTransactionArray($customer, $payment, $transaction, $custom_apptoken = 'default', $apptoken = NULL) {
-        $callback_url = \Pagatodo::generatePaymentCallback($transaction->payment_code);
+        $success_callback_url = \Pagatodo::generateRedirectCallback('success',$transaction->id);
+        $error_callback_url = \Pagatodo::generateRedirectCallback('error',$transaction->id);
+        $callback_url = \Pagatodo::generatePaymentCallback();
         $apptoken = \Pagatodo::getSession($apptoken, $custom_apptoken);
+        $transaction->external_payment_code = $apptoken;
+        $transaction->save();
         if(config('payments.pagatodo_params.finish_payment_verification')){
             $payment = \PagatodoBridge::finishPaymentVerification($payment, $transaction);
         }
@@ -162,8 +168,13 @@ class Pagatodo {
             "correo" => $customer['email'],
             "idempresa" => \Pagatodo::getCompanyId(),
             "descripcion_general" => $nit_name, // CAMBIAR POR RECIBO O PAYMENT ID
-            "nro_recibo" => 1, // CAMBIAR POR RECIBO O PAYMENT ID
+            "nro_recibo" => $transaction->id, // CAMBIAR POR TRANSACTION ID
             "nit" => $nit_number,
+            "pdata01" => $transaction->payment_code,
+            "pdata02" => $callback_url,
+            "pdata03" => $success_callback_url,
+            //"pdata04" => $error_callback_url, // FECHA DE VENCIMIENTO
+            //"pdata05" => $error_callback_url,
         );
         if(isset($payment['customer_ci_number'])){
             $final_fields['tipo_documento'] = 1;
@@ -197,7 +208,7 @@ class Pagatodo {
             \Log::info('detalle: '.$payment_item);
             $decode_payment_item = json_decode($payment_item, true);
             $total += $decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'];
-            $detalle[] = ['descripcion_item'=>$decode_payment_item['concepto'],'cantidad'=>$decode_payment_item['cantidad'],'item'=>'ITEM-1','precio_unitario'=>round($decode_payment_item['costo_unitario'],2),'sub_total'=>round($decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'],2)];
+            $detalle[] = ['descripcion_item'=>$decode_payment_item['concepto'],'cantidad'=>$decode_payment_item['cantidad'],'item'=>$decode_payment_item['concepto'],'precio_unitario'=>round($decode_payment_item['costo_unitario'],2),'sub_total'=>round($decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'],2)];
         }
         $final_fields['detalle'] = $detalle;
         $final_fields['moneda'] = 1;
@@ -205,6 +216,7 @@ class Pagatodo {
         if(config('payments.pagatodo_params.enable_custom_func')){
             $final_fields = \CustomFunc::pagatodo_params($final_fields, $customer, $payment, $transaction, $custom_app_key, $app_key, $cashier_app_key);
         }
+        \Log::info(json_encode($final_fields));
         return $final_fields;
     }
 
@@ -213,7 +225,7 @@ class Pagatodo {
         $decoded_result = \Pagatodo::queryCurlTransaction($url, $final_fields);
         \Log::info('decoded_result: '.json_encode($decoded_result)); // OCULTAR
         // Guardado de transaction_id generado por PagosTT
-        $transaction->external_payment_code = rand(10000,99999); // DEFINIR SI GUARDAR ALGO
+        //$transaction->external_payment_code = rand(10000,99999); // DEFINIR SI GUARDAR ALGO
         $transaction->save();
         
         // URL para redireccionar
@@ -235,11 +247,13 @@ class Pagatodo {
         return ['items'=>$items, 'payment_ids'=>$payment_ids, 'total_amount'=>$amount];
     }
 
-    public static function generatePaymentCallback($payment_code, $transaction_id = NULL) {
-        $url = url('api/pagatodo-confirmado/'.$payment_code);
-        if($transaction_id){
-            $url .= '/'.$transaction_id.'?transaction_id='.$transaction_id;
-        }
+    public static function generateRedirectCallback($status, $transaction_id) {
+        $url = url('api/pagatodo-redireccion/'.$status.'/'.$transaction_id);
+        return $url;
+    }
+
+    public static function generatePaymentCallback() {
+        $url = url('api/pagatodo-callback');
         return $url;
     }
 

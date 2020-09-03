@@ -45,40 +45,54 @@ class PagatodoController extends BaseController {
         } 
     }
 
-    public function getSuccessfulPayment($payment_code, $external_payment_code = NULL){
-        \Log::info('Successful transaction: '.$payment_code.' | '.$external_payment_code.' | '.json_encode(request()->all()));
+    public function getSuccessfulPayment($status, $transaction_id){
+        \Log::info('Payment redirection: '.$status.' | '.$transaction_id);
+        if(!$transaction_id){
+            if($status=='success'){
+                \Log::info('Transacción marcada como exitosa.');
+                return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
+            } 
+            if($status=='error'){
+                \Log::info('Transacción marcada como erronea.');
+                return redirect(config('payments.redirect_after_payment'))->with('message_error', 'Hubo un error al procesar el pago');
+            } 
+            \Log::info('No se cuenta con un payment_code.');
+            throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
+        }
+    }
+
+    public function postSuccessfulPayment(Request $request){
+        \Log::info(json_encode($request));
+        $token = $request->input('token');
+        $nro_recibo = $request->input('nro_recibo');
+        $estado = $request->input('estado');
+        $descripcion = $request->input('descripcion');
+        \Log::info('Successful transaction: '.$estado.' | '.$token.' | '.$descripcion.' | '.$nro_recibo);
+        $payment_code = $token;
+        $external_payment_code = $nro_recibo;
         if(!$payment_code){
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
         }
-        /*$checkInvoice = \Pagostt::checkInvoice($payment_code, request()->has('invoice_id'));
-        if(!$checkInvoice){
-            \Log::info('Los datos de facturación no son correctos.');
-            throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Los datos de facturación no son correctos.');
-        }*/
         $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
         if(!$checkItem){
             \Log::info('Transacción encontrada, no se accede de nuevo.');
             return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
         } 
         \Log::info('Transaccion aceptada, procesando: '.$payment_code);
-        if(request()->has('transaction_id')){
+        if($token&&$nro_recibo&&$estado&&$descripcion&&$estado=='PAG'){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = true;
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','holding')->first()){
+            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = false;
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','paid')->first()){
-                //\Pagostt::putInoviceParameters($transaction);
-                //\Pagostt::putPaymentInvoice($transaction);
+            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','paid')->first()){
                 return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','cancelled')->first()){
+            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','cancelled')->first()){
                 return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
             } else {
                 throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
             }
-            //\Pagostt::putInoviceParameters($transaction);
-            //\Pagostt::putPaymentInvoice($transaction);
             $transaction->status = 'paid';
             $transaction->save();
             if(config('payments.pagatodo_params.enable_bridge')){
