@@ -80,7 +80,7 @@ class PagatodoController extends BaseController {
             return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
         } 
         \Log::info('Transaccion aceptada, procesando: '.$payment_code);
-        if($token&&$nro_recibo&&$estado&&$descripcion&&$estado=='PAG'){
+        if($token&&$nro_recibo&&$estado&&$estado=='PAG'){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = true;
