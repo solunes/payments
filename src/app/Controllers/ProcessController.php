@@ -118,6 +118,11 @@ class ProcessController extends Controller {
 
   /* Ruta POST para deposito bancario */
   public function postCashPayment(Request $request) {
+    if($request->has('api_request')&&$request->input('api_request')==true){
+      $api_request = true;
+    } else {
+      $api_request = false;
+    }
     $validator = \Validator::make($request->all(), \Solunes\Payments\App\CashPayment::$rules_send);
     $sale_payment_id = $request->input('sale_payment_id');
     $sale_payment = \Solunes\Sales\App\SalePayment::find($sale_payment_id);
@@ -150,8 +155,14 @@ class ProcessController extends Controller {
         if(config('customer.custom_successful_payment')){
             \CustomFunc::customer_successful_payment($payment);
         }
+        if($api_request){
+          return ['success'=>true,'message'=>'Su pedido fue procesado correctamente y será enviado en la fecha y hora solicitada.'];
+        }
         return redirect($this->prev)->with('message_success', 'Muchas gracias, marcamos la orden como procesada y procederemos a realizar el cobro en el momento del envío.');
       } else {
+        if($api_request){
+          return ['success'=>false,'message'=>'Hubo un error al encontrar su pago.'];
+        }
         return redirect($this->prev)->with('message_error', 'Hubo un error al encontrar su pago.');
       }
     }
