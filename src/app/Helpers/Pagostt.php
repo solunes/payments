@@ -284,6 +284,9 @@ class Pagostt {
         $app_key = \Pagostt::getAppKey($app_key, $custom_app_key);
         if(config('payments.pagostt_params.finish_payment_verification')){
             $payment = \PagosttBridge::finishPaymentVerification($payment, $transaction);
+            if(isset($payment['cancel_payment'])){
+                return $payment;
+            }
         }
         if(isset($payment['nit_name'])){
             $nit_name = $payment['nit_name'];

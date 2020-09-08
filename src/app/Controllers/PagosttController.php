@@ -149,6 +149,9 @@ class PagosttController extends Controller {
 	      $payment = \Payments::getShippingCost($payment, $calc_array['payment_ids']);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
+          if(isset($final_fields['cancel_payment'])){
+            return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+          }
 	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
 	      if($api_url){
 	      	if($api_url=='success-cashier'){
@@ -187,6 +190,9 @@ class PagosttController extends Controller {
               $payment['canal_caja_usuario'] = $cashier_data['usuario'];
               $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
               $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
+              if(isset($final_fields['cancel_payment'])){
+                return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+              }
               $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
               if($api_url){
                 if($api_url=='success-cashier'){
@@ -217,7 +223,10 @@ class PagosttController extends Controller {
 	      $payment = \Payments::getShippingCost($payment, [$payment_id]);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
-	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
+          if(isset($final_fields['cancel_payment'])){
+            return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+          }
+          $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
 	      if($api_url){
 	      	if($api_url=='success-cashier'){
 	      		return redirect($this->prev)->with('message_success', 'Su pago en caja fue procesado correctamente.');
@@ -254,7 +263,10 @@ class PagosttController extends Controller {
 		      $payment['canal_caja_usuario'] = $cashier_data['usuario'];
 		      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, [$payment_id], $payment['amount']);
 		      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
-		      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
+              if(isset($final_fields['cancel_payment'])){
+                return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+              }
+              $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
 		      if($api_url){
 		      	if($api_url=='success-cashier'){
 		      		return redirect($this->prev)->with('message_success', 'Su pago en caja fue procesado correctamente.');
@@ -293,7 +305,10 @@ class PagosttController extends Controller {
 	      $payment = \Payments::getShippingCost($payment, $calc_array['payment_ids']);
 	      $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
 	      $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
-	      $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
+          if(isset($final_fields['cancel_payment'])){
+            return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+          }
+          $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
 	      if($api_url){
 	      	if($api_url=='success-cashier'){
 	      		return redirect($this->prev)->with('message_success', 'Su pago en caja fue procesado correctamente.');
@@ -336,6 +351,9 @@ class PagosttController extends Controller {
               $payment['canal_caja_usuario'] = $cashier_data['usuario'];
               $pagostt_transaction = \Pagostt::generatePaymentTransaction($customer_id, $calc_array['payment_ids'], $calc_array['total_amount']);
               $final_fields = \Pagostt::generateTransactionArray($customer, $payment, $pagostt_transaction, $custom_app_key);
+              if(isset($final_fields['cancel_payment'])){
+                return redirect($this->prev)->with('message_error', $final_fields['cancel_payment']);
+              }
               $api_url = \Pagostt::generateTransactionQuery($pagostt_transaction, $final_fields);
               if($api_url){
                 if($api_url=='success-cashier'){
