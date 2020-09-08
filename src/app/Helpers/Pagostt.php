@@ -442,6 +442,7 @@ class Pagostt {
         }
 
         // Guardado de transaction_id generado por PagosTT
+        $transaction->callback_url = $decoded_result->url_pasarela_pagos;
         $transaction->external_payment_code = $decoded_result->id_transaccion;
         $transaction->save();
         
