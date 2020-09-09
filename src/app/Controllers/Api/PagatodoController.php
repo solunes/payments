@@ -68,8 +68,8 @@ class PagatodoController extends BaseController {
         $estado = $request->input('estado');
         $descripcion = $request->input('descripcion');
         \Log::info('Successful transaction: '.$estado.' | '.$token.' | '.$descripcion.' | '.$nro_recibo);
-        $payment_code = $token;
-        $external_payment_code = $nro_recibo;
+        $payment_code = \Solunes\Payments\App\Transaction::find($nro_recibo)->payment_code;
+        $external_payment_code = $token;
         if(!$payment_code){
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
