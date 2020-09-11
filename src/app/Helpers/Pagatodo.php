@@ -140,6 +140,8 @@ class Pagatodo {
     }
 
     public static function generateTransactionArray($customer, $payment, $transaction, $custom_apptoken = 'default', $apptoken = NULL) {
+        \Log::info('customer: '.json_encode($customer));
+        \Log::info('payment: '.json_encode($payment));
         $success_callback_url = \Pagatodo::generateRedirectCallback('success',$transaction->id);
         $error_callback_url = \Pagatodo::generateRedirectCallback('error',$transaction->id);
         $callback_url = \Pagatodo::generatePaymentCallback();
@@ -204,11 +206,17 @@ class Pagatodo {
         $final_fields['concepto_recibo'] = $payment['name'];
         $detalle = [];
         $total = 0;
-        foreach($payment['items'] as $payment_item){
-            \Log::info('detalle: '.$payment_item);
+        foreach($payment['items'] as $key => $payment_item){
             $decode_payment_item = json_decode($payment_item, true);
             $total += $decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'];
-            $detalle[] = ['descripcion_item'=>$decode_payment_item['concepto'],'cantidad'=>$decode_payment_item['cantidad'],'item'=>$decode_payment_item['concepto'],'precio_unitario'=>round($decode_payment_item['costo_unitario'],2),'sub_total'=>round($decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'],2)];
+            $item_price = round($decode_payment_item['costo_unitario'],2);
+            $subtotal = round($decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'],2);
+            if(isset($payment['discount_amount'])&&$payment['discount_amount']>0&&$key==0){
+                $total = $total - round($payment['discount_amount'],2);
+                $item_price = $item_price - round($payment['discount_amount'],2);
+                $subtotal = $subtotal - round($payment['discount_amount'],2);
+            }
+            $detalle[] = ['descripcion_item'=>$decode_payment_item['concepto'],'cantidad'=>$decode_payment_item['cantidad'],'item'=>$decode_payment_item['concepto'],'precio_unitario'=>$item_price,'sub_total'=>$subtotal];
         }
         $final_fields['detalle'] = $detalle;
         $final_fields['moneda'] = 1;
