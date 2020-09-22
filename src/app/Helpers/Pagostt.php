@@ -288,14 +288,14 @@ class Pagostt {
                 return $payment;
             }
         }
-        if(isset($payment['nit_name'])){
+        if(!config('payments.pagostt_params.use_customer_invoice_data')&&isset($payment['nit_name'])){
             $nit_name = $payment['nit_name'];
         } else if(isset($customer['nit_name'])){
             $nit_name = $customer['nit_name'];
         } else {
             $nit_name = 'Sin Nombre';
         }
-        if(isset($payment['nit_number'])){
+        if(!config('payments.pagostt_params.use_customer_invoice_data')&&isset($payment['nit_number'])){
             $nit_number = $payment['nit_number'];
         } else if(isset($customer['nit_number'])){
             $nit_number = $customer['nit_number'];

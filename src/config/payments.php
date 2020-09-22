@@ -43,6 +43,7 @@ return [
 		'invoice_test_server' => 'http://todotix.com:20888/factura/', // Servidor donde se almacenan las facturas en pruebas, pegado al Invoice ID
 		'notify_email' => true, // Notificar la recepción del pago por correo electrónico
 		'enable_cashier' => false, // Definir si se habilita el pago en caja
+		'use_customer_invoice_data' => false, // Definir true cuando se utilicen los datos del cliente sobre los datos del payment.
 		'cashier_payments' => ['default'=>NULL], // Definir la llave de pagos en caja de PagosTT para la compañia
 		'test_cashier_payments' => ['default'=>'e93a676e14f672667ab6f7fe863061822331b13b258afd8cb14e0e5cd46c6ff1'], // Definir la llave de pagos en caja de PagosTT para la compañia en Modo Testing
 		'enable_custom_func' => false, // Habilitar si se habilita el CustomFunc
