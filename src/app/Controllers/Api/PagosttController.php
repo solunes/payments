@@ -73,7 +73,8 @@ class PagosttController extends BaseController {
                 \Pagostt::putPaymentInvoice($transaction);
                 return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
             } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',request()->input('transaction_id'))->where('status','cancelled')->first()){
-                return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
+                $api_transaction = false;
+                //return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
             } else {
                 throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
             }
