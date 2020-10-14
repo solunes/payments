@@ -62,14 +62,15 @@ class BanipayController extends BaseController {
     }
 
     public function postSuccessfulPayment(Request $request){
-        \Log::info(json_encode($request));
-        $token = $request->input('token');
-        $nro_recibo = $request->input('nro_recibo');
-        $estado = $request->input('estado');
-        $descripcion = $request->input('descripcion');
-        \Log::info('Successful transaction: '.$estado.' | '.$token.' | '.$descripcion.' | '.$nro_recibo);
-        $payment_code = \Solunes\Payments\App\Transaction::find($nro_recibo)->payment_code;
-        $external_payment_code = $token;
+        \Log::info(json_encode($request->all()));
+        $id = $request->input('id');
+        $externalCode = $request->input('externalCode');
+        $email = $request->input('email');
+        $paymentAmount = $request->input('paymentAmount');
+        $payment_code = $request->input('reserved1');
+        $paidOut = $request->input('paidOut');
+        \Log::info('Successful transaction: '.$id.' | '.$externalCode.' | '.$payment_code.' | '.$paidOut);
+        $external_payment_code = $id;
         if(!$payment_code){
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
@@ -80,7 +81,7 @@ class BanipayController extends BaseController {
             return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
         } 
         \Log::info('Transaccion aceptada, procesando: '.$payment_code);
-        if($token&&$nro_recibo&&$estado&&$estado=='PAG'){
+        if($payment_code&&$external_payment_code&&$paidOut){
             $api_transaction = false;
             if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
                 $api_transaction = true;

@@ -240,7 +240,7 @@ class Banipay {
         \Log::info('decoded_result: '.json_encode($decoded_result)); // OCULTAR
         // Guardado de transaction_id generado por PagosTT
         //$transaction->external_payment_code = rand(10000,99999); // DEFINIR SI GUARDAR ALGO
-        $transaction->external_payment_code = $decoded_result->transactionGenerated;
+        $transaction->external_payment_code = $decoded_result->paymentId;
         $transaction->save();
         
         // URL para redireccionar
