@@ -104,7 +104,7 @@ class Banipay {
 
     public static function generatePaymentTransaction($customer_id, $payment_ids, $amount = NULL) {
         $payment_code = \Banipay::generatePaymentCode();
-        $payment_method = \Solunes\Payments\App\PaymentMethod::where('code', 'pagatodo')->first();
+        $payment_method = \Solunes\Payments\App\PaymentMethod::where('code', 'banipay')->first();
         $transaction = new \Solunes\Payments\App\Transaction;
         $transaction->customer_id = $customer_id;
         $transaction->payment_code = $payment_code;
