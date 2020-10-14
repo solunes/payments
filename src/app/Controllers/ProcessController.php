@@ -50,6 +50,8 @@ class ProcessController extends Controller {
       $model = '\Pagostt';
     } else if($type=='pagatodo'){
       $model = '\Pagatodo';
+    } else if($type=='banipay'){
+      $model = '\Banipay';
     } else if($type=='paypal'||$type=='braintree'||$type=='payu'||$type=='neteller'){
       $model = '\OmnipayGateway';
     } else if($type=='payme'){

@@ -6,6 +6,8 @@ app('api.router')->group(['version'=>'v1', 'namespace'=>'Solunes\\Payments\\App\
 	$api->get('pago-confirmado/{payment_code}/{transaction_id?}', 'PagosttController@getSuccessfulPayment');
 	$api->get('pagatodo-redireccion/{status}/{transaction_id}', 'PagatodoController@getSuccessfulPayment');
 	$api->post('pagatodo-callback', 'PagatodoController@postSuccessfulPayment');
+	$api->get('banipay-redireccion/{status}/{transaction_id}', 'BanipayController@getSuccessfulPayment');
+	$api->post('banipay-callback', 'BanipayController@postSuccessfulPayment');
 	$api->get('confirmed-payment/{payment_code}/{transaction_id?}', 'PaymentsController@getSuccessfulPayment');
 	$api->get('paypal-success/{payment_code}/{transaction_id?}', 'PaypalController@getSuccessfulPayment');
 });

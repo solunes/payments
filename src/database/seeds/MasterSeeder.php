@@ -86,6 +86,9 @@ class MasterSeeder extends Seeder {
         if(config('payments.pagatodo')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'PagaTodo360', 'code'=>'pagatodo', 'model'=>'Pagatodo', 'content'=>'<p>Realiza tu pago a través de tarjeta de crédito / débito y pagos a través de Simple QR.</p>']);
         }
+        if(config('payments.banipay')){
+            \Solunes\Payments\App\PaymentMethod::create(['name'=>'Banipay', 'code'=>'banipay', 'model'=>'Banipay', 'content'=>'<p>Realiza tu pago a través de tarjeta de crédito / débito y pagos a través de Simple QR.</p>']);
+        }
         if(config('payments.test-payment')){
             \Solunes\Payments\App\PaymentMethod::create(['name'=>'Test Payment', 'code'=>'test-payment', 'model'=>'TestPayment', 'content'=>'<p>Realiza un pago de prueba.</p>', 'active'=>1]);
         }

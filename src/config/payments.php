@@ -25,6 +25,7 @@ return [
 	'tigo-money' => false,
 	'pagosnet' => false,
 	'pagatodo' => false,
+	'banipay' => false,
 	'test-payment' => false,
 
     'pagostt_params' => [
@@ -115,6 +116,27 @@ return [
 		'customer_all_payments' => true, // Habilitar si se desea aceptar pagos en masa
 	],
 
+    'banipay_params' => [
+		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
+		'main_server' => 'https://banipay.me:8443/api/', // URL DE PagosTT para Producción
+		'test_server' => 'https://banipay.me:8443/api/', // URL DE PagosTT para Pruebas
+		'user' => 'testing@banipay.me', // AppKey generado por PagosTT
+		'pass' => 'testing', // AppKey generado por PagosTT
+		'test_user' => 'testing@banipay.me', // AppKey generado por PagosTT
+		'test_pass' => 'testing', // AppKey generado por PagosTT
+		'custom_users' => ['default'=>'testing@banipay.me'], // AppKey personalizados para ser utilizados
+		'custom_test_users' => ['default'=>'testing'], // AppKey personalizados para ser utilizados en modo Testing
+		'custom_passwords' => ['default'=>'testing@banipay.me'], // AppKey personalizados para ser utilizados
+		'custom_test_passwords' => ['default'=>'testing'], // AppKey personalizados para ser utilizados en 
+		'affiliate' => '141581ae-fb1f-4cfb-b21e-040a8851c265', // Notificar la recepción del pago por correo electrónico
+		'affiliate_test' => '141581ae-fb1f-4cfb-b21e-040a8851c265', // Notificar la recepción del pago por correo electrónico
+		'notify_email' => true, // Notificar la recepción del pago por correo electrónico
+		'enable_custom_func' => false, // Habilitar si se habilita el CustomFunc
+		'enable_bridge' => false, // Habilitar si no se utilizarán los módulos de pagos de Solunes
+		'finish_payment_verification' => false, // Habilitar si se desea realizar la verificación final
+		'customer_all_payments' => true, // Habilitar si se desea aceptar pagos en masa
+	],
+	
     'cash_params' => [
 		'testing' => env('ENABLE_TEST', 1), // Utilizar el ambiente de pruebas
 		'redirect' => false, // Nombre enviado a Cuentas365
