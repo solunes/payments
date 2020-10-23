@@ -142,7 +142,7 @@ class Payments {
             $subitem_total = 0;
             $salepayment_total = $sale_payment->amount;
             foreach($sale->sale_items as $sale_item){
-                if($salepayment_total>0&&(!isset($sale_payments_array[$sale_item->id])||$sale_payments_array[$sale_item->id]>0)){
+                if((!isset($sale_payments_array[$sale_item->id])||$sale_payments_array[$sale_item->id]>0)){
                     if(!$sale_payment_item = \Solunes\Sales\App\SalePaymentItem::where('parent_id', $sale_payment->id)->where('sale_item_id', $sale_item->id)->first()){
                         $sale_payment_item = new \Solunes\Sales\App\SalePaymentItem;
                         $sale_payment_item->parent_id = $sale_payment->id;
