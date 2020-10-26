@@ -74,63 +74,67 @@ class PagatodoController extends BaseController {
             \Log::info('No se cuenta con un payment_code.');
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('No se cuenta con un payment_code.');
         }
-        $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
-        if(!$checkItem){
-            \Log::info('Transacción encontrada, no se accede de nuevo.');
-            return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
-        } 
-        \Log::info('Transaccion aceptada, procesando: '.$payment_code);
-        if($token&&$nro_recibo&&$estado&&$estado=='PAG'){
-            $api_transaction = false;
-            if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
-                $api_transaction = true;
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
-                $api_transaction = false;
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','paid')->first()){
+        if($estado&&$estado=='PAG'){
+            $checkItem = \DataManager::putUniqueValue('succesful-transactions-codes', $payment_code);
+            if(!$checkItem){
+                \Log::info('Transacción encontrada, no se accede de nuevo.');
                 return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
-            } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','cancelled')->first()){
-                return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
-            } else {
-                throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
-            }
-            $transaction->status = 'paid';
-            $transaction->save();
-            if(config('payments.pagatodo_params.enable_bridge')){
-                $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
-            } else {
-                $payment_registered = \Customer::transactionSuccesful($transaction);
-            }
-            if(config('payments.pagatodo_params.notify_email')){
+            } 
+            \Log::info('Transaccion aceptada, procesando: '.$payment_code);
+            if($token&&$nro_recibo&&$estado&&$estado=='PAG'){
+                $api_transaction = false;
+                if($external_payment_code&&$transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
+                    $api_transaction = true;
+                } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','holding')->first()){
+                    $api_transaction = false;
+                } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','paid')->first()){
+                    return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue realizado correctamente');
+                } else if($transaction = \Solunes\Payments\App\Transaction::where('payment_code',$payment_code)->where('external_payment_code',$external_payment_code)->where('status','cancelled')->first()){
+                    return redirect(config('payments.redirect_after_payment'))->with('message_success', 'Su pago fue cancelado. Para más información contáctese con el administrador.');
+                } else {
+                    throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Pago no encontrado en verificación.');
+                }
+                $transaction->status = 'paid';
+                $transaction->save();
                 if(config('payments.pagatodo_params.enable_bridge')){
-                    $customer = \PagosttBridge::getCustomer($transaction->customer_id);
+                    $payment_registered = \PagosttBridge::transactionSuccesful($transaction);
                 } else {
-                    $customer = \Customer::getCustomer($transaction->customer_id);
+                    $payment_registered = \Customer::transactionSuccesful($transaction);
                 }
-                \Log::info('Successful Transaction Email: '.$customer['email']);
-                if(!config('payments.pagatodo_params.testing')&&config('payments.pagatodo_params.notify_email')&&filter_var($customer['email'], FILTER_VALIDATE_EMAIL)){
-                    \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
-                        if($customer['name']){
-                            $name = $customer['name'];
-                        } else {
-                            $name = 'Cliente';
-                        }
-                        $m->to($customer['email'], $name)->subject(config('solunes.app_name').' | '.trans('payments::mail.successful_payment_title'));
-                    });
+                if(config('payments.pagatodo_params.notify_email')){
+                    if(config('payments.pagatodo_params.enable_bridge')){
+                        $customer = \PagosttBridge::getCustomer($transaction->customer_id);
+                    } else {
+                        $customer = \Customer::getCustomer($transaction->customer_id);
+                    }
+                    \Log::info('Successful Transaction Email: '.$customer['email']);
+                    if(!config('payments.pagatodo_params.testing')&&config('payments.pagatodo_params.notify_email')&&filter_var($customer['email'], FILTER_VALIDATE_EMAIL)){
+                        \Mail::send('payments::emails.successful-payment', ['amount'=>$transaction->amount, 'email'=>$customer['email']], function($m) use($customer) {
+                            if($customer['name']){
+                                $name = $customer['name'];
+                            } else {
+                                $name = 'Cliente';
+                            }
+                            $m->to($customer['email'], $name)->subject(config('solunes.app_name').' | '.trans('payments::mail.successful_payment_title'));
+                        });
+                    }
                 }
-            }
-            if($api_transaction){
-                return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
+                if($api_transaction){
+                    return $this->response->array(['payment_registered'=>$payment_registered])->setStatusCode(200);
+                } else {
+                    $payment = $transaction->transaction_payment->payment;
+                    $sale = $payment->sale_payment->parent;
+                    $sale_item = $sale->sale_item;
+                    $sale_product_bridge = $sale_item->product_bridge;
+                    if($sale_product_bridge&&$sale_product_bridge->delivery_type=='subscription'){
+                        $redirect = 'account/my-subscriptions/1354351278';
+                    } else {
+                        $redirect = config('payments.redirect_after_payment');
+                    }
+                    return redirect($redirect)->with('message_success', 'Su pago fue realizado correctamente.');
+                }
             } else {
-                $payment = $transaction->transaction_payment->payment;
-                $sale = $payment->sale_payment->parent;
-                $sale_item = $sale->sale_item;
-                $sale_product_bridge = $sale_item->product_bridge;
-                if($sale_product_bridge&&$sale_product_bridge->delivery_type=='subscription'){
-                    $redirect = 'account/my-subscriptions/1354351278';
-                } else {
-                    $redirect = config('payments.redirect_after_payment');
-                }
-                return redirect($redirect)->with('message_success', 'Su pago fue realizado correctamente.');
+                throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Operación no permitida.');
             }
         } else {
             throw new \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException('Operación no permitida.');
