@@ -62,7 +62,7 @@ class PagatodoController extends BaseController {
     }
 
     public function postSuccessfulPayment(Request $request){
-        \Log::info(json_encode($request));
+        \Log::info(json_encode($request->all()));
         $token = $request->input('token');
         $nro_recibo = $request->input('nro_recibo');
         $estado = $request->input('estado');
