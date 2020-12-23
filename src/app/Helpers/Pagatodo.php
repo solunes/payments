@@ -207,6 +207,7 @@ class Pagatodo {
         $detalle = [];
         $total = 0;
         foreach($payment['items'] as $key => $payment_item){
+            \Log::info('payment-item: '.json_encode($payment_item));
             $decode_payment_item = json_decode($payment_item, true);
             $total += $decode_payment_item['costo_unitario']*$decode_payment_item['cantidad'];
             $item_price = round($decode_payment_item['costo_unitario'],2);
@@ -215,6 +216,10 @@ class Pagatodo {
                 $total = $total - round($payment['discount_amount'],2);
                 $item_price = $item_price - round($payment['discount_amount'],2);
                 $subtotal = $subtotal - round($payment['discount_amount'],2);
+            } else if(isset($decode_payment_item['descuento_total'])&&$decode_payment_item['descuento_total']>0){
+                $total = $total - round($decode_payment_item['descuento_total'],2);
+                $item_price = $item_price - round($decode_payment_item['descuento_total'],2);
+                $subtotal = $subtotal - round($decode_payment_item['descuento_total'],2);
             }
             $detalle[] = ['descripcion_item'=>$decode_payment_item['concepto'],'cantidad'=>$decode_payment_item['cantidad'],'item'=>$decode_payment_item['concepto'],'precio_unitario'=>$item_price,'sub_total'=>$subtotal];
         }
